@@ -1,5 +1,11 @@
 # @three-kit/materials
 
+## 1.0.2
+
+### Patch Changes
+
+- 8881893: fixing build
+
 ## 1.0.1
 
 ### Patch Changes
