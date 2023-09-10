@@ -1,5 +1,11 @@
 # @three-kit/materials
 
+## 1.0.4
+
+### Patch Changes
+
+- d2597e4: publish attempt..
+
 ## 1.0.3
 
 ### Patch Changes
