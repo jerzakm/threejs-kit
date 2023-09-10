@@ -1,6 +1,5 @@
 {
   "name": "@three-kit/materials",
-  "private": true,
   "version": "1.0.0",
   "type": "module",
   "main": "./dist/materials.js",
