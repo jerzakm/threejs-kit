@@ -30,7 +30,7 @@
   },
   "publishOverrides": {
     "files": [
-      "dist"
+      "dist/*"
     ],
     "main": "./dist/materials.js",
     "module": "./dist/materials.js",
