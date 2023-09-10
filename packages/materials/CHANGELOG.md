@@ -1,5 +1,11 @@
 # @three-kit/materials
 
+## 1.0.5
+
+### Patch Changes
+
+- 98016fd: yet another build try
+
 ## 1.0.4
 
 ### Patch Changes
