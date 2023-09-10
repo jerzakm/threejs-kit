@@ -30,7 +30,7 @@ importers:
       '@sveltejs/adapter-vercel':
         specifier: ^3.0.3
         version: 3.0.3(@sveltejs/kit@1.24.0)
-      '@three-kit/materials':
+      '@threejs-kit/materials':
         specifier: workspace:^
         version: link:../../packages/materials
       '@threlte/rapier':

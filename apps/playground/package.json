@@ -35,7 +35,7 @@
 	"type": "module",
 	"dependencies": {
 		"@sveltejs/adapter-vercel": "^3.0.3",
-		"@three-kit/materials": "workspace:^",
+		"@threejs-kit/materials": "workspace:^",
 		"@threlte/rapier": "^1.1.2",
 		"@threlte/theatre": "^2.1.1",
 		"mikktspace": "^1.1.1",

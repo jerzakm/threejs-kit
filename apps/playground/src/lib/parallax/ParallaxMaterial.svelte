@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { MeshParallaxMaterial } from '@three-kit/materials';
+	import { MeshParallaxMaterial } from '@threejs-kit/materials';
 	import { T } from '@threlte/core';
 	import { useTexture } from '@threlte/extras';
 
