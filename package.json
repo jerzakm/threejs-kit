@@ -8,7 +8,7 @@
     "clean": "turbo clean && rm -rf node_modules",
     "changeset": "changeset",
     "version-packages": "changeset version",
-    "release": "turbo build --filter=docs^... && changeset publish"
+    "release": "turbo build --filter=playground^... && changeset publish"
   },
   "devDependencies": {
     "@changesets/cli": "^2.26.2",

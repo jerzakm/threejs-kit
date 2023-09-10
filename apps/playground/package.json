@@ -1,5 +1,5 @@
 {
-	"name": "@three-kit/docs",
+	"name": "@threejs-kit/docs",
 	"version": "0.0.2",
 	"private": true,
 	"scripts": {
