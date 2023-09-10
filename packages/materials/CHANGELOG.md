@@ -1,5 +1,11 @@
 # @three-kit/materials
 
+## 1.0.3
+
+### Patch Changes
+
+- 11cd80e: publish overrides
+
 ## 1.0.2
 
 ### Patch Changes
