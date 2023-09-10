@@ -27,5 +27,17 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "publishOverrides": {
+    "files": [
+      "dist"
+    ],
+    "main": "./dist/materials.js",
+    "module": "./dist/materials.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/materials.js"
+    }
   }
 }
