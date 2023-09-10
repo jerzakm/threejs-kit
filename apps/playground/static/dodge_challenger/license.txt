@@ -1,0 +1,11 @@
+Model Information:
+* title:	Dodge CHALLENGER
+* source:	https://sketchfab.com/3d-models/dodge-challenger-2c1f18d2f0214cb7a746fc5dd2baeebe
+* author:	Gesy (https://sketchfab.com/mrgesy)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Dodge CHALLENGER" (https://sketchfab.com/3d-models/dodge-challenger-2c1f18d2f0214cb7a746fc5dd2baeebe) by Gesy (https://sketchfab.com/mrgesy) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

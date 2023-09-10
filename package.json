@@ -1,19 +1,23 @@
 {
-  "name": "three-glint-material",
+  "name": "three-kit-mono",
   "private": true,
-  "version": "0.0.0",
-  "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview"
+    "build": "turbo build",
+    "dev": "turbo dev --no-cache --continue",
+    "lint": "turbo lint",
+    "clean": "turbo clean && rm -rf node_modules",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "turbo build --filter=docs^... && changeset publish"
   },
   "devDependencies": {
-    "@types/three": "^0.155.1",
-    "typescript": "^5.0.2",
-    "vite": "^4.4.5"
+    "@changesets/cli": "^2.26.2",
+    "eslint": "^7.32.0",
+    "prettier": "^2.5.1",
+    "turbo": "latest"
   },
+  "packageManager": "pnpm@8.6.10",
   "dependencies": {
-    "three": "^0.156.0"
+    "@changesets/changelog-github": "^0.4.8"
   }
 }
