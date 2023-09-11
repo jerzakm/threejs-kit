@@ -1,5 +1,5 @@
 {
-	"name": "@threejs-kit/docs",
+	"name": "@threejs-kit/playground",
 	"version": "0.0.9",
 	"private": true,
 	"scripts": {

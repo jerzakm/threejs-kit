@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "build": "turbo build",
+    "build:docs": "turbo run build --filter='@threejs-kit/docs'",
     "dev": "turbo dev --no-cache --continue",
     "lint": "turbo lint",
     "clean": "turbo clean && rm -rf node_modules",
