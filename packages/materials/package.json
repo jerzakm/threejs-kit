@@ -1,6 +1,6 @@
 {
   "name": "@threejs-kit/materials",
-  "version": "1.0.5b",
+  "version": null,
   "type": "module",
   "main": "./dist/materials.js",
   "module": "./dist/materials.js",
