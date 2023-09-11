@@ -1,5 +1,12 @@
 # @three-kit/docs
 
+## 0.0.8
+
+### Patch Changes
+
+- Updated dependencies [e059ce8]
+  - @threejs-kit/materials@1.0.6
+
 ## 0.0.7
 
 ### Patch Changes
