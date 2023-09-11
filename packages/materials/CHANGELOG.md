@@ -1,5 +1,11 @@
 # @three-kit/materials
 
+## 1.0.7
+
+### Patch Changes
+
+- 5ef828c: another release action test
+
 ## 1.0.6
 
 ### Patch Changes
