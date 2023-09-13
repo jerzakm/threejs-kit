@@ -1,5 +1,11 @@
 # @three-kit/materials
 
+## 1.0.8
+
+### Patch Changes
+
+- e78da3d: MeshParallaxMaterial fixes - constructor
+
 ## 1.0.7
 
 ### Patch Changes
