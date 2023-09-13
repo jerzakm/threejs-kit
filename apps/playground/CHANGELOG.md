@@ -1,5 +1,12 @@
 # @three-kit/docs
 
+## 0.0.10
+
+### Patch Changes
+
+- Updated dependencies [e78da3d]
+  - @threejs-kit/materials@1.0.8
+
 ## 0.0.9
 
 ### Patch Changes
