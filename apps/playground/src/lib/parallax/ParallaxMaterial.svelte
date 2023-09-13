@@ -10,8 +10,8 @@
 		{
 			// debugQualityMask: true,
 			parallaxMinLayers: 64,
-			parallaxMaxLayers: 256,
-			cutoffDistance: 3000,
+			parallaxMaxLayers: 128,
+			cutoffDistance: 1000,
 			parallaxScale: 0.1
 		}
 	);
@@ -20,7 +20,6 @@
 	const bump = useTexture('/stonewall/dis.jpg');
 	const diffuse = useTexture('/stonewall/diff.jpg');
 	const normal = useTexture('/stonewall/normal.jpg');
-	const roughness = useTexture('/stonewall/rough.jpg');
 
 	export let repeat = 1;
 
