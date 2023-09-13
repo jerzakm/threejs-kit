@@ -5,9 +5,16 @@
 
 	import * as THREE from 'three';
 
-	const material = new MeshParallaxMaterial({
-		debugQualityMask: false
-	});
+	const material = new MeshParallaxMaterial(
+		{},
+		{
+			// debugQualityMask: true,
+			parallaxMinLayers: 64,
+			parallaxMaxLayers: 256,
+			cutoffDistance: 3000,
+			parallaxScale: 0.1
+		}
+	);
 
 	// const bump = useTexture('/ixxie/bump.jpg');
 	const bump = useTexture('/stonewall/dis.jpg');
@@ -19,7 +26,6 @@
 
 	$: {
 		material.repeatUv.set(repeat, repeat);
-		material.qualityCutoffDistance = 350;
 	}
 
 	$: {

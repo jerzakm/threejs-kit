@@ -1,4 +1,111 @@
 ---
-title: Parallax Occlusion Material
+title: MeshParallaxMaterial
 description: Parallax Occlusion material for three.js
 ---
+
+import { Image } from "astro:assets";
+
+### Parallax Occlusion Mapping
+
+Parallax Occlusion Mapping (POM) is an advanced texturing technique used in 3D computer graphics. Unlike traditional methods like
+Bump Mapping or Normal Mapping that only simulate the appearance of depth or relief on surface textures, Parallax Occlusion Mapping
+actually displaces the texture coordinates at a pixel level, providing a pseudo-3D effect.
+This creates a much more convincing illusion of depth, surface irregularities, and geometric complexity, without the computational
+overhead of increasing the polygon count of the 3D models.
+
+This effect is particularly useful for surfaces with intricate detail like brick walls, cobblestone roads, or intricate tile patterns.
+
+### Implementation
+
+ParallaxMaterial extends [THREE.MeshPhysicalMaterial](https://threejs.org/docs/#api/en/materials/MeshPhysicalMaterial).
+This means that it inherits the same constructor, properties, and methods, while also introducing additional features described below.
+
+```ts
+import { MeshParallaxMaterial } from "@threejs-kit/materials";
+
+const material = new MeshParallaxMaterial(
+  {
+    map: diffuseTexture,
+    normalMap: normalTexture,
+  },
+  {
+    cutoffDistance: 450,
+    parallaxScale: 0.05,
+    parallaxMinLayers: 16,
+    parallaxMaxLayers: 96,
+    parallaxOcclusionMap: bumpTexture,
+    repeatUv: new THREE.Vector2(2, 2),
+  }
+);
+```
+
+## Constructor
+
+Instead of one set of parameters, you provide two - one for [THREE.MeshPhysicalMaterial](https://threejs.org/docs/#api/en/materials/MeshPhysicalMaterial) and one for `MeshParallaxMaterial`
+
+```ts
+new MeshParallaxMaterial(
+  MeshPhysicalMaterialParameters,
+  MeshParallaxMaterialProps
+);
+```
+
+## Parameters
+
+### `debugQualityMask`
+
+**type:** `boolean`
+
+Enables a debug visualization to assist with quality optimization. The quality parameter
+has range of 0 to 1. A value of 0 results in a black preview, indicating minimal detail,
+while a value of 1 yields a white preview, signifying maximum detail.
+
+### parallaxOcclusionMap
+
+**type:** `THREE.Texture`
+
+Texture with height data. Darker colors represent lower elevations, while lighter colors indicate higher elevations. Only the red channel is used.
+
+### repeatUv
+
+**type:** `THREE.Vector2`
+
+This parameter manages the uniform tiling of all associated texture maps, including normalMap, roughnessMap, etc.
+Its behavior is analogous to the repeat property in `THREE.Material`, controlling how many times textures are repeated
+along both the U and V axes.
+
+### parallaxScale
+
+**type:** `number`
+
+This parameter adjusts the intensity of the parallax effect. It accepts positive floating-point values.
+For most use cases, optimal results are generally achieved with values ranging from **0.01** to **0.15**.
+
+### parallaxMinLayers
+
+**type:** `number`
+
+Specifies the initial minimum number of occlusion layers used in the parallax effect.
+This value may be subsequently modified within the shader based on performance optimization settings.
+
+### parallaxMaxLayers
+
+**type:** `number`
+Defines the absolute maximum number of occlusion layers permitted in the parallax effect.
+The number of layers will never exceed this value and typically approaches this maximum only at steeper viewing angles.
+
+### cutoffDistance
+
+**type:** `number`
+Sets an upper limit for the effective range of the parallax effect. The number of occlusion layers is
+highest near the camera and gradually diminishes as the distance approaches this cutoff value.
+
+## Performance
+
+import debugQualityMask from "../../../assets/materials/parallax/debug.png";
+
+<Image
+  src={debugQualityMask}
+  alt="debug preview for parallax materials. White = higher quality"
+/>
+;

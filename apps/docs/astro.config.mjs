@@ -13,7 +13,7 @@ if (process.env.NODE_ENV === 'production') {
 export default defineConfig({
   integrations: [
     starlight({
-      title: 'threejs-kit - materials, shaders and utils for three.js',
+      title: 'threejs-kit',
       social: {
         github: 'https://github.com/jerzakm/threejs-kit',
       },
@@ -40,7 +40,8 @@ export default defineConfig({
     },
     resolve: {
       alias: {
-        'lib/*': './src/lib'
+        'lib/*': './src/lib',
+        "@assets/*": "src/assets/*"
       }
     }
   },

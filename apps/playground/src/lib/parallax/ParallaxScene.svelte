@@ -25,13 +25,13 @@
 />
 
 <!-- <T.PerspectiveCamera makeDefault position={[30, 35, 18]} fov={20}> -->
-<T.PerspectiveCamera makeDefault position={[200, 80, 200]} fov={20}>
+<T.PerspectiveCamera makeDefault position={[55, 20, 55]} fov={20}>
 	<OrbitControls
 		enableDamping
 		target.x={0}
-		target.y={2.5}
+		target.y={4.5}
 		target.z={0}
-		autoRotate={false}
+		autoRotate={true}
 		autoRotateSpeed={0.1}
 	/>
 </T.PerspectiveCamera>
@@ -43,7 +43,7 @@
 	</T.Mesh>
 </T.DirectionalLight>
 
-<T.AmbientLight intensity={0.5} />
+<!-- <T.AmbientLight intensity={0.5} /> -->
 
 <T.Mesh position.x={0} position.y={5}>
 	<T.BoxGeometry
@@ -65,17 +65,6 @@
 		}}
 	/>
 	<T.MeshBasicMaterial wireframe color="red" />
-</T.Mesh>
-
-<T.Mesh position.x={0} position.z={-50}>
-	<T.BoxGeometry
-		args={[45, 45, 45]}
-		on:create={({ ref }) => {
-			// ref.computeVertexNormals();
-			// ref.computeTangents();
-		}}
-	/>
-	<ParallaxTest repeat={2} />
 </T.Mesh>
 
 <T.Mesh position.x={40} position.y={40} rotation.y={DEG2RAD * 0}>
