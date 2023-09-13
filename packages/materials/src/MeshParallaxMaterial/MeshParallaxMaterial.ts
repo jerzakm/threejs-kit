@@ -3,26 +3,56 @@ import {
   Vector2,
   type Shader,
   MeshPhysicalMaterialParameters,
+  Texture,
 } from "three";
 
 import parallaxUv from "./parallax_uv_swap.glsl?raw";
 
-interface MeshParallaxMaterialProps extends MeshPhysicalMaterialParameters {
+interface MeshParallaxMaterialProps {
   debugQualityMask?: boolean;
+  parallaxOcclusionMap?: Texture;
+  repeatUv?: Vector2;
+  parallaxScale?: number;
+  parallaxMinLayers?: number;
+  parallaxMaxLayers?: number;
+  cutoffDistance?: number;
 }
 
 export class MeshParallaxMaterial extends MeshPhysicalMaterial {
-  private ParallaxOcclusionMap = { value: null };
+  private ParallaxOcclusionMap: { value: Texture | null } = { value: null };
   private RepeatUv = { value: new Vector2(1, 1) };
   private ParallaxScale = { value: 0.1 };
   private ParallaxMinLayers = { value: 16 };
   private ParallaxMaxLayers = { value: 128 };
   private CutoffDistance = { value: 300 };
 
-  constructor(parameters: MeshParallaxMaterialProps = {}) {
+  constructor(
+    parameters: MeshPhysicalMaterialParameters = {},
+    parallaxParameters: MeshParallaxMaterialProps
+  ) {
     super(parameters);
     this.setValues(parameters);
-    if (parameters.debugQualityMask) this.defines["QUALITY_MASK_DEBUG"] = "";
+
+    if (parallaxParameters.repeatUv)
+      this.RepeatUv.value = parallaxParameters.repeatUv;
+
+    if (parallaxParameters.parallaxScale)
+      this.ParallaxScale.value = parallaxParameters.parallaxScale;
+
+    if (parallaxParameters.parallaxMinLayers)
+      this.ParallaxMinLayers.value = parallaxParameters.parallaxMinLayers;
+
+    if (parallaxParameters.parallaxMaxLayers)
+      this.ParallaxMaxLayers.value = parallaxParameters.parallaxMaxLayers;
+
+    if (parallaxParameters.cutoffDistance)
+      this.CutoffDistance.value = parallaxParameters.cutoffDistance;
+
+    if (parallaxParameters.parallaxOcclusionMap)
+      this.ParallaxOcclusionMap.value = parallaxParameters.parallaxOcclusionMap;
+
+    if (parallaxParameters.debugQualityMask)
+      this.defines["QUALITY_MASK_DEBUG"] = "";
   }
   onBeforeCompile(shader: Shader) {
     shader.uniforms.ParallaxOcclusionMap = this.ParallaxOcclusionMap;
@@ -93,7 +123,7 @@ export class MeshParallaxMaterial extends MeshPhysicalMaterial {
       vec2 currentTextureCoords = vUv;
       float heightFromTexture = 1.f - texture2D(ParallaxOcclusionMap, currentTextureCoords).r;
 
-      int qualityMod = min(int(oParallaxMaxLayers/2.), 48);
+      int qualityMod = int(oParallaxMaxLayers/2.);
 
       for (int i = 0; i < 16 + qualityMod; i += 1) {
         if (heightFromTexture <= currentLayerHeight) {
@@ -166,7 +196,7 @@ export class MeshParallaxMaterial extends MeshPhysicalMaterial {
       vec2 parallaxedUv = vUv;
 
       if(qualityMod > 0.01){
-        float oParallaxMinLayers = clamp(parallaxMinLayers * qualityMod, 1., parallaxMinLayers);
+        float oParallaxMinLayers = clamp(parallaxMinLayers * distanceModifier, 1., parallaxMinLayers);
         float oParallaxMaxLayers = clamp(parallaxMaxLayers * qualityMod, 1., parallaxMaxLayers);
   
         vec3 warpVector = warpUVs(-vViewPosition, normalize(vNormal), normalize(vViewPosition));
@@ -174,9 +204,11 @@ export class MeshParallaxMaterial extends MeshPhysicalMaterial {
       }
 
       vec2 currentTextureCoords = parallaxedUv / repeatUv;
-    
-      if (currentTextureCoords.x > 1.0f || currentTextureCoords.x < 0.0f || currentTextureCoords.y < 0.f || currentTextureCoords.y > 1.f)
-        discard;     
+      // todo optional
+      // if (currentTextureCoords.x > 1.0f || currentTextureCoords.x < 0.0f || currentTextureCoords.y < 0.f || currentTextureCoords.y > 1.f)
+      //   discard;     
+
+      
       
  
       ${parallaxUv}

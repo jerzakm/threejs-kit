@@ -5,7 +5,9 @@
 		EffectPass,
 		RenderPass,
 		OutlineEffect,
-		BlendFunction
+		BlendFunction,
+		SMAAEffect,
+		SMAAPreset
 	} from 'postprocessing';
 
 	// export let selectedMesh: THREE.Mesh;
@@ -18,19 +20,14 @@
 		composer.removeAllPasses();
 		composer.addPass(new RenderPass(scene, camera));
 
-		// const outlineEffect = new OutlineEffect(scene, camera, {
-		// 	blendFunction: BlendFunction.ALPHA,
-		// 	edgeStrength: 100,
-		// 	pulseSpeed: 0.0,
-		// 	visibleEdgeColor: 0xffffff,
-		// 	hiddenEdgeColor: 0x9900ff,
-		// 	xRay: true,
-		// 	blur: true
-		// });
-		// if (selectedMesh !== undefined) {
-		// 	outlineEffect.selection.add(selectedMesh);
-		// }
-		// composer.addPass(new EffectPass(camera, outlineEffect));
+		composer.addPass(
+			new EffectPass(
+				camera,
+				new SMAAEffect({
+					preset: SMAAPreset.HIGH
+				})
+			)
+		);
 	};
 
 	$: setupEffectComposer($camera);

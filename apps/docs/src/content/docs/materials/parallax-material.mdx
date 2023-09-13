@@ -3,6 +3,8 @@ title: MeshParallaxMaterial
 description: Parallax Occlusion material for three.js
 ---
 
+import { Image } from "astro:assets";
+
 ### Parallax Occlusion Mapping
 
 Parallax Occlusion Mapping (POM) is an advanced texturing technique used in 3D computer graphics. Unlike traditional methods like
@@ -18,7 +20,37 @@ This effect is particularly useful for surfaces with intricate detail like brick
 ParallaxMaterial extends [THREE.MeshPhysicalMaterial](https://threejs.org/docs/#api/en/materials/MeshPhysicalMaterial).
 This means that it inherits the same constructor, properties, and methods, while also introducing additional features described below.
 
+```ts
+import { MeshParallaxMaterial } from "@threejs-kit/materials";
+
+const material = new MeshParallaxMaterial(
+  {
+    map: diffuseTexture,
+    normalMap: normalTexture,
+  },
+  {
+    cutoffDistance: 450,
+    parallaxScale: 0.05,
+    parallaxMinLayers: 16,
+    parallaxMaxLayers: 96,
+    parallaxOcclusionMap: bumpTexture,
+    repeatUv: new THREE.Vector2(2, 2),
+  }
+);
+```
+
 ## Constructor
+
+Instead of one set of parameters, you provide two - one for [THREE.MeshPhysicalMaterial](https://threejs.org/docs/#api/en/materials/MeshPhysicalMaterial) and one for `MeshParallaxMaterial`
+
+```ts
+new MeshParallaxMaterial(
+  MeshPhysicalMaterialParameters,
+  MeshParallaxMaterialProps
+);
+```
+
+## Parameters
 
 ### `debugQualityMask`
 
@@ -27,8 +59,6 @@ This means that it inherits the same constructor, properties, and methods, while
 Enables a debug visualization to assist with quality optimization. The quality parameter
 has range of 0 to 1. A value of 0 results in a black preview, indicating minimal detail,
 while a value of 1 yields a white preview, signifying maximum detail.
-
-## Parameters
 
 ### parallaxOcclusionMap
 
@@ -72,4 +102,10 @@ highest near the camera and gradually diminishes as the distance approaches this
 
 ## Performance
 
-## Example
+import debugQualityMask from "../../../assets/materials/parallax/debug.png";
+
+<Image
+  src={debugQualityMask}
+  alt="debug preview for parallax materials. White = higher quality"
+/>
+;

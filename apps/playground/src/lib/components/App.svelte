@@ -4,5 +4,6 @@
 </script>
 
 <Canvas>
+	<Renderer />
 	<slot />
 </Canvas>
