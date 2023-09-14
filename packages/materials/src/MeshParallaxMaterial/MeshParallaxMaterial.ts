@@ -119,13 +119,13 @@ export class MeshParallaxMaterial extends MeshPhysicalMaterial {
       float numLayers = mix(oParallaxMaxLayers, oParallaxMinLayers, abs(dot(vec3(0.0f, 0.0f, 1.0f), V)));
       float layerHeight = 1.0f / numLayers;
       float currentLayerHeight = 0.0f;
-      vec2 dtex = parallaxScale * V.xy / V.z / numLayers;
+      vec2 dtex = parallaxScale  * V.xy / V.z / numLayers;
       vec2 currentTextureCoords = vUv;
       float heightFromTexture = 1.f - texture2D(ParallaxOcclusionMap, currentTextureCoords).r;
 
-      int qualityMod = int(oParallaxMaxLayers/2.);
+      int qualityMod = int(oParallaxMaxLayers/2.)+32;
 
-      for (int i = 0; i < 16 + qualityMod; i += 1) {
+      for (int i = 0; i < qualityMod; i += 1) {
         if (heightFromTexture <= currentLayerHeight) {
           break;
         }
@@ -182,7 +182,7 @@ export class MeshParallaxMaterial extends MeshPhysicalMaterial {
       /*glsl*/ `
       
 
-      float viewDirModifier = (1. - pow(vCosTheta, 1.))*0.45;
+      float viewDirModifier = (1. - pow(vCosTheta, 1.))*0.45 +0.2;
       float steepViewDirModifier = (1. - clamp(pow((vCosTheta)*1., 2.),0.,1.))*0.6 + 0.01;
 
       float combinedViewDirMod = clamp(viewDirModifier + steepViewDirModifier,0.,1.);
@@ -191,13 +191,13 @@ export class MeshParallaxMaterial extends MeshPhysicalMaterial {
       float distanceModifier = clamp(cutoffDistance - vDistance, 0.0,1.0) * clamp((cutoffDistance/vDistance - 1.)* 0.5, 0.0, 1.0);
 
       float qualityMod = combinedViewDirMod * distanceModifier;
-
+      
       
       vec2 parallaxedUv = vUv;
 
       if(qualityMod > 0.01){
         float oParallaxMinLayers = clamp(parallaxMinLayers * distanceModifier, 1., parallaxMinLayers);
-        float oParallaxMaxLayers = clamp(parallaxMaxLayers * qualityMod, 1., parallaxMaxLayers);
+        float oParallaxMaxLayers = clamp(parallaxMaxLayers * qualityMod, 2., parallaxMaxLayers);
   
         vec3 warpVector = warpUVs(-vViewPosition, normalize(vNormal), normalize(vViewPosition));
         parallaxedUv = parallaxMap(warpVector, parallaxScale, oParallaxMinLayers, oParallaxMaxLayers);        
