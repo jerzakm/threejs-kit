@@ -38,9 +38,11 @@
 		"@threejs-kit/materials": "workspace:^",
 		"@threlte/rapier": "^1.1.2",
 		"@threlte/theatre": "^2.1.1",
+		"alea": "^1.0.1",
 		"mikktspace": "^1.1.1",
 		"postprocessing": "^6.33.0",
 		"simplex-noise": "^4.0.1",
+		"three-perf": "^1.0.10",
 		"tweakpane": "^4.0.1",
 		"xatlas-web": "^0.1.0"
 	}

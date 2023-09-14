@@ -66,6 +66,9 @@ importers:
       '@threlte/theatre':
         specifier: ^2.1.1
         version: 2.1.1(@theatre/core@0.7.0)(@theatre/studio@0.7.0)(@threlte/core@6.0.8)(@threlte/extras@5.6.1)(svelte@4.2.0)(three@0.153.0)
+      alea:
+        specifier: ^1.0.1
+        version: 1.0.1
       mikktspace:
         specifier: ^1.1.1
         version: 1.1.1
@@ -75,6 +78,9 @@ importers:
       simplex-noise:
         specifier: ^4.0.1
         version: 4.0.1
+      three-perf:
+        specifier: ^1.0.10
+        version: 1.0.10(three@0.153.0)
       tweakpane:
         specifier: ^4.0.1
         version: 4.0.1
@@ -2102,6 +2108,10 @@ packages:
       require-from-string: 2.0.2
       uri-js: 4.4.1
     dev: true
+
+  /alea@1.0.1:
+    resolution: {integrity: sha512-QU+wv+ziDXaMxRdsQg/aH7sVfWdhKps5YP97IIwFkHCsbDZA3k87JXoZ5/iuemf4ntytzIWeScrRpae8+lDrXA==}
+    dev: false
 
   /ansi-align@3.0.1:
     resolution: {integrity: sha512-IOfwwBF5iczOjp/WeY4YxyjqAFMQoZufdQWDd19SEExbVLNXqvpzSJ/M7Za4/sCPmQ0+GRquoA7bGcINcxew6w==}
@@ -6827,6 +6837,16 @@ packages:
       any-promise: 1.3.0
     dev: false
 
+  /three-perf@1.0.10(three@0.153.0):
+    resolution: {integrity: sha512-lCur/i8U6m0ysWYhQ1yFGWOZB0QA2oVsDsfynYd65HhXxLxJfiAt8OsXmpv9PnTLacfaZclBcZHUOB9QKk3eaw==}
+    peerDependencies:
+      three: '>=0.151'
+    dependencies:
+      three: 0.153.0
+      troika-three-text: 0.47.2(three@0.153.0)
+      tweakpane: 3.1.10
+    dev: false
+
   /three@0.153.0:
     resolution: {integrity: sha512-OCP2/uQR6GcDpSLnJt/3a4mdS0kNWcbfUXIwLoEMgLzEUIVIYsSDwskpmOii/AkDM+BBwrl6+CKgrjX9+E2aWg==}
 
@@ -7024,6 +7044,10 @@ packages:
       turbo-windows-64: 1.10.13
       turbo-windows-arm64: 1.10.13
     dev: true
+
+  /tweakpane@3.1.10:
+    resolution: {integrity: sha512-rqwnl/pUa7+inhI2E9ayGTqqP0EPOOn/wVvSWjZsRbZUItzNShny7pzwL3hVlaN4m9t/aZhsP0aFQ9U5VVR2VQ==}
+    dev: false
 
   /tweakpane@4.0.1:
     resolution: {integrity: sha512-1JmmGbF4h2zuFbpN1XfIWcV0kLbBUgSXpR1QtW19vJFx44asnCrufRSvd69OItOFMEWgbVtoiWM2uDPUEUKcMQ==}

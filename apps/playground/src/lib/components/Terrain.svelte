@@ -10,8 +10,14 @@
 	export let amplitude = 4;
 	let heights: any[] = [];
 
+	import alea from 'alea';
+	// create a new random function based on the seed
+	export let seed: string | undefined;
+
+	$: prng = seed ? alea(seed) : undefined;
+
 	const geometry = new PlaneGeometry(size, size, nsubdivs, nsubdivs);
-	const noise = createNoise2D();
+	const noise = createNoise2D(prng);
 	const vertices = geometry.getAttribute('position').array;
 
 	for (let x = 0; x <= nsubdivs; x++) {

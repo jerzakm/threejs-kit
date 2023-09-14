@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { useThrelte, useRender } from '@threlte/core';
+	import { useThrelte, useRender, useFrame } from '@threlte/core';
 	import {
 		EffectComposer,
 		EffectPass,
@@ -9,6 +9,8 @@
 		SMAAEffect,
 		SMAAPreset
 	} from 'postprocessing';
+
+	import { ThreePerf } from 'three-perf';
 
 	// export let selectedMesh: THREE.Mesh;
 
@@ -33,7 +35,17 @@
 	$: setupEffectComposer($camera);
 	$: composer.setSize($size.width, $size.height);
 
+	const perf = new ThreePerf({
+		anchorX: 'left',
+		anchorY: 'top',
+		domElement: document.body, // or other canvas rendering wrapper
+		renderer: renderer // three js renderer instance you use for rendering
+	});
+
 	useRender((_, delta) => {
-		composer.render(delta);
+		perf.begin();
+		renderer.render(scene, $camera);
+		perf.end();
+		// composer.render(delta);
 	});
 </script>
