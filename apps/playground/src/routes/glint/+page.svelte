@@ -1,5 +1,5 @@
 <script lang="ts">
-	import ParallaxScene from '$lib/parallax/ParallaxScene.svelte';
+	import GlintScene from '$lib/glint/GlintScene.svelte';
 </script>
 
-<ParallaxScene />
+<GlintScene />

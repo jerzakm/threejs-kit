@@ -74,10 +74,7 @@ export class MeshGlintMaterial extends MeshPhysicalMaterial {
       vec4 wp = modelMatrix * localPosition;
       VertexPos = wp.xyz;
 
-      
-		  // VertexPos = (modelViewMatrix * vec4(position, 1.f)).xyz;
       vModelViewMatrix = modelViewMatrix;
-		  // VertexPos = normalize(VertexPos);
       `
     );
 
@@ -108,34 +105,9 @@ export class MeshGlintMaterial extends MeshPhysicalMaterial {
 
       uniform mediump sampler2DArray DictionaryTexture;
 
-      mat4 brightnessMatrix(float brightness) {
-        return mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, brightness, brightness, brightness, 1);
-      }
-      
-      mat4 contrastMatrix(float contrast) {
-        float t = (1.0f - contrast) / 2.0f;
-      
-        return mat4(contrast, 0, 0, 0, 0, contrast, 0, 0, 0, 0, contrast, 0, t, t, t, 1);
-      
-      }
+
       ${glintMathChunks}
-      // linear to tonemapped
-vec3 ACES(vec3 x) {
-    return x*(2.51*x + .03) / (x*(2.43*x + .59) + .14); // https://knarkowicz.wordpress.com/2016/01/06/aces-filmic-tone-mapping-curve/
-}
 
-// tonemapped to linear
-vec3 ACES_Inv(vec3 x) {
-    return (sqrt(-10127.*x*x + 13702.*x + 9.) + 59.*x - 3.) / (502. - 486.*x); // thanks to https://www.wolframalpha.com/input?i=2.51y%5E2%2B.03y%3Dx%282.43y%5E2%2B.59y%2B.14%29+solve+for+y
-}
-vec3 changeExposure(vec3 col, vec3 b) {
-  b *= col;
-  return b/(b-col+1.);
-}
-
-vec3 changeExposure(vec3 col, float b) {
-  return changeExposure(col, vec3(b));
-}
 		  `
     );
 
@@ -155,22 +127,16 @@ vec3 changeExposure(vec3 col, float b) {
         VertexTang.x, vertexBinormal.x, VertexNorm.x,
         VertexTang.y, vertexBinormal.y, VertexNorm.y,
         VertexTang.z, vertexBinormal.z, VertexNorm.z);
-
-
         
       vec3 vPos = vec3(VertexPos.x, VertexPos.y, VertexPos.z);
       vec3 lPos = vec3(LightPosition.x, LightPosition.y, LightPosition.z);
       vec3 cPos = vec3(CameraPosition.x, CameraPosition.y, CameraPosition.z);
     
       
-      float distanceSquared = pow(distance(VertexPos, lPos), 2.);      
-      
+      float distanceSquared = pow(distance(VertexPos, lPos), 2.);           
       
       vec3 wi = toLocal * normalize(lPos - vPos);
       vec3 wo = toLocal * normalize(cPos  - vPos);
-
-
-  
 
       vec3 radiance_specular = vec3(0);
       vec3 radiance_diffuse = vec3(0.f);
@@ -183,49 +149,22 @@ vec3 changeExposure(vec3 col, float b) {
       // Call our physically based glinty BRDF
       radiance_specular = f_P(wo, wi, uv) * Li;
 
-
       glint_radiance = vec3(clamp(0.5f * radiance_specular.g, 0., 2.5));
-      // glint_radiance = radiance_specular * 0.5;
-
-      glint_radiance *= outgoingLight * 5.;
-
+      glint_radiance *= outgoingLight * 7.62;
       glint_radiance = pow(glint_radiance, vec3(1.0 / 2.2));
       
-      float gmod = clamp(radiance_specular.r * 0.5, 0.,2.5);
+      float gmod = clamp(radiance_specular.r * 0.5, 0.,3.5);
 
       vec3 diffuseGlint = gmod * (reflectedLight.directDiffuse + reflectedLight.indirectDiffuse);
       vec3 specularGlint = totalSpecular * gmod;
 
-
-      vec3 glintColor = diffuseGlint + specularGlint;
-      
-
-      
+      vec3 glintColor = diffuseGlint + specularGlint;     
+     
       diffuseGlint = 1. * glint_radiance * (reflectedLight.directDiffuse + reflectedLight.indirectDiffuse*0.7);
       specularGlint = 3. * totalSpecular * glint_radiance;
-      // totalDiffuse = 0.95 * totalDiffuse;
-      
-      
-      
-      vec3 combinedGlint = pow(max(diffuseGlint + specularGlint,vec3(0.)), vec3(1.))*1. + totalDiffuse;
-      
-      // outgoingLight = glint_radiance;
-      // outgoingLight = radiance_specular;
-
-        
-      // outgoingLight = mix(combinedGlint, totalDiffuse, 1.-totalSpecular.r);
-      // outgoingLight = mix(combinedGlint, outgoingLight, 1.-gmod/2.5);
-
-      // outgoingLight = diffuseGlint + specularGlint ;
-
-      // outgoingLight = pow(outgoingLight, vec3(radiance_specular.r));
-
-      // outgoingLight *= 0.1;
-      outgoingLight += glint_radiance*glint_radiance;
-      // outgoingLight += glint_radiance*outgoingLight;
-      // outgoingLight*=0.9;
-      // outgoingLight = pow(outgoingLight, vec3(1.0 / 2.2));
-
+                   
+      vec3 combinedGlint = pow(max(diffuseGlint + specularGlint,vec3(0.)), vec3(1.))*1. + totalDiffuse;      
+      outgoingLight += glint_radiance*glint_radiance;      
       `
     );
 
