@@ -20,6 +20,7 @@ export class MeshGlintMaterial extends MeshPhysicalMaterial {
     super(parameters);
     console.log(parameters);
     this.setValues(parameters);
+    this.defines["USE_UV"] = "";
   }
   onBeforeCompile(shader: Shader) {
     shader.uniforms.LightIntensity = this.LightIntensity;
@@ -45,7 +46,6 @@ export class MeshGlintMaterial extends MeshPhysicalMaterial {
         attribute vec3 tangent;
       #endif
 
-      varying vec2 TexCoord;
       varying vec3 VertexPos;
       varying vec3 VertexNorm;
       varying vec3 VertexTang;      
@@ -58,7 +58,7 @@ export class MeshGlintMaterial extends MeshPhysicalMaterial {
       `#include <fog_vertex>`,
       /*glsl*/ `
       #include <fog_vertex>
-      TexCoord = uv ;
+      
 		  VertexPos = position;
 		  VertexNorm = normal;
 		  VertexTang = tangent.xyz;
@@ -83,7 +83,6 @@ export class MeshGlintMaterial extends MeshPhysicalMaterial {
       /*glsl*/ `
       #include <clipping_planes_pars_fragment>
 
-		  varying vec2 TexCoord;
       varying vec3 VertexPos;
       varying vec3 VertexNorm;
       varying vec3 VertexTang;
@@ -101,10 +100,8 @@ export class MeshGlintMaterial extends MeshPhysicalMaterial {
       uniform float Alpha_y;
       uniform vec3 LightIntensity;
       uniform vec3 LightPosition;
-      uniform vec3 CameraPosition;
 
       uniform mediump sampler2DArray DictionaryTexture;
-
 
       ${glintMathChunks}
 
@@ -118,7 +115,7 @@ export class MeshGlintMaterial extends MeshPhysicalMaterial {
       ///GLINT STARTS HERE
       
       // Texture position
-      vec2 uv = TexCoord * 1.f;
+      vec2 uv = vUv;
       vec3 VN = gl_FrontFacing ? VertexNorm : -VertexNorm;
       vec3 vertexBinormal = cross(VertexNorm, VertexTang);
 
@@ -130,7 +127,7 @@ export class MeshGlintMaterial extends MeshPhysicalMaterial {
         
       vec3 vPos = vec3(VertexPos.x, VertexPos.y, VertexPos.z);
       vec3 lPos = vec3(LightPosition.x, LightPosition.y, LightPosition.z);
-      vec3 cPos = vec3(CameraPosition.x, CameraPosition.y, CameraPosition.z);
+      vec3 cPos = vec3(cameraPosition.x, cameraPosition.y, cameraPosition.z);
     
       
       float distanceSquared = pow(distance(VertexPos, lPos), 2.);           
@@ -191,13 +188,6 @@ export class MeshGlintMaterial extends MeshPhysicalMaterial {
   }
   set lightPosition(position: Vector3) {
     this.LightPosition.value = position;
-  }
-
-  get cameraPosition(): Vector3 {
-    return this.CameraPosition.value;
-  }
-  set cameraPosition(position: Vector3) {
-    this.CameraPosition.value = position;
   }
 
   get alphaX(): number {

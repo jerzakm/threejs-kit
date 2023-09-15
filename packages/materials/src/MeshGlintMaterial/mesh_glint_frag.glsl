@@ -344,7 +344,7 @@ vec3 f_P(vec3 wo, vec3 wi, vec2 uv) {
     // Eq. 1, Alg. 1, line 2
   vec2 slope_h = vec2(-wh.x / wh.z, -wh.y / wh.z);
 
-  vec2 texCoord = TexCoord * uv;
+  vec2 texCoord = vUv * uv;
 
   float D_P = 0.f;
   float P22_P = 0.f;
