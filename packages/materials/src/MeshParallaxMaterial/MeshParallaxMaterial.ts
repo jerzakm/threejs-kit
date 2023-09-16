@@ -1,9 +1,9 @@
 import {
   MeshPhysicalMaterial,
   Vector2,
+  type MeshPhysicalMaterialParameters,
   type Shader,
-  MeshPhysicalMaterialParameters,
-  Texture,
+  type Texture,
 } from "three";
 
 import parallaxUv from "./parallax_uv_swap.glsl?raw";
