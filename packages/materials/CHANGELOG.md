@@ -1,5 +1,15 @@
 # @three-kit/materials
 
+## 1.1.0
+
+### Minor Changes
+
+- 03e43e2: New material MeshGlintMaterial. Early release - needs major improvements.
+
+### Patch Changes
+
+- ad89c00: MeshParallaxMaterial - better quality at angles approaching 90°
+
 ## 1.0.8
 
 ### Patch Changes
