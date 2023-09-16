@@ -16,6 +16,7 @@ interface MeshParallaxMaterialProps {
   parallaxMinLayers?: number;
   parallaxMaxLayers?: number;
   cutoffDistance?: number;
+  cutEdges?: boolean;
 }
 
 export class MeshParallaxMaterial extends MeshPhysicalMaterial {
@@ -25,6 +26,7 @@ export class MeshParallaxMaterial extends MeshPhysicalMaterial {
   private ParallaxMinLayers = { value: 16 };
   private ParallaxMaxLayers = { value: 128 };
   private CutoffDistance = { value: 300 };
+  private CutEdges = { value: true };
 
   constructor(
     parameters: MeshPhysicalMaterialParameters = {},
@@ -51,6 +53,9 @@ export class MeshParallaxMaterial extends MeshPhysicalMaterial {
     if (parallaxParameters.parallaxOcclusionMap)
       this.ParallaxOcclusionMap.value = parallaxParameters.parallaxOcclusionMap;
 
+    if (parallaxParameters.cutEdges)
+      this.CutEdges.value = parallaxParameters.cutEdges;
+
     if (parallaxParameters.debugQualityMask)
       this.defines["QUALITY_MASK_DEBUG"] = "";
   }
@@ -61,6 +66,7 @@ export class MeshParallaxMaterial extends MeshPhysicalMaterial {
     shader.uniforms.parallaxMinLayers = this.ParallaxMinLayers;
     shader.uniforms.parallaxMaxLayers = this.ParallaxMaxLayers;
     shader.uniforms.cutoffDistance = this.CutoffDistance;
+    shader.uniforms.cutEdges = this.CutEdges;
 
     shader.vertexShader = shader.vertexShader.replace(
       `#include <clipping_planes_pars_vertex>`,
@@ -113,6 +119,9 @@ export class MeshParallaxMaterial extends MeshPhysicalMaterial {
      uniform float cutoffDistance;
 
      uniform mat4 projectionMatrix;
+
+
+     uniform bool cutEdges;
      
 
      vec2 parallaxMap(in vec3 V, float parallaxScale, float oParallaxMinLayers, float oParallaxMaxLayers) {
@@ -181,7 +190,6 @@ export class MeshParallaxMaterial extends MeshPhysicalMaterial {
       `#include <clipping_planes_fragment>`,
       /*glsl*/ `
       
-
       float viewDirModifier = (1. - pow(vCosTheta, 1.))*0.45 +0.2;
       float steepViewDirModifier = (1. - clamp(pow((vCosTheta)*1., 2.),0.,1.))*0.6 + 0.01;
 
@@ -204,12 +212,12 @@ export class MeshParallaxMaterial extends MeshPhysicalMaterial {
       }
 
       vec2 currentTextureCoords = parallaxedUv / repeatUv;
-      // todo optional
-      // if (currentTextureCoords.x > 1.0f || currentTextureCoords.x < 0.0f || currentTextureCoords.y < 0.f || currentTextureCoords.y > 1.f)
-      //   discard;     
 
-      
-      
+
+      if(cutEdges == true){
+        if (currentTextureCoords.x > 1.0f || currentTextureCoords.x < 0.0f || currentTextureCoords.y < 0.f || currentTextureCoords.y > 1.f)
+          discard;               
+      }
  
       ${parallaxUv}
       #include <clipping_planes_fragment>`
@@ -267,5 +275,12 @@ export class MeshParallaxMaterial extends MeshPhysicalMaterial {
   }
   set qualityCutoffDistance(distance: number) {
     this.CutoffDistance.value = distance;
+  }
+
+  public get cutEdges() {
+    return this.CutEdges;
+  }
+  public set cutEdges(value) {
+    this.CutEdges = value;
   }
 }

@@ -37,6 +37,7 @@ const material = new MeshParallaxMaterial(
     parallaxScale: 0.05,
     parallaxMinLayers: 16,
     parallaxMaxLayers: 96,
+    cutEdges: true,
     parallaxOcclusionMap: bumpTexture,
     repeatUv: new THREE.Vector2(2, 2),
   }
@@ -55,14 +56,6 @@ new MeshParallaxMaterial(
 ```
 
 ## Parameters
-
-### `debugQualityMask`
-
-**type:** `boolean`
-
-Enables a debug visualization to assist with quality optimization. The quality parameter
-has range of 0 to 1. A value of 0 results in a black preview, indicating minimal detail,
-while a value of 1 yields a white preview, signifying maximum detail.
 
 ### parallaxOcclusionMap
 
@@ -85,6 +78,12 @@ along both the U and V axes.
 This parameter adjusts the intensity of the parallax effect. It accepts positive floating-point values.
 For most use cases, optimal results are generally achieved with values ranging from **0.01** to **0.15**.
 
+### cutEdges
+
+**type:** `boolean`
+
+Indicates whether to trim the edges of the geometry when the parallaxed UV coordinates exceed the value of 1. If set to true, any portions of the material where the parallaxed UV coordinates go beyond the limit wil get clipped producing a jagged look at the edge.
+
 ### parallaxMinLayers
 
 **type:** `number`
@@ -104,7 +103,13 @@ The number of layers will never exceed this value and typically approaches this 
 Sets an upper limit for the effective range of the parallax effect. The number of occlusion layers is
 highest near the camera and gradually diminishes as the distance approaches this cutoff value.
 
-## Performance
+### `debugQualityMask`
+
+**type:** `boolean`
+
+Enables a debug visualization to assist with quality optimization. The quality parameter
+has range of 0 to 1. A value of 0 results in a black preview, indicating minimal detail,
+while a value of 1 yields a white preview, signifying maximum detail.
 
 import debugQualityMask from "../../../assets/materials/parallax/debug.png";
 
