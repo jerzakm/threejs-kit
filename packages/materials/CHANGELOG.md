@@ -1,5 +1,11 @@
 # @three-kit/materials
 
+## 1.1.1
+
+### Patch Changes
+
+- f0da89e: new `cutEdges` parameter for `MeshParallaxMaterial`. Indicates whether to trim the edges of the geometry when the parallaxed UV coordinates exceed the value of 1. If set to true, any portions of the material where the parallaxed UV coordinates go beyond the limit wil get clipped producing a jagged look at the edge.
+
 ## 1.1.0
 
 ### Minor Changes
