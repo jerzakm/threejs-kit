@@ -1,0 +1,103 @@
+---
+title: MeshGlintMaterial
+description: Parallax Occlusion material for three.js
+---
+
+import { Image } from "astro:assets";
+
+import materialPreview from "../../../assets/materials/glint/preview.png";
+
+<Image src={materialPreview} alt="shows how glint material looks like" />
+
+### Implementation
+
+This is a very early version and some simplifications were made to implement it. Contributions and comments are welcome,
+especially when it comes to lighting and blending the effect inside the `THREE.MeshPhysicalMaterial`.
+
+ParallaxMaterial extends [THREE.MeshPhysicalMaterial](https://threejs.org/docs/#api/en/materials/MeshPhysicalMaterial).
+This means that it inherits the same constructor, properties, and methods, while also introducing additional features described below.
+The material can have significant impact on performance, but I'm looking into simplifying the glints and releasing a performance version.
+
+Three.js implementation of [Procedural Physically based BRDF for Real-Time Rendering of Glints](http://igg.unistra.fr/People/chermain/real_time_glint/).
+
+### Dictionary
+
+The material is currently provided with 1 base dictionary for glints and can have a significant effect on performance.
+https://github.com/ASTex-ICube/real_time_glint_dictgenerator
+
+## Constructor
+
+Instead of one set of parameters, you provide two - one for [THREE.MeshPhysicalMaterial](https://threejs.org/docs/#api/en/materials/MeshPhysicalMaterial) and one for `MeshParallaxMaterial`
+
+```ts
+new MeshParallaxMaterial(
+  MeshPhysicalMaterialParameters,
+  MeshGlintMaterialProps
+);
+```
+
+## Parameters
+
+### `lightIntensity`
+
+**type:** `THREE.Vector3`
+
+intensity of the light
+
+### `lightPosition`
+
+**type:** `THREE.Vector3`
+
+position of the light
+
+### `logMicrofacetDensity`
+
+**type:** `number`
+
+5 - 25
+
+### `alpha`
+
+**type:** `number`
+
+### `alphaX`
+
+**type:** `number`
+
+X direction roughness 0 -1
+
+### `alphaY`
+
+**type:** `number`
+
+Y direction roughness 0 -1
+
+### `microfacetRelativeArea`
+
+**type:** `number`
+
+Coverage of the surface with glints 0 -1
+
+### `maxAnisotropy`
+
+**type:** `number`
+
+1-16
+
+### `dictionaryTexture`
+
+**type:** `DataArrayTexture`
+
+1-16
+
+### `n`
+
+**type:** `number`
+
+### `nLevels`
+
+**type:** `number`
+
+### `pyramid0Size`
+
+**type:** `number`

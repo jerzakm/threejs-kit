@@ -16,7 +16,9 @@
 
 	$: prng = seed ? alea(seed) : undefined;
 
-	const geometry = new PlaneGeometry(size, size, nsubdivs, nsubdivs);
+	export const geometry = new PlaneGeometry(size, size, nsubdivs, nsubdivs);
+
+	// const geometry = new PlaneGeometry(size, size, nsubdivs, nsubdivs);
 	const noise = createNoise2D(prng);
 	const vertices = geometry.getAttribute('position').array;
 
@@ -36,7 +38,7 @@
 	}
 
 	// needed for lighting
-	generateBoxUVs(geometry);
+	// generateBoxUVs(geometry);
 	geometry.computeVertexNormals();
 	geometry.computeTangents();
 </script>

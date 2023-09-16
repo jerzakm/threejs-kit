@@ -1,31 +1,77 @@
-import { MeshPhysicalMaterial, Vector3, type Shader } from "three";
+import {
+  MeshPhysicalMaterial,
+  Vector3,
+  type Shader,
+  MeshPhysicalMaterialParameters,
+  DataArrayTexture,
+} from "three";
 import glintMathChunks from "./mesh_glint_frag.glsl?raw";
+
+interface MeshGlintMaterialProps {
+  lightIntensity?: Vector3;
+  lightPosition?: Vector3;
+  logMicrofacetDensity?: number;
+  roughnessX?: number;
+  roughnessY?: number;
+  microfacetRelativeArea?: number;
+  maxAnisotropy?: number;
+  dictionaryTexture?: DataArrayTexture;
+  nLevels?: number;
+  alpha?: number;
+  n?: number;
+  pyramid0Size?: number;
+}
 
 export class MeshGlintMaterial extends MeshPhysicalMaterial {
   private LightIntensity = { value: new Vector3() };
   private LightPosition = { value: new Vector3() };
-  private CameraPosition = { value: new Vector3() };
   private LogMicrofacetDensity = { value: 1 };
   private Alpha_x = { value: 1 };
   private Alpha_y = { value: 1 };
   private MicrofacetRelativeArea = { value: 1 };
   private MaxAnisotropy = { value: 16 };
-  private DictionaryTexture = { value: null };
+  private DictionaryTexture: { value: DataArrayTexture | null } = {
+    value: null,
+  };
   private NLevels = { value: 16 };
   private Alpha = { value: 0.5 };
   private N = { value: 64 * 3 };
   private Pyramid0Size = { value: 1 << (16 - 1) };
 
-  constructor(parameters = {}) {
+  constructor(
+    parameters: MeshPhysicalMaterialParameters = {},
+    glintParameters: MeshGlintMaterialProps = {}
+  ) {
     super(parameters);
-    console.log(parameters);
     this.setValues(parameters);
     this.defines["USE_UV"] = "";
+
+    if (glintParameters.lightIntensity)
+      this.LightIntensity.value = glintParameters.lightIntensity;
+    if (glintParameters.lightPosition)
+      this.LightPosition.value = glintParameters.lightPosition;
+    if (glintParameters.logMicrofacetDensity)
+      this.LogMicrofacetDensity.value = glintParameters.logMicrofacetDensity;
+    if (glintParameters.roughnessX)
+      this.Alpha_x.value = glintParameters.roughnessX;
+    if (glintParameters.roughnessY)
+      this.Alpha_y.value = glintParameters.roughnessY;
+    if (glintParameters.microfacetRelativeArea)
+      this.MicrofacetRelativeArea.value =
+        glintParameters.microfacetRelativeArea;
+    if (glintParameters.maxAnisotropy)
+      this.MaxAnisotropy.value = glintParameters.maxAnisotropy;
+    if (glintParameters.dictionaryTexture)
+      this.DictionaryTexture.value = glintParameters.dictionaryTexture;
+    if (glintParameters.nLevels) this.NLevels.value = glintParameters.nLevels;
+    if (glintParameters.alpha) this.Alpha.value = glintParameters.alpha;
+    if (glintParameters.n) this.N.value = glintParameters.n;
+    if (glintParameters.pyramid0Size)
+      this.Pyramid0Size.value = glintParameters.pyramid0Size;
   }
   onBeforeCompile(shader: Shader) {
     shader.uniforms.LightIntensity = this.LightIntensity;
     shader.uniforms.LightPosition = this.LightPosition;
-    shader.uniforms.CameraPosition = this.CameraPosition;
     shader.uniforms.LogMicrofacetDensity = this.LogMicrofacetDensity;
     shader.uniforms.Alpha_x = this.Alpha_x;
     shader.uniforms.Alpha_y = this.Alpha_y;
@@ -139,7 +185,7 @@ export class MeshGlintMaterial extends MeshPhysicalMaterial {
       vec3 radiance_diffuse = vec3(0.f);
       vec3 glint_radiance = vec3(0);
 
-      vec3 Li = LightIntensity/ distanceSquared;
+      vec3 Li = (LightIntensity* 10000.) / distanceSquared;
 
       radiance_diffuse = f_diffuse(wo, wi) * Li;
 
@@ -190,17 +236,17 @@ export class MeshGlintMaterial extends MeshPhysicalMaterial {
     this.LightPosition.value = position;
   }
 
-  get alphaX(): number {
+  get roughnessX(): number {
     return this.Alpha_x.value;
   }
-  set alphaX(alphaX: number) {
+  set roughnessX(alphaX: number) {
     this.Alpha_x.value = alphaX;
   }
 
-  get alphaY(): number {
+  get roughnessY(): number {
     return this.Alpha_y.value;
   }
-  set alphaY(alphaY: number) {
+  set roughnessY(alphaY: number) {
     this.Alpha_y.value = alphaY;
   }
 

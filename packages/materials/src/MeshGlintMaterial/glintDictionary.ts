@@ -48,7 +48,7 @@ function loaderTextRaw(text: string) {
   return { nbl, nbd, w, data };
 }
 
-export const loadGlintDictionaryQuality = () => {
+export const loadDefaultGlintDictionary = () => {
   const addAlphaChannel = (rgbArray: Float32Array) => {
     const length = rgbArray.length;
     const rgbaArray = new Float32Array((length / 3) * 4);
@@ -65,8 +65,6 @@ export const loadGlintDictionaryQuality = () => {
 
   const { data, nbd, nbl, w } = loaderTextRaw(rawDictionary);
   const rgbaData = addAlphaChannel(data);
-
-  console.log({ nbd, nbl, w });
 
   const dictionaryTexture = new DataArrayTexture(rgbaData, w, nbd, nbl);
   dictionaryTexture.type = FloatType;
