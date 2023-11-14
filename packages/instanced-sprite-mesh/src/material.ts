@@ -30,12 +30,12 @@ const replaceUVs = (text: string, replacement: string) => {
   return modifiedLines.join("\n");
 };
 
-export const spriteMaterial = (baseMaterial: Material) => {
+// TODO TYPE GENERICS
+export const constructSpriteMaterial = (baseMaterial: Material): Material => {
   const customMaterial = createDerivedMaterial(baseMaterial, {
     defines: {
       USE_UV: "",
     },
-    timeUniform: "elapsed",
     uniforms: {
       /** active animation */
       animationId: { value: 0 },
@@ -104,6 +104,7 @@ export const spriteMaterial = (baseMaterial: Material) => {
 			float totalTime = animLength / fps;
 
 			float frameTimedId = mod(time + offset, totalTime) / totalTime;
+      // frameTimedId = time / totalTime;
 			float frameId = floor(animLength * frameTimedId);
 
 			float spritesheetFrameId = readData(frameId, 2.f + animationId).r;
@@ -166,8 +167,12 @@ export const parseAseprite = (json: any) => {
   return { frames, animations, sheetSize, animationLengths };
 };
 
-// todo - make a proper type when data structure is settled
-export type SpritesheetFormat = ReturnType<typeof parseAseprite>;
+export type SpritesheetFormat = {
+  frames: [x: number, y: number, w: number, h: number][];
+  animations: Record<string, [frameId: number, duration: number][]>;
+  sheetSize: [w: number, h: number][];
+  animationLengths: number[];
+};
 
 export const makeDataTexture = (data: SpritesheetFormat) => {
   const { frames, animationLengths, animations } = data;
