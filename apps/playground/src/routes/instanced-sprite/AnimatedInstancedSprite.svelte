@@ -10,6 +10,7 @@
 		FileLoader,
 		LinearFilter,
 		Matrix4,
+		MeshBasicMaterial,
 		MeshStandardMaterial,
 		NearestFilter,
 		PlaneGeometry,
@@ -45,7 +46,7 @@
 	// export let transparent: $$Props['transparent'] = true
 	// export let flipX: $$Props['flipX'] = false
 
-	const baseMaterial = new MeshStandardMaterial({
+	const baseMaterial = new MeshBasicMaterial({
 		transparent: true,
 		alphaTest: 0.01,
 		// needs to be double side for shading
@@ -64,7 +65,7 @@
 		| 'RunBackward'
 		| 'IdleBackward';
 
-	const mesh: InstancedSpriteMesh<MeshStandardMaterial, SpriteAnimations> = new InstancedSpriteMesh(
+	const mesh: InstancedSpriteMesh<MeshBasicMaterial, SpriteAnimations> = new InstancedSpriteMesh(
 		baseMaterial,
 		count
 	);
@@ -119,6 +120,8 @@
 			mesh.castShadow = true;
 		}
 	}
+
+	// mesh.scale.set(2, 2, 2);
 
 	let dirtyInstanceMatrix = false;
 

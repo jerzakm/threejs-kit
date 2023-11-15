@@ -39,8 +39,11 @@ export const constructSpriteMaterial = (baseMaterial: Material): Material => {
     uniforms: {
       /** active animation */
       animationId: { value: 0 },
+      /* Repeat animation in a loop */
+      billboarding: { value: 0 },
       /** timer in s */
       time: { value: 0 },
+      /** used for non looped animation. Animation starts at this time and plays only once, then stays at the last frame */
       startTime: { value: 0 },
       /** per instance time offset, can be used so that all of the animations aren't perfectly synced */
       offset: { value: 0 },
@@ -49,8 +52,8 @@ export const constructSpriteMaterial = (baseMaterial: Material): Material => {
        * Needed to determine number of rows there are in DataTexture
        */
       fps: { value: 0 },
+      /* Repeat animation in a loop */
       loop: { value: 1 },
-      dataSize: { value: new Vector2(0, 0) },
       /**
        * DataArrayTexture - data stored in columns. Rows are:
        * 0 - Frames declaration - RGBA[x,y,w,h]
@@ -60,24 +63,41 @@ export const constructSpriteMaterial = (baseMaterial: Material): Material => {
        * ....etc
        */
       spritesheetData: { value: null },
+      /**util for reading data texture in spritesheetData */
+      dataSize: { value: new Vector2(0, 0) },
     },
-    vertexMainOutro: `
 
-			vec3 instancePosition = vec3(instanceMatrix[3][0], instanceMatrix[3][1], instanceMatrix[3][2]);
+    /**
+     *
+     * VERTEX
+     * - billboarding
+     *
+     * */
+    vertexDefs: /*glsl*/ `
+    uniform float billboarding;
+    `,
 
-			vec3 cameraRight_worldspace = vec3(modelViewMatrix[0][0], modelViewMatrix[1][0], modelViewMatrix[2][0]);
-    	vec3 cameraUp_worldspace = vec3(modelViewMatrix[0][1], modelViewMatrix[1][1], modelViewMatrix[2][1]);
+    vertexMainOutro: /*glsl*/ `
+    if(billboarding == 1.){
+      vec3 instancePosition = vec3(instanceMatrix[3][0], instanceMatrix[3][1], instanceMatrix[3][2]);
 
-			vec2 BillboardSize = vec2 (1.,1.);
-
-			vec3 vertexPosition_worldspace = instancePosition
+      vec3 cameraRight_worldspace = vec3(modelViewMatrix[0][0], modelViewMatrix[1][0], modelViewMatrix[2][0]);
+      vec3 cameraUp_worldspace = vec3(modelViewMatrix[0][1], modelViewMatrix[1][1], modelViewMatrix[2][1]);
+  
+      vec2 BillboardSize = vec2 (1.,1.);
+  
+      vec3 vertexPosition_worldspace = instancePosition
         + cameraRight_worldspace * position.x * BillboardSize.x
         + cameraUp_worldspace * position.y * BillboardSize.y;
-			//wip billboarding
-			// gl_Position = projectionMatrix * modelViewMatrix * vec4(vertexPosition_worldspace, 1.0);
-
-
+        //wip billboarding
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(vertexPosition_worldspace, 1.0);
+    }   
     `,
+    /**
+     *
+     * FRAGMENT REWRITER
+     *
+     * */
     customRewriter: ({ vertexShader, fragmentShader }: any) => {
       // uniforms etc
       const header = /*glsl*/ `
@@ -147,6 +167,10 @@ export const constructSpriteMaterial = (baseMaterial: Material): Material => {
   return customMaterial;
 };
 
+/**
+ * wip - basic aseprite json support
+ * todo
+ * */
 export const parseAseprite = (json: any) => {
   const frames: [x: number, y: number, w: number, h: number][] = [];
   const frameDurations: number[] = [];

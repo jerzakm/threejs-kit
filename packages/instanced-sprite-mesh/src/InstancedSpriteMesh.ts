@@ -74,8 +74,22 @@ export class InstancedSpriteMesh<
         this._spriteMaterial.uniforms.startTime.value =
           performance.now() * 0.001;
       },
-      unsetAll: () => {
+      resetInstances: () => {
         this.unsetUniform("animationId");
+      },
+    };
+  }
+
+  get billboarding() {
+    return {
+      setAt: (instanceId: number, enable: boolean) => {
+        this.setUniformAt("billboarding", instanceId, enable ? 1 : 0);
+      },
+      setGlobal: (enable: boolean) => {
+        this._spriteMaterial.uniforms.billboarding.value = enable ? 1 : 0;
+      },
+      unsetAll: () => {
+        this.unsetUniform("billboarding");
       },
     };
   }
