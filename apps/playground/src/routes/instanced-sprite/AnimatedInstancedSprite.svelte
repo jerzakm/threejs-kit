@@ -118,6 +118,11 @@
 	$: {
 		if ($textureStore && mesh.material && !initialized && mesh) {
 			mesh.castShadow = true;
+			mesh.tint.setGlobal({
+				h: 2,
+				s: 1,
+				v: 1
+			});
 		}
 	}
 

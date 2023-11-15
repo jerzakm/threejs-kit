@@ -7,6 +7,7 @@ import {
   RGBAFormat,
   RepeatWrapping,
   Vector2,
+  Vector4,
 } from "three";
 
 //@ts-ignore
@@ -65,6 +66,10 @@ export const constructSpriteMaterial = (baseMaterial: Material): Material => {
       spritesheetData: { value: null },
       /**util for reading data texture in spritesheetData */
       dataSize: { value: new Vector2(0, 0) },
+      /**
+       * Tinting - Vector4 (enabled 0/1, H (0-3), S (0-1), V(0-1))
+       */
+      tint: { value: new Vector4(0, 0, 0, 0) },
     },
 
     /**
@@ -109,6 +114,7 @@ export const constructSpriteMaterial = (baseMaterial: Material): Material => {
 			uniform float fps;
       uniform float loop;
 			uniform vec2 dataSize;
+      uniform vec4 tint;
 			`;
 
       // read spritesheet metadata
@@ -155,6 +161,22 @@ export const constructSpriteMaterial = (baseMaterial: Material): Material => {
 			${readData}
 			${fragmentShader}
 			`;
+
+      fragmentShader = fragmentShader.replace(
+        `vec4 sampledDiffuseColor = texture2D( map, vMapUv );`,
+        /*glsl*/ `
+        vec4 sampledDiffuseColor = texture2D( map, vMapUv );
+        if(tint.w == 1.){    
+          vec3 hue_term = 1.0 - min(abs(vec3(tint.x) - vec3(0,2.0,1.0)), 1.0);
+          hue_term.x = 1.0 - dot(hue_term.yz, vec2(1));
+          vec3 res = vec3(dot(sampledDiffuseColor.xyz, hue_term.xyz), dot(sampledDiffuseColor.xyz, hue_term.zxy), dot(sampledDiffuseColor.xyz, hue_term.yzx));
+          res = mix(vec3(dot(res, vec3(0.2, 0.5, 0.3))), res, tint.y);
+          res = res * tint.z;        
+  
+          sampledDiffuseColor = vec4(res, sampledDiffuseColor.a);
+        }        
+      `
+      );
 
       fragmentShader = replaceUVs(fragmentShader, "spriteUv");
 

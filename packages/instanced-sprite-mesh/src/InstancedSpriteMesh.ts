@@ -1,4 +1,4 @@
-import { Material, PlaneGeometry, ShaderMaterial } from "three";
+import { Material, PlaneGeometry, ShaderMaterial, Vector4 } from "three";
 import { InstancedUniformsMesh } from "three-instanced-uniforms-mesh";
 import {
   SpritesheetFormat,
@@ -104,6 +104,38 @@ export class InstancedSpriteMesh<
       },
       unsetAll: () => {
         this.unsetUniform("loop");
+      },
+    };
+  }
+  /** HSV shift tinting */
+  get tint() {
+    /**
+     * todo - reuse vector4 or something
+     */
+    const tVector = new Vector4();
+    return {
+      // TODO - per instance tinting doesnt work - artifacts
+      // setAt: (
+      //   instanceId: number,
+      //   tint?: { h: number; s: number; v: number }
+      // ) => {
+      //   if (tint) {
+      //     tVector.set(tint.h, tint.s, tint.v, 1);
+      //   } else {
+      //     tVector.setW(0);
+      //   }
+      //   this.setUniformAt("tint", instanceId, tVector);
+      // },
+      setGlobal: (tint?: { h: number; s: number; v: number }) => {
+        if (tint) {
+          tVector.set(tint.h, tint.s, tint.v, 1);
+        } else {
+          tVector.setW(0);
+        }
+        this._spriteMaterial.uniforms.tint.value = tVector;
+      },
+      unsetAll: () => {
+        this.unsetUniform("tint");
       },
     };
   }
