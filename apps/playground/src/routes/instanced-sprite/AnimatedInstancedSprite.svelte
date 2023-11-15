@@ -54,7 +54,17 @@
 
 	const suspend = useSuspense();
 
-	const mesh: InstancedSpriteMesh<MeshStandardMaterial> = new InstancedSpriteMesh(
+	type SpriteAnimations =
+		| 'RunRight'
+		| 'RunLeft'
+		| 'RunForward'
+		| 'IdleRight'
+		| 'IdleLeft'
+		| 'IdleForward'
+		| 'RunBackward'
+		| 'IdleBackward';
+
+	const mesh: InstancedSpriteMesh<MeshStandardMaterial, SpriteAnimations> = new InstancedSpriteMesh(
 		baseMaterial,
 		count
 	);
@@ -88,7 +98,7 @@
 		}
 	});
 
-	const animationMap = writable<Map<string, number>>(new Map());
+	const animationMap = writable<Map<SpriteAnimations, number>>(new Map());
 
 	watch(jsonStore, (rawSpritesheet) => {
 		if (rawSpritesheet) {
@@ -113,7 +123,7 @@
 
 	const { clock } = useThrelte();
 
-	const setAnimation = (instanceId: number, animationId: string) => {
+	const setAnimation = (instanceId: number, animationId: SpriteAnimations) => {
 		mesh.animation.setAt(instanceId, animationId);
 		// mesh.loop.setGlobal(false);
 	};

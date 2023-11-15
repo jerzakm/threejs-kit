@@ -1,11 +1,4 @@
-import {
-  Material,
-  type BufferGeometry,
-  PlaneGeometry,
-  MeshBasicMaterial,
-  ShaderMaterial,
-  Matrix4,
-} from "three";
+import { Material, PlaneGeometry, ShaderMaterial } from "three";
 import { InstancedUniformsMesh } from "three-instanced-uniforms-mesh";
 import {
   SpritesheetFormat,
@@ -18,11 +11,12 @@ type InstancedSpriteOptions = {
 };
 
 export class InstancedSpriteMesh<
-  T extends Material
+  T extends Material,
+  V
 > extends InstancedUniformsMesh<T> {
   private _spriteMaterial: ShaderMaterial;
   private _spritesheet?: SpritesheetFormat | undefined;
-  private _animationMap: Map<string, number>;
+  private _animationMap: Map<V, number>;
   private _time: number = 0;
 
   constructor(
@@ -58,13 +52,13 @@ export class InstancedSpriteMesh<
     this._spritesheet = value;
   }
 
-  get animationMap(): Map<string, number> | undefined {
+  get animationMap(): Map<V, number> | undefined {
     return this._animationMap;
   }
 
   get animation() {
     return {
-      setAt: (instanceId: number, animation: string) => {
+      setAt: (instanceId: number, animation: V) => {
         this.setUniformAt(
           "animationId",
           instanceId,
@@ -73,7 +67,7 @@ export class InstancedSpriteMesh<
 
         this.setUniformAt("startTime", instanceId, performance.now() * 0.001);
       },
-      setGlobal: (animation: string) => {
+      setGlobal: (animation: V) => {
         this._spriteMaterial.uniforms.animationId.value =
           this._animationMap.get(animation) || 0;
 
