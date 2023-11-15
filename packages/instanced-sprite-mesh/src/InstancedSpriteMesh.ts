@@ -52,6 +52,7 @@ export class InstancedSpriteMesh<
   public get spritesheet(): SpritesheetFormat | undefined {
     return this._spritesheet;
   }
+
   public set spritesheet(value: SpritesheetFormat) {
     this.updateSpritesheet(value);
     this._spritesheet = value;
@@ -68,12 +69,16 @@ export class InstancedSpriteMesh<
           "animationId",
           instanceId,
           this._animationMap.get(animation) || 0
-          // animation
         );
+
+        this.setUniformAt("startTime", instanceId, performance.now() * 0.001);
       },
       setGlobal: (animation: string) => {
         this._spriteMaterial.uniforms.animationId.value =
           this._animationMap.get(animation) || 0;
+
+        this._spriteMaterial.uniforms.startTime.value =
+          performance.now() * 0.001;
       },
       unsetAll: () => {
         this.unsetUniform("animationId");
@@ -81,9 +86,24 @@ export class InstancedSpriteMesh<
     };
   }
 
+  get loop() {
+    return {
+      setAt: (instanceId: number, loop: boolean) => {
+        this.setUniformAt("loop", instanceId, loop ? 1 : 0);
+      },
+      setGlobal: (loop: boolean) => {
+        this._spriteMaterial.uniforms.loop.value = loop ? 1 : 0;
+      },
+      unsetAll: () => {
+        this.unsetUniform("loop");
+      },
+    };
+  }
+
   public get time(): number {
     return this._time;
   }
+
   public set time(value: number) {
     this._spriteMaterial.uniforms.time.value = value;
     this._time = value;

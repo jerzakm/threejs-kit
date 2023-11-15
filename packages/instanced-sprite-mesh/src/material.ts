@@ -41,6 +41,7 @@ export const constructSpriteMaterial = (baseMaterial: Material): Material => {
       animationId: { value: 0 },
       /** timer in s */
       time: { value: 0 },
+      startTime: { value: 0 },
       /** per instance time offset, can be used so that all of the animations aren't perfectly synced */
       offset: { value: 0 },
       /**
@@ -48,6 +49,7 @@ export const constructSpriteMaterial = (baseMaterial: Material): Material => {
        * Needed to determine number of rows there are in DataTexture
        */
       fps: { value: 0 },
+      loop: { value: 1 },
       dataSize: { value: new Vector2(0, 0) },
       /**
        * DataArrayTexture - data stored in columns. Rows are:
@@ -81,9 +83,11 @@ export const constructSpriteMaterial = (baseMaterial: Material): Material => {
       const header = /*glsl*/ `
 			uniform sampler2D spritesheetData;
 			uniform float animationId;
+      uniform float startTime;
 			uniform float time;
 			uniform float offset;
 			uniform float fps;
+      uniform float loop;
 			uniform vec2 dataSize;
 			`;
 
@@ -105,9 +109,15 @@ export const constructSpriteMaterial = (baseMaterial: Material): Material => {
 
 			float frameTimedId = mod(time + offset, totalTime) / totalTime;
       // frameTimedId = time / totalTime;
+      if(loop == 0.){
+        frameTimedId = clamp((time - startTime) / totalTime, 0.,1.);
+      }
+
 			float frameId = floor(animLength * frameTimedId);
 
 			float spritesheetFrameId = readData(frameId, 2.f + animationId).r;
+      
+     
 			// x,y,w,h
 			vec4 frameMeta = readData(spritesheetFrameId, 0.f);
 

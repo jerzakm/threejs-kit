@@ -100,6 +100,8 @@
 
 	$: mesh.material.uniforms.fps.value = fps;
 
+	$: mesh.loop.setGlobal(loop);
+
 	let dirtyInstanceMatrix = false;
 
 	const tempMatrix = new Matrix4();
@@ -111,9 +113,9 @@
 
 	const { clock } = useThrelte();
 
-	const setAnimation = (instanceId: number, animationId: number) => {
-		// mesh.setUniformAt('animationId', instanceId, animationId);
+	const setAnimation = (instanceId: number, animationId: string) => {
 		mesh.animation.setAt(instanceId, animationId);
+		// mesh.loop.setGlobal(false);
 	};
 
 	setContext('instanced-sprite-ctx', {
@@ -125,8 +127,6 @@
 	});
 
 	useFrame(() => {
-		// const elapsed = clock.getElapsedTime();
-		mesh.time = performance.now() * 0.001;
 		mesh.updateTime();
 	});
 
