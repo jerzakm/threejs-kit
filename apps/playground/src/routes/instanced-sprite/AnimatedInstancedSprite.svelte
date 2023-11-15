@@ -1,24 +1,20 @@
 <script lang="ts">
-	import { T, useFrame, useLoader, watch } from '@threlte/core';
 	import {
 		InstancedSpriteMesh,
 		makeDataTexture,
-		parseAseprite,
-		spriteMaterial
+		parseAseprite
 	} from '@threejs-kit/instanced-sprite-mesh';
+	import { T, useFrame, useLoader, useThrelte, watch } from '@threlte/core';
 	import {
-		BufferGeometry,
 		DoubleSide,
 		FileLoader,
 		LinearFilter,
 		Matrix4,
-		MeshBasicMaterial,
 		MeshStandardMaterial,
 		NearestFilter,
 		PlaneGeometry,
 		RepeatWrapping,
 		ShaderMaterial,
-		Vector3,
 		type Texture,
 		type Vector3Tuple
 	} from 'three';
@@ -28,9 +24,9 @@
 		AnimatedInstancedSpriteSlots
 	} from './AnimatedInstancedSprite.svelte';
 
+	import { useSuspense, useTexture } from '@threlte/extras';
 	import { setContext } from 'svelte';
 	import { writable } from 'svelte/store';
-	import { useSuspense, useTexture } from '@threlte/extras';
 
 	type $$Props = Required<AnimatedInstancedSpriteProps>;
 	type $$Events = AnimatedInstancedSpriteEvents;
@@ -39,8 +35,8 @@
 	export let textureUrl: $$Props['textureUrl'];
 	export let dataUrl: $$Props['dataUrl'] = '';
 	// export let animation: $$Props['animation'] = ''
-	// export let loop: $$Props['loop'] = true
-	// export let autoplay: $$Props['autoplay'] = true
+	export let loop: $$Props['loop'] = true;
+	// export let autoplay: $$Props['autoplay'] = true;
 	export let count: $$Props['count'] = 1000;
 	export let fps: $$Props['fps'] = 15;
 	export let filter: $$Props['filter'] = 'nearest';
@@ -51,18 +47,15 @@
 
 	const baseMaterial = new MeshStandardMaterial({
 		transparent: true,
-		alphaTest: 0.99,
+		alphaTest: 0.01,
 		// needs to be double side for shading
 		side: DoubleSide
 	});
 
-	const material = spriteMaterial(baseMaterial);
-
 	const suspend = useSuspense();
 
-	let mesh: InstancedSpriteMesh<ShaderMaterial> = new InstancedSpriteMesh(
-		new PlaneGeometry(),
-		material,
+	const mesh: InstancedSpriteMesh<MeshStandardMaterial> = new InstancedSpriteMesh(
+		baseMaterial,
 		count
 	);
 
@@ -99,19 +92,13 @@
 
 	watch(jsonStore, (rawSpritesheet) => {
 		if (rawSpritesheet) {
-			const { dataTexture, dataWidth, dataHeight, animMap } = makeDataTexture(
-				parseAseprite(rawSpritesheet)
-			);
-			mesh.material.uniforms.spritesheetData.value = dataTexture;
-			mesh.material.uniforms.dataSize.value.x = dataWidth;
-			mesh.material.uniforms.dataSize.value.y = dataHeight;
-
-			mesh.material.needsUpdate = true;
-			animationMap.set(animMap);
+			const spritesheet = parseAseprite(rawSpritesheet);
+			mesh.spritesheet = spritesheet;
+			animationMap.set(mesh.animationMap);
 		}
 	});
 
-	$: material.uniforms.fps.value = fps;
+	$: mesh.material.uniforms.fps.value = fps;
 
 	let dirtyInstanceMatrix = false;
 
@@ -122,8 +109,11 @@
 		dirtyInstanceMatrix = true;
 	};
 
+	const { clock } = useThrelte();
+
 	const setAnimation = (instanceId: number, animationId: number) => {
-		mesh.setUniformAt('animationId', instanceId, animationId);
+		// mesh.setUniformAt('animationId', instanceId, animationId);
+		mesh.animation.setAt(instanceId, animationId);
 	};
 
 	setContext('instanced-sprite-ctx', {
@@ -134,8 +124,10 @@
 		setAnimation
 	});
 
-	useFrame(({ clock }) => {
-		mesh.material.uniforms.time.value = clock.getElapsedTime();
+	useFrame(() => {
+		// const elapsed = clock.getElapsedTime();
+		mesh.time = performance.now() * 0.001;
+		mesh.updateTime();
 	});
 
 	useFrame(({ clock }) => {

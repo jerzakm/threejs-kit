@@ -39,7 +39,7 @@
 		anchorX: 'left',
 		anchorY: 'top',
 		domElement: document.body, // or other canvas rendering wrapper
-		renderer: renderer // three js renderer instance you use for rendering
+		renderer: renderer // three js renderer instance you use for rendering,
 	});
 
 	useRender((_, delta) => {
