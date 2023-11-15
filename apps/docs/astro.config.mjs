@@ -23,9 +23,14 @@ export default defineConfig({
           autogenerate: { directory: 'intro' },
         },
         {
+          label: 'Sprites',
+          autogenerate: { directory: 'sprites' },
+        },
+        {
           label: 'Materials',
           autogenerate: { directory: 'materials' },
         },
+
       ],
       customCss: ['./src/tailwind.css'],
 
