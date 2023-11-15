@@ -112,6 +112,14 @@
 
 	$: mesh.loop.setGlobal(loop);
 
+	let initialized = false;
+
+	$: {
+		if ($textureStore && mesh.material && !initialized && mesh) {
+			mesh.castShadow = true;
+		}
+	}
+
 	let dirtyInstanceMatrix = false;
 
 	const tempMatrix = new Matrix4();
