@@ -1,5 +1,11 @@
 # @three-kit/materials
 
+## 1.0.0
+
+### Major Changes
+
+- 990d63b: instanced sprites wip
+
 ## 1.1.1
 
 ### Patch Changes
