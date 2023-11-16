@@ -40,6 +40,8 @@ export class InstancedSpriteMesh<
     this._spriteMaterial.uniforms.spritesheetData.value = dataTexture;
     this._spriteMaterial.uniforms.dataSize.value.x = dataWidth;
     this._spriteMaterial.uniforms.dataSize.value.y = dataHeight;
+    // @ts-ignore
+    // todo type this with named animations?
     this._animationMap = animMap;
   }
 
@@ -107,6 +109,20 @@ export class InstancedSpriteMesh<
       },
     };
   }
+
+  play(animation: V, loop: boolean = true) {
+    return {
+      at: (instanceId: number) => {
+        this.loop.setAt(instanceId, loop);
+        this.animation.setAt(instanceId, animation);
+      },
+      global: () => {
+        this.loop.setGlobal(loop);
+        this.animation.setGlobal(animation);
+      },
+    };
+  }
+
   /** HSV shift tinting */
   get tint() {
     /**

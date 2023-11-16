@@ -1,5 +1,23 @@
-<script lang="ts">
+<script>
 	import GlintScene from '$lib/glint/GlintScene.svelte';
+	import App from '$lib/components/App.svelte';
 </script>
 
-<GlintScene />
+<div>
+	<App>
+		<GlintScene />
+	</App>
+</div>
+
+<style>
+	:global(body) {
+		margin: 0;
+	}
+
+	div {
+		width: 100vw;
+		height: 100vh;
+		background: rgb(13, 19, 32);
+		background: linear-gradient(180deg, rgba(13, 19, 32, 1) 0%, rgba(8, 12, 21, 1) 100%);
+	}
+</style>

@@ -39,6 +39,12 @@ importers:
       '@astrojs/tailwind':
         specifier: ^5.0.2
         version: 5.0.2(astro@3.5.4)(tailwindcss@3.3.5)
+      '@threejs-kit/instanced-sprite-mesh':
+        specifier: workspace:^
+        version: link:../../packages/instanced-sprite-mesh
+      '@threejs-kit/materials':
+        specifier: workspace:^
+        version: link:../../packages/materials
       astro:
         specifier: ^3.5.4
         version: 3.5.4(typescript@5.2.2)
@@ -51,6 +57,9 @@ importers:
       tailwindcss:
         specifier: ^3.3.5
         version: 3.3.5
+      three:
+        specifier: ^0.158.0
+        version: 0.158.0
 
   apps/playground:
     dependencies:
