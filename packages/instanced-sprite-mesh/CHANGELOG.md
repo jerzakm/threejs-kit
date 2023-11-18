@@ -1,5 +1,15 @@
 # @three-kit/materials
 
+## 1.0.0
+
+### Major Changes
+
+- 990d63b: instanced sprites wip
+
+### Minor Changes
+
+- 296a668: Docs sketch for sprites, fps setter
+
 ## 1.1.1
 
 ### Patch Changes
