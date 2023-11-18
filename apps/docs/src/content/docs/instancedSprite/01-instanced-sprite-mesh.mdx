@@ -1,0 +1,119 @@
+---
+title: Overview
+description: Installation and reference sheet for InstancedSpriteMesh
+---
+
+
+import { Image } from "astro:assets";
+
+`InstancedSpriteMesh` was created to enabled high performant instancing of animated sprites in threejs. Current solutions do not fare well with very high instance counts. This package aims to resolve that, boasting the capability to render tens of thousands individually animated sprites even on low/medium power devices.
+
+
+## Installation
+
+Package is published as `@threejs-kit/instanced-sprite-mesh` and you can add it to your project by installing it as such:
+
+```bash
+npm i @threejs-kit/instanced-sprite-mesh
+```
+
+
+
+## Getting started
+At it's core `InstancedSpriteMesh` is built on top of, and extends [InstancedUniformsMesh](https://protectwise.github.io/troika/three-instanced-uniforms-mesh/) so any of their documentation might be helpful to you - it's recommended to get familiar with it as well.
+
+### Basic example
+
+InstancedSpriteMesh needs spritesheet texture and spritesheet metadata provided to it (imported from Aseprite, others or generated on the fly)
+
+- load texture
+- create a base material
+- make instanced sprite mesh
+- add spritesheet to mesh
+
+```js
+const texture = new THREE.TextureLoader().load('/spritesheet.png');
+texture.minFilter = THREE.NearestFilter;
+texture.magFilter = THREE.NearestFilter;
+
+const baseMaterial = new THREE.MeshBasicMaterial({
+  transparent: true,
+  alphaTest: 0.01,
+  side: THREE.DoubleSide,
+  map: texture
+});
+
+const mesh = new InstancedSpriteMesh(baseMaterial, INSTANCE_COUNT);
+
+mesh.fps = 15
+
+const spritesheet = parseAseprite(JSON.parse(rawSpritesheet));
+mesh.spritesheet = spritesheet;
+```
+
+### Quick api preview
+
+
+```js
+  // set global FPS for updating
+  mesh.fps = 15
+
+  // loop one animation globally for all sprites without indivudually set animation
+  mesh.play('IdleBackward', true).global();
+  // play this animation once for sprite at instanceId 0
+  mesh.play('RunLeft').at(0);
+
+  // only set animation
+  mesh.animation.setGlobal('IdleRight');
+  mesh.animation.setAt(0, 'RunBackward');
+
+  // defined looping behaviour
+  mesh.loop.setGlobal(true);
+  mesh.loop.setAt(0, false);
+
+  // billboarding
+  mesh.billboarding.setGlobal(true);
+  mesh.billboarding.setAt(0, true);
+  
+  // tint, only global for now
+  mesh.tint.setGlobal({h:2, s:0.8, v: 0.8})
+  ```
+
+## Updating sprite animations
+
+Currently the sprites are only animated based on provided FPS and a timer. Either: 
+
+- `mesh.updateTime();` has to be called to update the animations - manually or in RAF (performance.now())
+- `mesh.time = 100` can be set manually
+
+
+
+Support for animations independent on time and setting specific frameIDs will be coming soon
+
+
+## Typescript support
+Yes, wip.
+
+import materialPreview from "../../../assets/sprite/typescript1.png";
+
+
+
+
+```ts
+type SpriteAnimations =
+		| 'RunRight'
+		| 'RunLeft'
+		| 'RunForward'
+		| 'IdleRight'
+		| 'IdleLeft'
+		| 'IdleForward'
+		| 'RunBackward'
+		| 'IdleBackward';
+
+const mesh: InstancedSpriteMesh<THREE.MeshBasicMaterial, SpriteAnimations> =
+			new InstancedSpriteMesh(baseMaterial, INSTANCE_COUNT);
+      ```
+
+for example, the above will allow for autocompletion of animation names
+
+<Image src={materialPreview} alt="shows how glint material looks like" />

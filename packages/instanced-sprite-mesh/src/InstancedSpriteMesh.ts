@@ -18,6 +18,7 @@ export class InstancedSpriteMesh<
   private _spritesheet?: SpritesheetFormat | undefined;
   private _animationMap: Map<V, number>;
   private _time: number = 0;
+  private _fps: number = 15;
 
   constructor(
     baseMaterial: T,
@@ -163,6 +164,15 @@ export class InstancedSpriteMesh<
   public set time(value: number) {
     this._spriteMaterial.uniforms.time.value = value;
     this._time = value;
+  }
+
+  public get fps(): number {
+    return this._fps;
+  }
+
+  public set fps(value: number) {
+    this._spriteMaterial.uniforms.fps.value = value;
+    this._fps = value;
   }
 
   public updateTime() {
