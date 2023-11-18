@@ -285,7 +285,6 @@ export const start = async () => {
 		playerIndicator.position.set(posX[0], 2, posZ[0]);
 		updateAgents(0.01);
 
-		sprite.updateTime();
 		if (dirtyInstanceMatrix) {
 			sprite.instanceMatrix.needsUpdate = true;
 			dirtyInstanceMatrix = false;

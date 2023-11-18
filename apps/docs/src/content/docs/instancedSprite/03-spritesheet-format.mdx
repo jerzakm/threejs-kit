@@ -1,0 +1,23 @@
+---
+title: Spritesheet metadata
+description: InstancedSpriteMesh
+---
+
+## Spritesheet format
+
+Each instanced mesh has to be provided with a spritesheet formatted like this. The library provides utilities to parse aseprite json metadata and to generate it from a image file, but you can (should?) write your own
+
+
+```ts
+type SpritesheetFormat = {
+  frames: [x: number, y: number, w: number, h: number][];
+  animations: Record<string, [frameId: number, duration: number][]>;
+  sheetSize: [w: number, h: number][];
+  animationLengths: number[];
+};
+```
+
+- `frames`: each frame of the spritesheet has its cooridnates and size specified separately - this will allow for non-uniform sized frames
+- `animations`: `Map` of named animations. Each animation is defined by an array of frames it consists of (frameId is the index of a frame in `frames`)
+- `sheetSize` - size of an image
+- `animationLengths` - util, how many frames does each animation have

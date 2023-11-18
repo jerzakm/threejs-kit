@@ -23,8 +23,8 @@ export default defineConfig({
           autogenerate: { directory: 'intro' },
         },
         {
-          label: 'Sprites',
-          autogenerate: { directory: 'sprites' },
+          label: 'Instanced Sprite',
+          autogenerate: { directory: 'instancedSprite' },
         },
         {
           label: 'Materials',
