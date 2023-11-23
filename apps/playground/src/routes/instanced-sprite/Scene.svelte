@@ -4,37 +4,31 @@
 	import PlayerUpdater from './PlayerUpdater.svelte';
 	import { DEG2RAD } from 'three/src/math/MathUtils.js';
 	import AnimatedInstancedSprite from './AnimatedInstancedSprite.svelte';
-	import { SpriteBuilder } from './spriteBuilder';
 	import FlyerUpdater from './FlyerUpdater.svelte';
+	import { createSpritesheet } from '@threejs-kit/instanced-sprite-mesh';
 
 	const count = 50000;
 
-	const monster = new SpriteBuilder();
-
-	const g = monster
+	const spritesheet = createSpritesheet()
 		.add('fly', '/textures/sprites/Monsters_Creatures_Fantasy/Flying_eye/Flight.png', {
-			type: 'rowColumn',
-			w: 8,
-			h: 1,
-			rowMajor: true
+			type: 'frameSize',
+			w: 150,
+			h: 150
 		})
 		.add('attack', '/textures/sprites/Monsters_Creatures_Fantasy/Flying_eye/Attack.png', {
 			type: 'rowColumn',
 			w: 8,
-			h: 1,
-			rowMajor: true
+			h: 1
 		})
 		.add('death', '/textures/sprites/Monsters_Creatures_Fantasy/Flying_eye/Death.png', {
 			type: 'rowColumn',
 			w: 4,
-			h: 1,
-			rowMajor: true
+			h: 1
 		})
 		.add('hit', '/textures/sprites/Monsters_Creatures_Fantasy/Flying_eye/Hit.png', {
 			type: 'rowColumn',
 			w: 4,
-			h: 1,
-			rowMajor: true
+			h: 1
 		})
 		.build();
 </script>
@@ -55,7 +49,7 @@
 	<PlayerUpdater />
 </AnimatedInstancedSprite> -->
 
-{#await g then { spritesheet, texture }}
+{#await spritesheet then { spritesheet, texture }}
 	<AnimatedInstancedSprite {spritesheet} {texture} fps={10} loop={true} {count}>
 		<FlyerUpdater />
 	</AnimatedInstancedSprite>

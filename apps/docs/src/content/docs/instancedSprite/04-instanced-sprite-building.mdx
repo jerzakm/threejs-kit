@@ -16,3 +16,33 @@ https://luizmelo.itch.io/monsters-creatures-fantasy
 2. 1 img file = 1 animation
 3. Name animations and Combine img files into one spritesheet via html canvas so there's only one texture
 4. Generate meta
+
+```ts
+
+const g = createSpritesheet()
+		.add('fly', '/Monsters_Creatures_Fantasy/Flying_eye/Flight.png', {
+			type: 'rowColumn',
+			w: 8,
+			h: 1,
+			rowMajor: true
+		})
+		.add('attack', '/Monsters_Creatures_Fantasy/Flying_eye/Attack.png', {
+			type: 'rowColumn',
+			w: 8,
+			h: 1,
+			rowMajor: true
+		})
+		.add('death', '/Monsters_Creatures_Fantasy/Flying_eye/Death.png', {
+			type: 'rowColumn',
+			w: 4,
+			h: 1,
+			rowMajor: true
+		})
+		.add('hit', '/Monsters_Creatures_Fantasy/Flying_eye/Hit.png', {
+			type: 'rowColumn',
+			w: 4,
+			h: 1,
+			rowMajor: true
+		})
+		.build();
+```
