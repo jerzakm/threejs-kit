@@ -8,7 +8,7 @@
 
 	//@ts-ignore
 	watch(animationMap, (anims: Map<string, number>) => {
-		console.log(anims.keys());
+		// console.log(anims.keys());
 	});
 
 	const posX: number[] = new Array(count).fill(0);

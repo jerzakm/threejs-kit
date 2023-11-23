@@ -71,8 +71,8 @@ export class InstancedSpriteMesh<
         this.setUniformAt("startTime", instanceId, performance.now() * 0.001);
       },
       setGlobal: (animation: V) => {
-        this._spriteMaterial.uniforms.animationId.value =
-          this._animationMap.get(animation) || 0;
+        const animIndex = this._animationMap.get(animation) || 0;
+        this._spriteMaterial.uniforms.animationId.value = animIndex;
 
         this._spriteMaterial.uniforms.startTime.value =
           performance.now() * 0.001;

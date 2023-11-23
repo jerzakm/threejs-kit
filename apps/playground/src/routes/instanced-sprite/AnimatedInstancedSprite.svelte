@@ -1,8 +1,8 @@
 <script lang="ts">
 	import {
 		InstancedSpriteMesh,
-		makeDataTexture,
-		parseAseprite
+		parseAseprite,
+		type SpritesheetFormat
 	} from '@threejs-kit/instanced-sprite-mesh';
 	import { T, useFrame, useLoader, useThrelte, watch } from '@threlte/core';
 	import {
@@ -11,11 +11,8 @@
 		LinearFilter,
 		Matrix4,
 		MeshBasicMaterial,
-		MeshStandardMaterial,
 		NearestFilter,
-		PlaneGeometry,
 		RepeatWrapping,
-		ShaderMaterial,
 		type Texture,
 		type Vector3Tuple
 	} from 'three';
@@ -25,7 +22,7 @@
 		AnimatedInstancedSpriteSlots
 	} from './AnimatedInstancedSprite.svelte';
 
-	import { useSuspense, useTexture } from '@threlte/extras';
+	import { useTexture } from '@threlte/extras';
 	import { setContext } from 'svelte';
 	import { writable } from 'svelte/store';
 
@@ -46,14 +43,15 @@
 	// export let transparent: $$Props['transparent'] = true
 	// export let flipX: $$Props['flipX'] = false
 
+	export let texture: Texture | undefined = undefined;
+	export let spritesheet: SpritesheetFormat | undefined = undefined;
+
 	const baseMaterial = new MeshBasicMaterial({
 		transparent: true,
 		alphaTest: 0.01,
 		// needs to be double side for shading
 		side: DoubleSide
 	});
-
-	const suspend = useSuspense();
 
 	type SpriteAnimations =
 		| 'RunRight'
@@ -70,40 +68,48 @@
 		count
 	);
 
-	const textureStore = suspend(
-		useTexture(textureUrl, {
-			transform: (value: Texture) => {
-				value.matrixAutoUpdate = false;
-				value.generateMipmaps = false;
-				value.premultiplyAlpha = false;
-				value.wrapS = value.wrapT = RepeatWrapping;
-				value.magFilter = value.minFilter = filter === 'nearest' ? NearestFilter : LinearFilter;
-				return value;
-			}
-		})
-	);
+	const textureStore = texture
+		? writable(texture)
+		: useTexture(textureUrl, {
+				transform: (value: Texture) => {
+					value.matrixAutoUpdate = false;
+					value.generateMipmaps = false;
+					value.premultiplyAlpha = false;
+					value.wrapS = value.wrapT = RepeatWrapping;
+					value.magFilter = value.minFilter = filter === 'nearest' ? NearestFilter : LinearFilter;
+					return value;
+				}
+		  });
 
 	watch(textureStore, () => {
 		mesh.material.map = $textureStore;
 		mesh.material.needsUpdate = true;
 	});
 
-	const jsonStore = useLoader(FileLoader).load(dataUrl, {
-		transform: (file) => {
-			if (typeof file !== 'string') return;
-			try {
-				return JSON.parse(file);
-			} catch {
-				return;
-			}
-		}
-	});
+	const jsonStore = spritesheet
+		? writable(spritesheet)
+		: useLoader(FileLoader).load(dataUrl, {
+				transform: (file) => {
+					if (typeof file !== 'string') return;
+					try {
+						return JSON.parse(file);
+					} catch {
+						return;
+					}
+				}
+		  });
 
 	const animationMap = writable<Map<SpriteAnimations, number>>(new Map());
 
 	watch(jsonStore, (rawSpritesheet) => {
-		if (rawSpritesheet) {
+		if (rawSpritesheet && !spritesheet) {
 			const spritesheet = parseAseprite(rawSpritesheet);
+			console.log({ spritesheet });
+			mesh.spritesheet = spritesheet;
+			animationMap.set(mesh.animationMap);
+		}
+
+		if (spritesheet) {
 			mesh.spritesheet = spritesheet;
 			animationMap.set(mesh.animationMap);
 		}
@@ -118,11 +124,6 @@
 	$: {
 		if ($textureStore && mesh.material && !initialized && mesh) {
 			mesh.castShadow = true;
-			mesh.tint.setGlobal({
-				h: 2,
-				s: 1,
-				v: 1
-			});
 		}
 	}
 

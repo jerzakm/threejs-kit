@@ -202,7 +202,7 @@ export const parseAseprite = (json: any) => {
   const w = json.meta.size.w;
   const h = json.meta.size.h;
 
-  const sheetSize: [w: number, h: number][] = [
+  const sheetSize: [w: number, h: number] = [
     json.meta.size.w,
     json.meta.size.h,
   ];
@@ -226,7 +226,7 @@ export const parseAseprite = (json: any) => {
 export type SpritesheetFormat = {
   frames: [x: number, y: number, w: number, h: number][];
   animations: Record<string, [frameId: number, duration: number][]>;
-  sheetSize: [w: number, h: number][];
+  sheetSize: [w: number, h: number];
   animationLengths: number[];
 };
 
@@ -269,9 +269,11 @@ export const makeDataTexture = (data: SpritesheetFormat) => {
       })
       .flat()
       .concat(new Array((dataWidth - animations[key].length) * 4).fill(0));
-
+    console.log({ aFrames });
     animationsRGBA.push(...aFrames);
   }
+
+  console.log(animMap);
 
   const combinedData = [
     ...framesRGBA,
