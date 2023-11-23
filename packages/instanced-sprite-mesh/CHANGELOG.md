@@ -1,5 +1,11 @@
 # @three-kit/materials
 
+## 1.1.0
+
+### Minor Changes
+
+- a29f901: createSpritesheet utility function for combining multiple image files into one and generating metadata for instancing
+
 ## 1.0.0
 
 ### Major Changes
