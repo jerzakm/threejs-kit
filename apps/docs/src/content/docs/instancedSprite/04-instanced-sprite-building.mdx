@@ -3,46 +3,100 @@ title: Making spritesheet from images
 description: InstancedSpriteMesh
 ---
 
-
-### InstancedSpriteMesh
-
-tutorial on how to make spritesheet metadata with just images:
-
-Sprites from
-https://luizmelo.itch.io/monsters-creatures-fantasy
+import { Image } from "astro:assets";
 
 
-1. load images
-2. 1 img file = 1 animation
-3. Name animations and Combine img files into one spritesheet via html canvas so there's only one texture
-4. Generate meta
+
+### `createSpritesheet` utility
+
+The `createSpritesheet` is a helper function that facilitates the creation of spritesheet metadata and a `Texture` which are essential for configuring 
+`InstancedSpriteMesh`. The process involves the following steps:
+
+1. *Initialization:* Begin by invoking the `createSpritesheet` function. This function is the starting point for creating your spritesheet.
+2. *Adding Images*: For each image you wish to include in the spritesheet, call the `add` function on the created spritesheet. This function requires specific parameters:
+    - `name`: A string identifier for the image. By default, this is set to "default".
+    - `imageUrl`: The URL or path to the image file.
+    - `config` object consiting of:
+      - `type` - choose whether you're providing how many rows and columns are in an image `"rowColumn"` or giving the size of a single frame for the builder to interpolate from `"frameSize"`
+      - `w` and `h` refer to either `column` and `row` or `imageWidth` and `imageHeight` depending on what you chose in `type`
+        ```ts
+        /* The configuration object is structured as follows: */
+        config: {
+          type: "rowColumn" | "frameSize";
+          w: number;
+          h: number;          
+        }
+        ```
+3. *Build*: After adding all of the animations, call `build()`. The `createSpritesheet` function returns a promise. This promise resolves to an object containing a `texture: THREE.Texture`, which can be applied as the map property of a material, and a `spritesheet` for use in the InstancedSpriteMesh.
+
+
+**Important Note:** The utility currently supports only the rowMajor layout. This means the frames in the spritesheet are ordered from left to right and top to bottom, progressing row by row. Adjustments to support different frame sequencing may be added in future updates.
+
+
+
+
+## Example
+
+This example shows how to create a spritesheet using the Flying Eye character 
+from the collection available at https://luizmelo.itch.io/monsters-creatures-fantasy. 
+The Flying Eye character includes four separate animation files. The goal is to merge these 
+files into a single texture and establish the necessary metadata for it.
+
+import attack from "@assets/sprite/Monsters_Creatures_Fantasy/Flying_eye/Attack.png";
+import flight from "@assets/sprite/Monsters_Creatures_Fantasy/Flying_eye/Flight.png";
+import death from "@assets/sprite/Monsters_Creatures_Fantasy/Flying_eye/Death.png";
+import hit from "@assets/sprite/Monsters_Creatures_Fantasy/Flying_eye/Hit.png";
+
+
+**Attack.png**
+<div class="bg-gray-800">
+  <Image src={attack} alt="attack"/>
+</div>
+**Flight.png**
+<div class="bg-gray-800">
+  <Image src={flight} alt="attack"/>
+</div>
+**Death.png**
+<div class="bg-gray-800">
+  <Image src={death} alt="attack"/>
+</div>
+**Hit.png**
+<div class="bg-gray-800">
+  <Image src={hit} alt="attack"/>
+</div>
+
+
+### example code
+
+We call `createSpritesheet` and start defining metadata for each of the sprite files.
+- first `add` a `Flight.png` file - we name the animation as `fly` and use `rowColumn` type. We then provide `w` of 8 - because there are 8 columns (frames left to right) and `h` of 1 - because there is only one row of animation
+- for the second animation - `attack` - I'm going to use a `frameSize` type. So now we provide `w` and `h` in pixels of how big each frame is, then the builder calculates columsn and rows internally.
+- Then I add `death` and `hit` animations, just like I did the first one. Notice that these animations have a different number of columns, but that's fine. Each of your animations can have different column and row numbers.
 
 ```ts
 
-const g = createSpritesheet()
+import { createSpritesheet } from '@threejs-kit/instanced-sprite-mesh';
+
+const {spritesheet, texture} = await createSpritesheet()
 		.add('fly', '/Monsters_Creatures_Fantasy/Flying_eye/Flight.png', {
 			type: 'rowColumn',
 			w: 8,
-			h: 1,
-			rowMajor: true
+			h: 1
 		})
 		.add('attack', '/Monsters_Creatures_Fantasy/Flying_eye/Attack.png', {
-			type: 'rowColumn',
-			w: 8,
-			h: 1,
-			rowMajor: true
+			type: 'frameSize',
+			w: 150,
+			h: 150
 		})
 		.add('death', '/Monsters_Creatures_Fantasy/Flying_eye/Death.png', {
 			type: 'rowColumn',
 			w: 4,
-			h: 1,
-			rowMajor: true
+			h: 1
 		})
 		.add('hit', '/Monsters_Creatures_Fantasy/Flying_eye/Hit.png', {
 			type: 'rowColumn',
 			w: 4,
-			h: 1,
-			rowMajor: true
+			h: 1
 		})
 		.build();
 ```
