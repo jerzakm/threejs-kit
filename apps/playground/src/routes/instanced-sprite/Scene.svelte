@@ -39,7 +39,7 @@
 
 <slot />
 
-<!-- <AnimatedInstancedSprite
+<AnimatedInstancedSprite
 	textureUrl="/textures/sprites/player.png"
 	dataUrl="/textures/sprites/player.json"
 	fps={10}
@@ -47,7 +47,7 @@
 	{count}
 >
 	<PlayerUpdater />
-</AnimatedInstancedSprite> -->
+</AnimatedInstancedSprite>
 
 {#await spritesheet then { spritesheet, texture }}
 	<AnimatedInstancedSprite {spritesheet} {texture} fps={10} loop={true} {count}>

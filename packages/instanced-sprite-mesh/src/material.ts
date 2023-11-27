@@ -48,6 +48,10 @@ export const constructSpriteMaterial = (baseMaterial: Material): Material => {
       startTime: { value: 0 },
       /** per instance time offset, can be used so that all of the animations aren't perfectly synced */
       offset: { value: 0 },
+      /** flip uvs on x */
+      flipX: { value: 0 },
+      /** flip uvs on y */
+      flipY: { value: 0 },
       /**
        * How many different animations there are.
        * Needed to determine number of rows there are in DataTexture
@@ -110,6 +114,8 @@ export const constructSpriteMaterial = (baseMaterial: Material): Material => {
 			uniform float animationId;
       uniform float startTime;
 			uniform float time;
+			uniform float flipX;
+			uniform float flipY;
 			uniform float offset;
 			uniform float fps;
       uniform float loop;
@@ -149,7 +155,18 @@ export const constructSpriteMaterial = (baseMaterial: Material): Material => {
 
 			vec2 fSize = frameMeta.zw;
 			vec2 fOffset = vec2(frameMeta.xy);
-			vec2 spriteUv = fSize * vUv + fOffset;
+
+      vec2 transformedPlaneUv = vUv;
+
+      if(flipX == 1.){
+        transformedPlaneUv.x = 1. - transformedPlaneUv.x;
+      }
+      if(flipY == 1.){
+        transformedPlaneUv.y = 1. - transformedPlaneUv.y;
+      }    
+      
+			vec2 spriteUv = fSize * transformedPlaneUv + fOffset;
+
 			`;
       fragmentShader = fragmentShader.replace(
         `void main() {`,

@@ -97,6 +97,23 @@ export class InstancedSpriteMesh<
     };
   }
 
+  get offset() {
+    return {
+      setAt: (instanceId: number, offset: number) => {
+        this.setUniformAt("offset", instanceId, offset);
+      },
+      randomizeAll: (scalar: number = 1) => {
+        for (let i = 0; i < this.count; i++) {
+          // todo benchmark and optimize?
+          this.setUniformAt("offset", i, Math.random() * scalar);
+        }
+      },
+      unsetAll: () => {
+        this.unsetUniform("billboarding");
+      },
+    };
+  }
+
   get loop() {
     return {
       setAt: (instanceId: number, loop: boolean) => {
@@ -107,6 +124,34 @@ export class InstancedSpriteMesh<
       },
       unsetAll: () => {
         this.unsetUniform("loop");
+      },
+    };
+  }
+
+  get flipX() {
+    return {
+      setAt: (instanceId: number, flipX: boolean) => {
+        this.setUniformAt("loop", instanceId, flipX ? 1 : 0);
+      },
+      setGlobal: (flipX: boolean) => {
+        this._spriteMaterial.uniforms.flipX.value = flipX ? 1 : 0;
+      },
+      unsetAll: () => {
+        this.unsetUniform("flipX");
+      },
+    };
+  }
+
+  get flipY() {
+    return {
+      setAt: (instanceId: number, flipY: boolean) => {
+        this.setUniformAt("flipY", instanceId, flipY ? 1 : 0);
+      },
+      setGlobal: (flipY: boolean) => {
+        this._spriteMaterial.uniforms.flipY.value = flipY ? 1 : 0;
+      },
+      unsetAll: () => {
+        this.unsetUniform("flipY");
       },
     };
   }
@@ -125,7 +170,7 @@ export class InstancedSpriteMesh<
   }
 
   /** HSV shift tinting */
-  get tint() {
+  get hueShift() {
     /**
      * todo - reuse vector4 or something
      */

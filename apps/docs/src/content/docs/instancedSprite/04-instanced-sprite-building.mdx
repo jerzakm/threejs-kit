@@ -12,8 +12,8 @@ import { Image } from "astro:assets";
 The `createSpritesheet` is a helper function that facilitates the creation of spritesheet metadata and a `Texture` which are essential for configuring 
 `InstancedSpriteMesh`. The process involves the following steps:
 
-1. *Initialization:* Begin by invoking the `createSpritesheet` function. This function is the starting point for creating your spritesheet.
-2. *Adding Images*: For each image you wish to include in the spritesheet, call the `add` function on the created spritesheet. This function requires specific parameters:
+1. **Initialization:** Begin by invoking the `createSpritesheet` function. This function is the starting point for creating your spritesheet.
+2. **Adding Images**: For each image you wish to include in the spritesheet, call the `add` function on the created spritesheet. This function requires specific parameters:
     - `name`: A string identifier for the image. By default, this is set to "default".
     - `imageUrl`: The URL or path to the image file.
     - `config` object consiting of:
@@ -27,7 +27,7 @@ The `createSpritesheet` is a helper function that facilitates the creation of sp
           h: number;          
         }
         ```
-3. *Build*: After adding all of the animations, call `build()`. The `createSpritesheet` function returns a promise. This promise resolves to an object containing a `texture: THREE.Texture`, which can be applied as the map property of a material, and a `spritesheet` for use in the InstancedSpriteMesh.
+3. **Build**: After adding all of the animations, call `build()`. The `createSpritesheet` function returns a promise. This promise resolves to an object containing a `texture: THREE.Texture`, which can be applied as the map property of a material, and a `spritesheet` for use in the InstancedSpriteMesh.
 
 
 **Important Note:** The utility currently supports only the rowMajor layout. This means the frames in the spritesheet are ordered from left to right and top to bottom, progressing row by row. Adjustments to support different frame sequencing may be added in future updates.
@@ -68,11 +68,6 @@ import hit from "@assets/sprite/Monsters_Creatures_Fantasy/Flying_eye/Hit.png";
 
 ### example code
 
-We call `createSpritesheet` and start defining metadata for each of the sprite files.
-- first `add` a `Flight.png` file - we name the animation as `fly` and use `rowColumn` type. We then provide `w` of 8 - because there are 8 columns (frames left to right) and `h` of 1 - because there is only one row of animation
-- for the second animation - `attack` - I'm going to use a `frameSize` type. So now we provide `w` and `h` in pixels of how big each frame is, then the builder calculates columsn and rows internally.
-- Then I add `death` and `hit` animations, just like I did the first one. Notice that these animations have a different number of columns, but that's fine. Each of your animations can have different column and row numbers.
-
 ```ts
 
 import { createSpritesheet } from '@threejs-kit/instanced-sprite-mesh';
@@ -100,3 +95,9 @@ const {spritesheet, texture} = await createSpritesheet()
 		})
 		.build();
 ```
+
+We call `createSpritesheet` and start defining metadata for each of the sprite files.
+- first `add` a `Flight.png` file - we name the animation as `fly` and use `rowColumn` type. We then provide `w` of 8 - because there are 8 columns (frames left to right) and `h` of 1 - because there is only one row of animation
+- for the second animation - `attack` - I'm going to use a `frameSize` type. So now we provide `w` and `h` in pixels of how big each frame is, then the builder calculates columsn and rows internally.
+- Then I add `death` and `hit` animations, just like I did the first one. Notice that these animations have a different number of columns, but that's fine. Each of your animations can have different column and row numbers.
+
