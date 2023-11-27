@@ -196,9 +196,9 @@ export class InstancedSpriteMesh<
         }
         this._spriteMaterial.uniforms.tint.value = tVector;
       },
-      unsetAll: () => {
-        this.unsetUniform("tint");
-      },
+      // unsetAll: () => {
+      //   this.unsetUniform("tint");
+      // },
     };
   }
 

@@ -3,4 +3,38 @@ title: Reference sheet
 description: InstancedSpriteMesh
 ---
 
-## 
+InstancedSpriteMesh extends troika's [InstancedUniformsMesh](https://protectwise.github.io/troika/three-instanced-uniforms-mesh/), 
+which in turn extends [THREE.InstancedMesh](https://threejs.org/docs/?q=instance#api/en/objects/InstancedMesh). 
+
+## Constructor
+```ts
+new InstancedSpriteMesh ( 
+    baseMaterial: T extends Material, 
+    count: number, 
+    spritesheet?: SpritesheetFormat, 
+    options?: InstancedSpriteOptions 
+    )
+```
+
+**baseMaterial** - Threejs material (recommended THREE.MeshBasicMaterial or THREE.MeshStandardMaterial) - more on this here -> (TODO)
+**count** - number of instances
+**spritesheet** - spritesheet metadata
+**options** - (none atm, placeholder)
+
+
+## Properties and Methods
+
+### `.spritesheet`
+set and get spritesheet (todo, test dynamic spritesheet setting on pre-built mesh)
+
+### `.animation`
+  Set of methods to manipulate which animation is set
+  - **.animation.setAt( instanceId: number, animation: string )** - sets animation (by name) on instanceId
+  - **.animation.setGlobal( animation: string )** - sets default global animation that is used unless the `setAt` was called on the instance
+  - **.animation.resetInstances()** - removes all instance specific animation settings
+
+### `.billboarding`
+  Set of methods to toggle billboarding
+  - **.billboarding.setAt( instanceId: number, enable: boolean )** - enables billboarding on instance
+  - **.billboarding.setGlobal( enable: boolean )** - sets default global billboarding state that is used unless the `setAt` was called on the instance
+  - **.billboarding.resetInstances()** - removes all instance specific billboarding settings
