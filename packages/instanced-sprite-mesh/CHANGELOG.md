@@ -1,5 +1,13 @@
 # @three-kit/materials
 
+## 1.2.0
+
+### Minor Changes
+
+- 55c1caa: Option to use a triangle instead of a plane for the sprite geometry
+- 9071d46: - flipY and flipX for sprites
+  - offset animations by time (random or set)
+
 ## 1.1.0
 
 ### Minor Changes
