@@ -65,7 +65,10 @@
 
 	const mesh: InstancedSpriteMesh<MeshBasicMaterial, SpriteAnimations> = new InstancedSpriteMesh(
 		baseMaterial,
-		count
+		count,
+		{
+			triGeometry: true
+		}
 	);
 
 	const textureStore = texture
