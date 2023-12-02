@@ -1,7 +1,14 @@
 <script lang="ts">
 	import { useFrame, watch, T, useThrelte } from '@threlte/core';
 	import { getContext } from 'svelte';
-	import { SphereGeometry, Vector2 } from 'three';
+	import {
+		BoxGeometry,
+		BoxHelper,
+		MeshBasicMaterial,
+		SphereGeometry,
+		SpotLightHelper,
+		Vector2
+	} from 'three';
 
 	const spriteCtx: any = getContext('instanced-sprite-ctx');
 	const { updatePosition, count, animationMap, setAnimation, mesh } = spriteCtx;
@@ -14,6 +21,8 @@
 	// mesh.material.uniforms.animationId.value = 0;
 
 	mesh.animation.setGlobal('fly');
+
+	mesh.offset.randomizeAll();
 
 	console.log(mesh);
 
