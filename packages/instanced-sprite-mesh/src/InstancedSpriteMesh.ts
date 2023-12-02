@@ -1,13 +1,21 @@
-import { Material, PlaneGeometry, ShaderMaterial, Vector4 } from "three";
+import {
+  BufferGeometry,
+  Material,
+  PlaneGeometry,
+  ShaderMaterial,
+  Vector4,
+} from "three";
 import { InstancedUniformsMesh } from "three-instanced-uniforms-mesh";
 import {
   SpritesheetFormat,
   constructSpriteMaterial,
   makeDataTexture,
 } from "./material";
+import { createSpriteTriangle } from "./triangle";
 
 type InstancedSpriteOptions = {
-  // geometry?: BufferGeometry
+  spritesheet?: SpritesheetFormat;
+  triGeometry?: boolean;
 };
 
 export class InstancedSpriteMesh<
@@ -23,16 +31,26 @@ export class InstancedSpriteMesh<
   constructor(
     baseMaterial: T,
     count: number,
-    spritesheet?: SpritesheetFormat,
-    options?: InstancedSpriteOptions
+    options: InstancedSpriteOptions = {}
   ) {
-    const geometry = new PlaneGeometry(1, 1);
-    const spriteMaterial = constructSpriteMaterial(baseMaterial);
+    let geometry: BufferGeometry<any> | PlaneGeometry;
+
+    if (options?.triGeometry) {
+      console.log("tri geo");
+      geometry = createSpriteTriangle();
+    } else {
+      geometry = new PlaneGeometry(1, 1) as any;
+    }
+
+    const spriteMaterial = constructSpriteMaterial(
+      baseMaterial,
+      options?.triGeometry
+    );
     super(geometry, spriteMaterial as any, count);
 
     this._animationMap = new Map();
     this._spriteMaterial = spriteMaterial as any;
-    if (spritesheet) this.updateSpritesheet(spritesheet);
+    if (options.spritesheet) this.updateSpritesheet(options.spritesheet);
   }
 
   private updateSpritesheet(spritesheet: SpritesheetFormat) {

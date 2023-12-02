@@ -32,11 +32,20 @@ const replaceUVs = (text: string, replacement: string) => {
 };
 
 // TODO TYPE GENERICS
-export const constructSpriteMaterial = (baseMaterial: Material): Material => {
+export const constructSpriteMaterial = (
+  baseMaterial: Material,
+  triGeometry: boolean | undefined
+): Material => {
+  const defines: Record<string, any> = {
+    USE_UV: "",
+  };
+
+  if (triGeometry) {
+    defines["TRI_GEOMETRY"] = "";
+  }
+
   const customMaterial = createDerivedMaterial(baseMaterial, {
-    defines: {
-      USE_UV: "",
-    },
+    defines,
     uniforms: {
       /** active animation */
       animationId: { value: 0 },
@@ -131,11 +140,13 @@ export const constructSpriteMaterial = (baseMaterial: Material): Material => {
 				float hStep = 1.f / dataSize.y;
 				float hHalfStep = 1.f / dataSize.y * 0.5f;
 				return texture2D(spritesheetData, vec2(col * wStep + wHalfStep, row * hStep + hHalfStep));
-			}
+			}     
 			`;
 
       // calculate sprite UV
       const spriteUv = /*glsl*/ `
+
+
 			float animLength = readData(animationId, 1.f).r;
 			float totalTime = animLength / fps;
 
@@ -156,16 +167,33 @@ export const constructSpriteMaterial = (baseMaterial: Material): Material => {
 			vec2 fSize = frameMeta.zw;
 			vec2 fOffset = vec2(frameMeta.xy);
 
-      vec2 transformedPlaneUv = vUv;
+      vec2 transformedPlaneUv = vUv + vec2(0.,0.);
 
       if(flipX == 1.){
         transformedPlaneUv.x = 1. - transformedPlaneUv.x;
       }
       if(flipY == 1.){
         transformedPlaneUv.y = 1. - transformedPlaneUv.y;
-      }    
+      }           
       
-			vec2 spriteUv = fSize * transformedPlaneUv + fOffset;
+			vec2 spriteUv = fSize * transformedPlaneUv + fOffset ;
+
+      #ifdef TRI_GEOMETRY
+        // Shift UVs if mesh uses triangle geometry
+        // TODO optimize ugly math
+        if(vUv.y>0.5 || vUv.x<0.25 || vUv.x>0.75){
+          discard;
+        }  
+
+        vec2 zoomCenter = vec2(fSize.x * 0.5,0.);
+        float zoomFactor = 2.;
+        vec2 shiftedUV = spriteUv - zoomCenter; 
+        shiftedUV *= zoomFactor;
+        shiftedUV += zoomCenter; 
+        spriteUv = shiftedUV;
+      #endif
+
+   
 
 			`;
       fragmentShader = fragmentShader.replace(

@@ -8,18 +8,24 @@ which in turn extends [THREE.InstancedMesh](https://threejs.org/docs/?q=instance
 
 ## Constructor
 ```ts
+type InstancedSpriteOptions = {
+  spritesheet?: SpritesheetFormat;
+  triGeometry?: boolean;
+};
+
 new InstancedSpriteMesh ( 
     baseMaterial: T extends Material, 
     count: number, 
-    spritesheet?: SpritesheetFormat, 
-    options?: InstancedSpriteOptions 
+    options: InstancedSpriteOptions = {}
     )
 ```
 
-**baseMaterial** - Threejs material (recommended THREE.MeshBasicMaterial or THREE.MeshStandardMaterial) - more on this here -> (TODO)
-**count** - number of instances
-**spritesheet** - spritesheet metadata
-**options** - (none atm, placeholder)
+- **baseMaterial** - Threejs material (recommended THREE.MeshBasicMaterial or THREE.MeshStandardMaterial) - more on this here -> (TODO)
+- **count** - number of instances
+- **options** - (none atm, placeholder)
+  - **spritesheet** - spritesheet metadata
+  - **triGeometry** - use triangles instead of PlaneGeometry for sprites
+
 
 
 ## Properties and Methods
