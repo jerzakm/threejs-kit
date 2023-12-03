@@ -62,8 +62,6 @@ class SpriteBuilder {
   async build() {
     const imgLoader = new ImageLoader();
 
-    console.log(this.animations);
-
     const spritesheet: SpritesheetFormat = {
       frames: [],
       animations: {},
@@ -171,9 +169,6 @@ class SpriteBuilder {
     texture.colorSpace = SRGBColorSpace;
 
     spritesheet.sheetSize = [generatedWidth, generatedHeight];
-
-    console.log({ generatedSpritesheet: spritesheet });
-
     return { spritesheet, texture };
   }
 }
