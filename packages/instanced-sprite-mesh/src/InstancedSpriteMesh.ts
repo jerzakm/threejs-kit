@@ -36,7 +36,6 @@ export class InstancedSpriteMesh<
     let geometry: BufferGeometry<any> | PlaneGeometry;
 
     if (options?.triGeometry) {
-      console.log("tri geo");
       geometry = createSpriteTriangle();
     } else {
       geometry = new PlaneGeometry(1, 1) as any;

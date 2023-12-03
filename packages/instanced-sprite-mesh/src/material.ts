@@ -237,10 +237,6 @@ export const constructSpriteMaterial = (
       );
 
       fragmentShader = replaceUVs(fragmentShader, "spriteUv");
-
-      // console.log(fragmentShader)
-      // console.log(vertexShader)
-
       return { vertexShader, fragmentShader };
     },
   });
@@ -327,11 +323,8 @@ export const makeDataTexture = (data: SpritesheetFormat) => {
       })
       .flat()
       .concat(new Array((dataWidth - animations[key].length) * 4).fill(0));
-    console.log({ aFrames });
     animationsRGBA.push(...aFrames);
   }
-
-  console.log(animMap);
 
   const combinedData = [
     ...framesRGBA,
