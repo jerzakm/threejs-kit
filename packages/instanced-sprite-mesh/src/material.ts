@@ -141,6 +141,19 @@ export const constructSpriteMaterial = (
 				float hHalfStep = 1.f / dataSize.y * 0.5f;
 				return texture2D(spritesheetData, vec2(col * wStep + wHalfStep, row * hStep + hHalfStep));
 			}     
+
+      vec2 zoomUV(vec2 uv, vec2 zoomCenter, float zoomFactor) {
+        // Shift UVs so that the zoom center is the origin
+        vec2 shiftedUV = uv - zoomCenter;
+    
+        // Scale (zoom) the UV coordinates
+        shiftedUV *= zoomFactor;
+    
+        // Shift back
+        shiftedUV += zoomCenter;
+    
+        return shiftedUV;
+    }
 			`;
 
       // calculate sprite UV
@@ -185,7 +198,7 @@ export const constructSpriteMaterial = (
           discard;
         }  
 
-        vec2 zoomCenter = vec2(fSize.x * 0.5,0.);
+        vec2 zoomCenter = vec2(fSize.x * 0.5,0.) + fOffset;
         float zoomFactor = 2.;
         vec2 shiftedUV = spriteUv - zoomCenter; 
         shiftedUV *= zoomFactor;
