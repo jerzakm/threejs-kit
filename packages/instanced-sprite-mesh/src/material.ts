@@ -47,6 +47,8 @@ export const constructSpriteMaterial = (
   const customMaterial = createDerivedMaterial(baseMaterial, {
     defines,
     uniforms: {
+      /** GPGPU animation driven data */
+      animationData: { value: null },
       /** active animation */
       animationId: { value: 0 },
       /* Repeat animation in a loop */
@@ -93,9 +95,11 @@ export const constructSpriteMaterial = (
      * */
     vertexDefs: /*glsl*/ `
     uniform float billboarding;
+    flat varying int vId;
     `,
 
     vertexMainOutro: /*glsl*/ `
+    vId = gl_InstanceID;
     if(billboarding == 1.){
       vec3 instancePosition = vec3(instanceMatrix[3][0], instanceMatrix[3][1], instanceMatrix[3][2]);
 
@@ -119,6 +123,7 @@ export const constructSpriteMaterial = (
     customRewriter: ({ vertexShader, fragmentShader }: any) => {
       // uniforms etc
       const header = /*glsl*/ `
+			uniform sampler2D animationData;
 			uniform sampler2D spritesheetData;
 			uniform float animationId;
       uniform float startTime;
@@ -130,6 +135,8 @@ export const constructSpriteMaterial = (
       uniform float loop;
 			uniform vec2 dataSize;
       uniform vec4 tint;
+
+      flat varying int vId;
 			`;
 
       // read spritesheet metadata
@@ -159,12 +166,11 @@ export const constructSpriteMaterial = (
       // calculate sprite UV
       const spriteUv = /*glsl*/ `
 
-
 			float animLength = readData(animationId, 1.f).r;
 			float totalTime = animLength / fps;
 
 			float frameTimedId = mod(time + offset, totalTime) / totalTime;
-      // frameTimedId = time / totalTime;
+      // frameTimedId = texture2D(animationData, vec2(0.1)).r;
       if(loop == 0.){
         frameTimedId = clamp((time - startTime) / totalTime, 0.,1.);
       }
@@ -172,7 +178,15 @@ export const constructSpriteMaterial = (
 			float frameId = floor(animLength * frameTimedId);
 
 			float spritesheetFrameId = readData(frameId, 2.f + animationId).r;
-      
+
+
+      // todo this will come from a uniform - size of animatonData texture
+      int animDataSize = 8;
+
+      float y = float(vId / animDataSize) / float(animDataSize);
+      float x = mod(float(vId),float(animDataSize)) / float(animDataSize);
+
+      spritesheetFrameId = texture2D(animationData, vec2(x,y)).r;
      
 			// x,y,w,h
 			vec4 frameMeta = readData(spritesheetFrameId, 0.f);
@@ -217,7 +231,7 @@ export const constructSpriteMaterial = (
       fragmentShader = `
 			${header}
 			${readData}
-			${fragmentShader}
+			${fragmentShader}      
 			`;
 
       fragmentShader = fragmentShader.replace(
@@ -233,6 +247,8 @@ export const constructSpriteMaterial = (
   
           sampledDiffuseColor = vec4(res, sampledDiffuseColor.a);
         }        
+
+        // sampledDiffuseColor = vec4(texture2D(animationData, vUv).rgb, 1.);
       `
       );
 

@@ -3,6 +3,7 @@ import {
   Material,
   PlaneGeometry,
   ShaderMaterial,
+  Vector2,
   Vector4,
   WebGLRenderer,
 } from "three";
@@ -53,8 +54,13 @@ export class InstancedSpriteMesh<
     super(geometry, spriteMaterial as any, count);
 
     this.compute = initAnimationRunner(renderer, count);
+
     this._animationMap = new Map();
     this._spriteMaterial = spriteMaterial as any;
+    this._spriteMaterial.uniforms.animationData.value =
+      this.compute.gpuCompute.getCurrentRenderTarget(
+        this.compute.variables.progressVariable
+      ).texture;
     if (options.spritesheet) this.updateSpritesheet(options.spritesheet);
   }
 
@@ -64,6 +70,14 @@ export class InstancedSpriteMesh<
     this._spriteMaterial.uniforms.spritesheetData.value = dataTexture;
     this._spriteMaterial.uniforms.dataSize.value.x = dataWidth;
     this._spriteMaterial.uniforms.dataSize.value.y = dataHeight;
+
+    this.compute.variables.progressVariable.material.uniforms[
+      "dataSize"
+    ].value = new Vector2(dataWidth, dataHeight);
+
+    this.compute.variables.progressVariable.material.uniforms[
+      "spritesheetData"
+    ].value = dataTexture;
     // @ts-ignore
     // todo type this with named animations?
     this._animationMap = animMap;
@@ -90,8 +104,12 @@ export class InstancedSpriteMesh<
           instanceId,
           this._animationMap.get(animation) || 0
         );
-
         this.setUniformAt("startTime", instanceId, performance.now() * 0.001);
+
+        this.compute.updateAnimationAt(
+          instanceId,
+          this._animationMap.get(animation) || 0
+        );
       },
       setGlobal: (animation: V) => {
         const animIndex = this._animationMap.get(animation) || 0;
@@ -239,13 +257,19 @@ export class InstancedSpriteMesh<
   }
 
   public set fps(value: number) {
-    this._spriteMaterial.uniforms.fps.value = value;
+    // this._spriteMaterial.uniforms.fps.value = value;
     this._fps = value;
+    this.compute.variables.progressVariable.material.uniforms["fps"].value =
+      value;
   }
 
   public updateTime() {
     const value = performance.now() * 0.001;
-    this._spriteMaterial.uniforms.time.value = value;
+    // this._spriteMaterial.uniforms.time.value = value;
+
+    this.compute.variables.progressVariable.material.uniforms["time"].value =
+      value;
+
     this._time = value;
   }
 }

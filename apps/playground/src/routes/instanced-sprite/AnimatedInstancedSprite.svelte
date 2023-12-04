@@ -125,7 +125,7 @@
 		}
 	});
 
-	$: mesh.material.uniforms.fps.value = fps;
+	$: mesh.fps = fps;
 
 	$: mesh.loop.setGlobal(loop);
 

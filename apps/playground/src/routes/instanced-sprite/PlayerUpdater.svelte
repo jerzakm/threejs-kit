@@ -14,7 +14,7 @@
 	const posX: number[] = new Array(count).fill(0);
 	const posZ: number[] = new Array(count).fill(0);
 
-	const spread = 400;
+	const spread = 15;
 	const minCenterDistance = 5;
 	const maxCenterDistance = spread;
 	const rndPosition: any = () => {

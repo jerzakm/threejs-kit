@@ -5,6 +5,7 @@ import {
   LinearFilter,
   RGBAFormat,
   RepeatWrapping,
+  Vector2,
   WebGLRenderer,
 } from "three";
 import { GPUComputationRenderer } from "three/examples/jsm/misc/GPUComputationRenderer.js";
@@ -12,16 +13,30 @@ import { GPUComputationRenderer } from "three/examples/jsm/misc/GPUComputationRe
 const animProgressCompute = /*glsl*/ `
   #include <common>
   uniform sampler2D instructionsTexture;
+  
+  uniform sampler2D spritesheetData;
+  uniform vec2 dataSize;
+  uniform float fps;
+  uniform float time;
 
-  void main()	{
+  // read spritesheet metadata
+  vec4 readData(float col, float row) {
+    float wStep = 1.f / dataSize.x;
+    float wHalfStep = wStep * 0.5f;
+    float hStep = 1.f / dataSize.y;
+    float hHalfStep = 1.f / dataSize.y * 0.5f;
+    return texture2D(spritesheetData, vec2(col * wStep + wHalfStep, row * hStep + hHalfStep));
+  }
+
+  void main()	{    
 
     vec2 cellSize = 1.0 / resolution.xy;
-
     vec2 uv = gl_FragCoord.xy * cellSize;
 
-    // progressValue.x == val from previous frame
-    // progressValue.y == val from penultimate frame
-    // progressValue.z, progressValue.w not used
+    // progressValue.x - picked animation frame
+    // progressValue.y - previous progress state (for pause, reverse & pingpong consistency)
+    // progressValue.z - not used yet
+    // progressValue.w - not used yet
     vec4 progressValue = texture2D( progress, uv );
 
     vec4 instructions = texture2D(instructionsTexture, uv);
@@ -30,9 +45,19 @@ const animProgressCompute = /*glsl*/ `
     progressValue.z = 0.;
     progressValue.w = 1.;
 
+    progressValue.y = 0.;
 
-    progressValue.y = instructions.x;    
-    progressValue.x = mod(progressValue.x +0.01, 1.);
+    float animationId = instructions.x;
+    float offset = 0.;
+
+    float animLength = readData(animationId, 1.f).r;
+    float totalTime = animLength / fps;
+    float frameTimedId = mod(time + offset, totalTime) / totalTime;
+
+    float frameId = floor(animLength * frameTimedId);
+    float spritesheetFrameId = readData(frameId, 2.f + animationId).r;
+    
+    progressValue.x = spritesheetFrameId;
 
     gl_FragColor = progressValue;
 
@@ -40,15 +65,10 @@ const animProgressCompute = /*glsl*/ `
 `;
 
 const makeDataTexture = (size = 512) => {
-  // R -
-  // G -
-  // B -
-  // A -
-
   const combinedDataF32 = new Float32Array(size ** 2 * 4);
 
   for (let i = 0; i < size ** 2 * 4; i++) {
-    combinedDataF32[i] = Math.random();
+    combinedDataF32[i] = 0;
   }
 
   const dataTexture = new DataTexture(
@@ -95,6 +115,8 @@ export const initAnimationRunner = (
 
   const computeTextureSize = findFirstPow2LargerThan(Math.sqrt(instanceCount));
 
+  console.log({ computeTextureSize });
+
   const gpuCompute = new GPUComputationRenderer(
     computeTextureSize,
     computeTextureSize,
@@ -113,6 +135,10 @@ export const initAnimationRunner = (
   progressVariable.material.uniforms["instructionsTexture"] = {
     value: progressDataTexture,
   };
+  progressVariable.material.uniforms["spritesheetData"] = { value: null };
+  progressVariable.material.uniforms["fps"] = { value: 0 };
+  progressVariable.material.uniforms["time"] = { value: 0 };
+  progressVariable.material.uniforms["dataSize"] = { value: new Vector2() };
 
   gpuCompute.setVariableDependencies(progressVariable, [progressVariable]);
 
@@ -121,5 +147,23 @@ export const initAnimationRunner = (
     console.error(error);
   }
 
-  return { gpuCompute, variables: { progressVariable }, progressDataTexture };
+  // Format of instructions coming from library user
+  // R - animationId
+  // G -
+  // B - 0 - forward 1 - reverse 2 - pingpong | loop if over 10
+  // A -
+
+  const updateAnimationAt = (instanceId: number, animationId: number) => {
+    const index = instanceId * 4;
+    progressDataTexture.image.data[index] = animationId;
+    progressDataTexture.needsUpdate = true;
+  };
+
+  // todo make this nicer after deciding on api
+  return {
+    gpuCompute,
+    variables: { progressVariable },
+    progressDataTexture,
+    updateAnimationAt,
+  };
 };
