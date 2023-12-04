@@ -49,7 +49,7 @@ const animProgressCompute = /*glsl*/ `
     // todo shouldn't be rounding here, pick
     float animationId = round(instructions.x);
     
-    float offset = 0.;
+    float offset = instructions.g;
 
     float animLength = readData(animationId, 1.f, spritesheetData).r;
     float totalTime = animLength / fps;

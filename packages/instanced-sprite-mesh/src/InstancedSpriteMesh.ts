@@ -150,6 +150,8 @@ export class InstancedSpriteMesh<
         for (let i = 0; i < this.count; i++) {
           // todo benchmark and optimize?
           this.setUniformAt("offset", i, Math.random() * scalar);
+          this.compute.progressDataTexture.image.data[i * 4 + 1] =
+            Math.random() * scalar;
         }
       },
       unsetAll: () => {
