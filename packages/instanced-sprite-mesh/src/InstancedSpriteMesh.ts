@@ -4,6 +4,7 @@ import {
   PlaneGeometry,
   ShaderMaterial,
   Vector4,
+  WebGLRenderer,
 } from "three";
 import { InstancedUniformsMesh } from "three-instanced-uniforms-mesh";
 import {
@@ -12,6 +13,7 @@ import {
   makeDataTexture,
 } from "./material";
 import { createSpriteTriangle } from "./triangle";
+import { initAnimationRunner } from "./animationRunner";
 
 type InstancedSpriteOptions = {
   spritesheet?: SpritesheetFormat;
@@ -28,9 +30,12 @@ export class InstancedSpriteMesh<
   private _time: number = 0;
   private _fps: number = 15;
 
+  compute: ReturnType<typeof initAnimationRunner>;
+
   constructor(
     baseMaterial: T,
     count: number,
+    renderer: WebGLRenderer,
     options: InstancedSpriteOptions = {}
   ) {
     let geometry: BufferGeometry<any> | PlaneGeometry;
@@ -47,6 +52,7 @@ export class InstancedSpriteMesh<
     );
     super(geometry, spriteMaterial as any, count);
 
+    this.compute = initAnimationRunner(renderer, count);
     this._animationMap = new Map();
     this._spriteMaterial = spriteMaterial as any;
     if (options.spritesheet) this.updateSpritesheet(options.spritesheet);

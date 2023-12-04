@@ -12,6 +12,7 @@
 		Matrix4,
 		MeshBasicMaterial,
 		NearestFilter,
+		PlaneGeometry,
 		RepeatWrapping,
 		type Texture,
 		type Vector3Tuple
@@ -25,6 +26,7 @@
 	import { useTexture } from '@threlte/extras';
 	import { setContext } from 'svelte';
 	import { writable } from 'svelte/store';
+	import PreviewMaterial from './PreviewMaterial.svelte';
 
 	type $$Props = Required<AnimatedInstancedSpriteProps>;
 	type $$Events = AnimatedInstancedSpriteEvents;
@@ -63,13 +65,18 @@
 		| 'RunBackward'
 		| 'IdleBackward';
 
+	const { renderer } = useThrelte();
+
 	const mesh: InstancedSpriteMesh<MeshBasicMaterial, SpriteAnimations> = new InstancedSpriteMesh(
 		baseMaterial,
 		count,
+		renderer,
 		{
 			triGeometry: true
 		}
 	);
+
+	console.log(mesh.compute);
 
 	const textureStore = texture
 		? writable(texture)
@@ -157,7 +164,9 @@
 	});
 
 	useFrame(() => {
+		// mesh.compute.rtSmall.texture.needsUpdate = true;
 		mesh.updateTime();
+		mesh.compute.gpuCompute.compute();
 	});
 
 	useFrame(({ clock }) => {
@@ -166,7 +175,32 @@
 			dirtyInstanceMatrix = false;
 		}
 	});
+
+	let j = 0;
+	useFrame(() => {
+		const computeSize = 256;
+		let row = j % (computeSize * 4);
+
+		if (j % 1 == 0) {
+			for (let i = 0; i < computeSize * 4; i++) {
+				const index = computeSize * row + i;
+				mesh.compute.progressDataTexture.image.data[index] = Math.random();
+			}
+
+			// mesh.compute.progressDataTexture.needsUpdate = true;
+		}
+
+		j++;
+	});
 </script>
+
+<T.Mesh position.y={4}>
+	<T.PlaneGeometry args={[1, 1]} />
+	<PreviewMaterial
+		texture={mesh.compute.gpuCompute.getCurrentRenderTarget(mesh.compute.variables.progressVariable)
+			.texture}
+	/>
+</T.Mesh>
 
 <T is={mesh} />
 

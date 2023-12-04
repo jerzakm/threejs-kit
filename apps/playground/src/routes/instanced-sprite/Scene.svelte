@@ -7,7 +7,7 @@
 	import FlyerUpdater from './FlyerUpdater.svelte';
 	import { createSpritesheet } from '@threejs-kit/instanced-sprite-mesh';
 
-	const count = 50000;
+	const count = 20;
 
 	const spritesheet = createSpritesheet()
 		.add('fly', '/textures/sprites/Monsters_Creatures_Fantasy/Flying_eye/Flight.png', {
@@ -49,11 +49,11 @@
 	<PlayerUpdater />
 </AnimatedInstancedSprite>
 
-{#await spritesheet then { spritesheet, texture }}
+<!-- {#await spritesheet then { spritesheet, texture }}
 	<AnimatedInstancedSprite {spritesheet} {texture} fps={10} loop={true} {count}>
 		<FlyerUpdater />
 	</AnimatedInstancedSprite>
-{/await}
+{/await} -->
 
 <Sky elevation={0.15} />
 <!-- <T.AmbientLight /> -->

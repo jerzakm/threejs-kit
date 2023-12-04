@@ -335,6 +335,7 @@ export const makeDataTexture = (data: SpritesheetFormat) => {
   const combinedDataF32 = new Float32Array(combinedData);
   combinedDataF32.set(combinedData);
 
+  //todo pow2 sized texture instead ?
   const dataTexture = new DataTexture(
     combinedDataF32,
     dataWidth,
