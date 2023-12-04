@@ -62,6 +62,9 @@ export class InstancedSpriteMesh<
         this.compute.variables.progressVariable
       ).texture;
     if (options.spritesheet) this.updateSpritesheet(options.spritesheet);
+
+    this._spriteMaterial.uniforms.animationDataSize.value =
+      this.compute.progressDataTexture.image.width;
   }
 
   private updateSpritesheet(spritesheet: SpritesheetFormat) {

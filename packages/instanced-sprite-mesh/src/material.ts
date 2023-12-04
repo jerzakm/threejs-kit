@@ -49,6 +49,7 @@ export const constructSpriteMaterial = (
     uniforms: {
       /** GPGPU animation driven data */
       animationData: { value: null },
+      animationDataSize: { value: 0 },
       /** active animation */
       animationId: { value: 0 },
       /* Repeat animation in a loop */
@@ -124,6 +125,7 @@ export const constructSpriteMaterial = (
       // uniforms etc
       const header = /*glsl*/ `
 			uniform sampler2D animationData;
+      uniform int animationDataSize;
 			uniform sampler2D spritesheetData;
 			uniform float animationId;
       uniform float startTime;
@@ -180,11 +182,10 @@ export const constructSpriteMaterial = (
 			float spritesheetFrameId = readData(frameId, 2.f + animationId).r;
 
 
-      // todo this will come from a uniform - size of animatonData texture
-      int animDataSize = 8;
+    
 
-      float y = float(vId / animDataSize) / float(animDataSize);
-      float x = mod(float(vId),float(animDataSize)) / float(animDataSize);
+      float y = float(vId / animationDataSize) / float(animationDataSize);
+      float x = mod(float(vId),float(animationDataSize)) / float(animationDataSize);
 
       spritesheetFrameId = texture2D(animationData, vec2(x,y)).r;
      

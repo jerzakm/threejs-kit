@@ -20,7 +20,7 @@ const animProgressCompute = /*glsl*/ `
   uniform float time;
 
   // read spritesheet metadata
-  vec4 readData(float col, float row) {
+  vec4 readData(float col, float row, sampler2D tex) {
     float wStep = 1.f / dataSize.x;
     float wHalfStep = wStep * 0.5f;
     float hStep = 1.f / dataSize.y;
@@ -39,25 +39,29 @@ const animProgressCompute = /*glsl*/ `
     // progressValue.w - not used yet
     vec4 progressValue = texture2D( progress, uv );
 
-    vec4 instructions = texture2D(instructionsTexture, uv);
+
+    vec4 instructions = texture2D( instructionsTexture, uv);
 
 
     progressValue.z = 0.;
     progressValue.w = 1.;
-
-    progressValue.y = 0.;
-
-    float animationId = instructions.x;
+    
+    // todo shouldn't be rounding here, pick
+    float animationId = round(instructions.x);
+    
     float offset = 0.;
 
-    float animLength = readData(animationId, 1.f).r;
+    float animLength = readData(animationId, 1.f, spritesheetData).r;
     float totalTime = animLength / fps;
     float frameTimedId = mod(time + offset, totalTime) / totalTime;
 
     float frameId = floor(animLength * frameTimedId);
-    float spritesheetFrameId = readData(frameId, 2.f + animationId).r;
+    float spritesheetFrameId = readData(frameId, 2.f + animationId, spritesheetData).r;
     
+    // Picked sprite frame that goes to material
     progressValue.x = spritesheetFrameId;
+    // Save current time
+    progressValue.y = frameTimedId;
 
     gl_FragColor = progressValue;
 
@@ -78,6 +82,7 @@ const makeDataTexture = (size = 512) => {
     RGBAFormat,
     FloatType
   );
+
   dataTexture.type = FloatType;
   dataTexture.minFilter = LinearFilter;
   dataTexture.magFilter = LinearFilter;
@@ -149,7 +154,7 @@ export const initAnimationRunner = (
 
   // Format of instructions coming from library user
   // R - animationId
-  // G -
+  // G - offset?
   // B - 0 - forward 1 - reverse 2 - pingpong | loop if over 10
   // A -
 
