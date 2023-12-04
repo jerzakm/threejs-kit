@@ -167,27 +167,10 @@ export const constructSpriteMaterial = (
 
       // calculate sprite UV
       const spriteUv = /*glsl*/ `
-
-			float animLength = readData(animationId, 1.f).r;
-			float totalTime = animLength / fps;
-
-			float frameTimedId = mod(time + offset, totalTime) / totalTime;
-      // frameTimedId = texture2D(animationData, vec2(0.1)).r;
-      if(loop == 0.){
-        frameTimedId = clamp((time - startTime) / totalTime, 0.,1.);
-      }
-
-			float frameId = floor(animLength * frameTimedId);
-
-			float spritesheetFrameId = readData(frameId, 2.f + animationId).r;
-
-
-    
-
       float y = float(vId / animationDataSize) / float(animationDataSize);
       float x = mod(float(vId),float(animationDataSize)) / float(animationDataSize);
 
-      spritesheetFrameId = texture2D(animationData, vec2(x,y)).r;
+      float spritesheetFrameId = texture2D(animationData, vec2(x,y)).r;
      
 			// x,y,w,h
 			vec4 frameMeta = readData(spritesheetFrameId, 0.f);
