@@ -145,6 +145,9 @@
 		if (e.key === 'd' || e.key === 'ArrowRight') dirs.right = false;
 		if (e.key === 'w' || e.key === 'ArrowUp') dirs.up = false;
 		if (e.key === 's' || e.key === 'ArrowDown') dirs.down = false;
+
+		const animIndex = pickAnimation(0);
+		setAnimation(0, animIndex);
 	};
 
 	const playerMoveVector = new Vector2(0, 0);

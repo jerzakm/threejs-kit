@@ -12,6 +12,7 @@
 		Matrix4,
 		MeshBasicMaterial,
 		NearestFilter,
+		PlaneGeometry,
 		RepeatWrapping,
 		type Texture,
 		type Vector3Tuple
@@ -25,6 +26,7 @@
 	import { useTexture } from '@threlte/extras';
 	import { setContext } from 'svelte';
 	import { writable } from 'svelte/store';
+	import PreviewMaterial from './PreviewMaterial.svelte';
 
 	type $$Props = Required<AnimatedInstancedSpriteProps>;
 	type $$Events = AnimatedInstancedSpriteEvents;
@@ -63,11 +65,14 @@
 		| 'RunBackward'
 		| 'IdleBackward';
 
+	const { renderer } = useThrelte();
+
 	const mesh: InstancedSpriteMesh<MeshBasicMaterial, SpriteAnimations> = new InstancedSpriteMesh(
 		baseMaterial,
 		count,
+		renderer,
 		{
-			triGeometry: true
+			triGeometry: false
 		}
 	);
 
@@ -107,7 +112,6 @@
 	watch(jsonStore, (rawSpritesheet) => {
 		if (rawSpritesheet && !spritesheet) {
 			const spritesheet = parseAseprite(rawSpritesheet);
-			console.log({ spritesheet });
 			mesh.spritesheet = spritesheet;
 			animationMap.set(mesh.animationMap);
 		}
@@ -118,9 +122,7 @@
 		}
 	});
 
-	$: mesh.material.uniforms.fps.value = fps;
-
-	$: mesh.loop.setGlobal(loop);
+	$: mesh.fps = fps;
 
 	let initialized = false;
 
@@ -145,7 +147,6 @@
 
 	const setAnimation = (instanceId: number, animationId: SpriteAnimations) => {
 		mesh.animation.setAt(instanceId, animationId);
-		// mesh.loop.setGlobal(false);
 	};
 
 	setContext('instanced-sprite-ctx', {
@@ -157,7 +158,7 @@
 	});
 
 	useFrame(() => {
-		mesh.updateTime();
+		mesh.update();
 	});
 
 	useFrame(({ clock }) => {
@@ -166,7 +167,16 @@
 			dirtyInstanceMatrix = false;
 		}
 	});
+
+	let j = 0;
 </script>
+
+<T.Mesh position.y={4}>
+	<T.PlaneGeometry args={[1, 1]} />
+	<PreviewMaterial
+		texture={mesh.compute.gpuCompute.getCurrentRenderTarget(mesh.compute.animationRunner).texture}
+	/>
+</T.Mesh>
 
 <T is={mesh} />
 

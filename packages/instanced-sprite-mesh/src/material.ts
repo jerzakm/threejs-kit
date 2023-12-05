@@ -47,27 +47,15 @@ export const constructSpriteMaterial = (
   const customMaterial = createDerivedMaterial(baseMaterial, {
     defines,
     uniforms: {
-      /** active animation */
-      animationId: { value: 0 },
+      /** GPGPU animation driven data */
+      animationData: { value: null },
+      animationDataSize: { value: 0 },
       /* Repeat animation in a loop */
       billboarding: { value: 0 },
-      /** timer in s */
-      time: { value: 0 },
-      /** used for non looped animation. Animation starts at this time and plays only once, then stays at the last frame */
-      startTime: { value: 0 },
-      /** per instance time offset, can be used so that all of the animations aren't perfectly synced */
-      offset: { value: 0 },
       /** flip uvs on x */
       flipX: { value: 0 },
       /** flip uvs on y */
       flipY: { value: 0 },
-      /**
-       * How many different animations there are.
-       * Needed to determine number of rows there are in DataTexture
-       */
-      fps: { value: 0 },
-      /* Repeat animation in a loop */
-      loop: { value: 1 },
       /**
        * DataArrayTexture - data stored in columns. Rows are:
        * 0 - Frames declaration - RGBA[x,y,w,h]
@@ -93,9 +81,11 @@ export const constructSpriteMaterial = (
      * */
     vertexDefs: /*glsl*/ `
     uniform float billboarding;
+    flat varying int vId;
     `,
 
     vertexMainOutro: /*glsl*/ `
+    vId = gl_InstanceID;
     if(billboarding == 1.){
       vec3 instancePosition = vec3(instanceMatrix[3][0], instanceMatrix[3][1], instanceMatrix[3][2]);
 
@@ -119,17 +109,17 @@ export const constructSpriteMaterial = (
     customRewriter: ({ vertexShader, fragmentShader }: any) => {
       // uniforms etc
       const header = /*glsl*/ `
-			uniform sampler2D spritesheetData;
-			uniform float animationId;
+			uniform sampler2D animationData;
+      uniform int animationDataSize;
+			uniform sampler2D spritesheetData;			
       uniform float startTime;
 			uniform float time;
 			uniform float flipX;
-			uniform float flipY;
-			uniform float offset;
-			uniform float fps;
-      uniform float loop;
+			uniform float flipY;						      
 			uniform vec2 dataSize;
       uniform vec4 tint;
+
+      flat varying int vId;
 			`;
 
       // read spritesheet metadata
@@ -158,21 +148,10 @@ export const constructSpriteMaterial = (
 
       // calculate sprite UV
       const spriteUv = /*glsl*/ `
+      float y = float(vId / animationDataSize) / float(animationDataSize);
+      float x = mod(float(vId),float(animationDataSize)) / float(animationDataSize);
 
-
-			float animLength = readData(animationId, 1.f).r;
-			float totalTime = animLength / fps;
-
-			float frameTimedId = mod(time + offset, totalTime) / totalTime;
-      // frameTimedId = time / totalTime;
-      if(loop == 0.){
-        frameTimedId = clamp((time - startTime) / totalTime, 0.,1.);
-      }
-
-			float frameId = floor(animLength * frameTimedId);
-
-			float spritesheetFrameId = readData(frameId, 2.f + animationId).r;
-      
+      float spritesheetFrameId = texture2D(animationData, vec2(x,y)).r;
      
 			// x,y,w,h
 			vec4 frameMeta = readData(spritesheetFrameId, 0.f);
@@ -217,7 +196,7 @@ export const constructSpriteMaterial = (
       fragmentShader = `
 			${header}
 			${readData}
-			${fragmentShader}
+			${fragmentShader}      
 			`;
 
       fragmentShader = fragmentShader.replace(
@@ -233,6 +212,8 @@ export const constructSpriteMaterial = (
   
           sampledDiffuseColor = vec4(res, sampledDiffuseColor.a);
         }        
+
+        // sampledDiffuseColor = vec4(texture2D(animationData, vUv).rgb, 1.);
       `
       );
 
@@ -335,6 +316,7 @@ export const makeDataTexture = (data: SpritesheetFormat) => {
   const combinedDataF32 = new Float32Array(combinedData);
   combinedDataF32.set(combinedData);
 
+  //todo pow2 sized texture instead ?
   const dataTexture = new DataTexture(
     combinedDataF32,
     dataWidth,

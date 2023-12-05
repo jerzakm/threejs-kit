@@ -3,7 +3,9 @@ import {
   Material,
   PlaneGeometry,
   ShaderMaterial,
+  Vector2,
   Vector4,
+  WebGLRenderer,
 } from "three";
 import { InstancedUniformsMesh } from "three-instanced-uniforms-mesh";
 import {
@@ -12,11 +14,25 @@ import {
   makeDataTexture,
 } from "./material";
 import { createSpriteTriangle } from "./triangle";
+import { initAnimationRunner } from "./animationRunner";
+import { Timer } from "./Timer";
+
+let t = 0;
 
 type InstancedSpriteOptions = {
   spritesheet?: SpritesheetFormat;
   triGeometry?: boolean;
 };
+
+export const PLAY_MODE = {
+  FORWARD: 0,
+  REVERSE: 1,
+  PAUSE: 2,
+  PINGPONG: 3,
+} as const;
+
+type PLAY_MODE_Keys = keyof typeof PLAY_MODE;
+type PLAY_MODE_Vals = (typeof PLAY_MODE)[PLAY_MODE_Keys];
 
 export class InstancedSpriteMesh<
   T extends Material,
@@ -27,29 +43,48 @@ export class InstancedSpriteMesh<
   private _animationMap: Map<V, number>;
   private _time: number = 0;
   private _fps: number = 15;
+  private _timer: Timer;
+
+  compute: ReturnType<typeof initAnimationRunner>;
 
   constructor(
     baseMaterial: T,
     count: number,
+    renderer: WebGLRenderer,
     options: InstancedSpriteOptions = {}
   ) {
+    // todo bench triangle performance and fix y axis positioning
     let geometry: BufferGeometry<any> | PlaneGeometry;
-
     if (options?.triGeometry) {
       geometry = createSpriteTriangle();
     } else {
       geometry = new PlaneGeometry(1, 1) as any;
     }
 
+    // display material
     const spriteMaterial = constructSpriteMaterial(
       baseMaterial,
       options?.triGeometry
     );
     super(geometry, spriteMaterial as any, count);
-
-    this._animationMap = new Map();
     this._spriteMaterial = spriteMaterial as any;
     if (options.spritesheet) this.updateSpritesheet(options.spritesheet);
+
+    this._timer = new Timer();
+
+    // animation runner - compute, data texture, utils
+    this.compute = initAnimationRunner(renderer, count);
+
+    this._animationMap = new Map();
+
+    // bind texture from animation runner to the display material
+    this._spriteMaterial.uniforms.animationData.value =
+      this.compute.gpuCompute.getCurrentRenderTarget(
+        this.compute.animationRunner
+      ).texture;
+
+    this._spriteMaterial.uniforms.animationDataSize.value =
+      this.compute.progressDataTexture.image.width;
   }
 
   private updateSpritesheet(spritesheet: SpritesheetFormat) {
@@ -58,6 +93,12 @@ export class InstancedSpriteMesh<
     this._spriteMaterial.uniforms.spritesheetData.value = dataTexture;
     this._spriteMaterial.uniforms.dataSize.value.x = dataWidth;
     this._spriteMaterial.uniforms.dataSize.value.y = dataHeight;
+
+    this.compute.animationRunner.material.uniforms["dataSize"].value =
+      new Vector2(dataWidth, dataHeight);
+
+    this.compute.animationRunner.material.uniforms["spritesheetData"].value =
+      dataTexture;
     // @ts-ignore
     // todo type this with named animations?
     this._animationMap = animMap;
@@ -79,23 +120,10 @@ export class InstancedSpriteMesh<
   get animation() {
     return {
       setAt: (instanceId: number, animation: V) => {
-        this.setUniformAt(
-          "animationId",
+        this.compute.utils.updateAnimationAt(
           instanceId,
           this._animationMap.get(animation) || 0
         );
-
-        this.setUniformAt("startTime", instanceId, performance.now() * 0.001);
-      },
-      setGlobal: (animation: V) => {
-        const animIndex = this._animationMap.get(animation) || 0;
-        this._spriteMaterial.uniforms.animationId.value = animIndex;
-
-        this._spriteMaterial.uniforms.startTime.value =
-          performance.now() * 0.001;
-      },
-      resetInstances: () => {
-        this.unsetUniform("animationId");
       },
     };
   }
@@ -117,16 +145,12 @@ export class InstancedSpriteMesh<
   get offset() {
     return {
       setAt: (instanceId: number, offset: number) => {
-        this.setUniformAt("offset", instanceId, offset);
+        this.compute.utils.updateOffsetAt(instanceId, offset);
       },
       randomizeAll: (scalar: number = 1) => {
         for (let i = 0; i < this.count; i++) {
-          // todo benchmark and optimize?
-          this.setUniformAt("offset", i, Math.random() * scalar);
+          this.compute.utils.updateOffsetAt(i, Math.random() * scalar);
         }
-      },
-      unsetAll: () => {
-        this.unsetUniform("billboarding");
       },
     };
   }
@@ -134,13 +158,19 @@ export class InstancedSpriteMesh<
   get loop() {
     return {
       setAt: (instanceId: number, loop: boolean) => {
-        this.setUniformAt("loop", instanceId, loop ? 1 : 0);
+        const playmode =
+          this.compute.progressDataTexture.image.data[instanceId * 4 + 2] % 10;
+        this.compute.utils.updatePlaymodeAt(
+          instanceId,
+          playmode + (loop ? 0 : 10)
+        );
       },
-      setGlobal: (loop: boolean) => {
-        this._spriteMaterial.uniforms.loop.value = loop ? 1 : 0;
-      },
-      unsetAll: () => {
-        this.unsetUniform("loop");
+      setAll: (loop: boolean) => {
+        for (let i = 0; i < this.count; i++) {
+          const playmode =
+            this.compute.progressDataTexture.image.data[i * 4 + 2] % 10;
+          this.compute.utils.updatePlaymodeAt(i, playmode + (loop ? 0 : 10));
+        }
       },
     };
   }
@@ -173,15 +203,22 @@ export class InstancedSpriteMesh<
     };
   }
 
-  play(animation: V, loop: boolean = true) {
+  play(
+    animation: V,
+    loop: boolean = true,
+    playmode: PLAY_MODE_Vals = PLAY_MODE.FORWARD
+  ) {
     return {
       at: (instanceId: number) => {
-        this.loop.setAt(instanceId, loop);
-        this.animation.setAt(instanceId, animation);
-      },
-      global: () => {
-        this.loop.setGlobal(loop);
-        this.animation.setGlobal(animation);
+        this.compute.utils.updateAnimationAt(
+          instanceId,
+          this._animationMap.get(animation) || 0
+        );
+
+        this.compute.utils.updatePlaymodeAt(
+          instanceId,
+          playmode + (loop ? 0 : 10)
+        );
       },
     };
   }
@@ -219,27 +256,20 @@ export class InstancedSpriteMesh<
     };
   }
 
-  public get time(): number {
-    return this._time;
-  }
-
-  public set time(value: number) {
-    this._spriteMaterial.uniforms.time.value = value;
-    this._time = value;
-  }
-
   public get fps(): number {
     return this._fps;
   }
 
   public set fps(value: number) {
-    this._spriteMaterial.uniforms.fps.value = value;
     this._fps = value;
+    this.compute.animationRunner.material.uniforms["fps"].value = value;
   }
 
-  public updateTime() {
-    const value = performance.now() * 0.001;
-    this._spriteMaterial.uniforms.time.value = value;
-    this._time = value;
+  public update() {
+    this._timer.update();
+    const dt = this._timer.getDelta();
+    this.compute.animationRunner.material.uniforms["deltaTime"].value = dt;
+
+    this.compute.update();
   }
 }
