@@ -53,6 +53,7 @@ export class InstancedSpriteMesh<
     renderer: WebGLRenderer,
     options: InstancedSpriteOptions = {}
   ) {
+    // todo bench triangle performance and fix y axis positioning
     let geometry: BufferGeometry<any> | PlaneGeometry;
     if (options?.triGeometry) {
       geometry = createSpriteTriangle();
@@ -66,6 +67,8 @@ export class InstancedSpriteMesh<
       options?.triGeometry
     );
     super(geometry, spriteMaterial as any, count);
+    this._spriteMaterial = spriteMaterial as any;
+    if (options.spritesheet) this.updateSpritesheet(options.spritesheet);
 
     this._timer = new Timer();
 
@@ -73,12 +76,12 @@ export class InstancedSpriteMesh<
     this.compute = initAnimationRunner(renderer, count);
 
     this._animationMap = new Map();
-    this._spriteMaterial = spriteMaterial as any;
+
+    // bind texture from animation runner to the display material
     this._spriteMaterial.uniforms.animationData.value =
       this.compute.gpuCompute.getCurrentRenderTarget(
         this.compute.animationRunner
       ).texture;
-    if (options.spritesheet) this.updateSpritesheet(options.spritesheet);
 
     this._spriteMaterial.uniforms.animationDataSize.value =
       this.compute.progressDataTexture.image.width;
