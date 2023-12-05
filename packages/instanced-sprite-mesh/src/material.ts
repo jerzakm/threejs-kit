@@ -50,27 +50,12 @@ export const constructSpriteMaterial = (
       /** GPGPU animation driven data */
       animationData: { value: null },
       animationDataSize: { value: 0 },
-      /** active animation */
-      animationId: { value: 0 },
       /* Repeat animation in a loop */
       billboarding: { value: 0 },
-      /** timer in s */
-      time: { value: 0 },
-      /** used for non looped animation. Animation starts at this time and plays only once, then stays at the last frame */
-      startTime: { value: 0 },
-      /** per instance time offset, can be used so that all of the animations aren't perfectly synced */
-      offset: { value: 0 },
       /** flip uvs on x */
       flipX: { value: 0 },
       /** flip uvs on y */
       flipY: { value: 0 },
-      /**
-       * How many different animations there are.
-       * Needed to determine number of rows there are in DataTexture
-       */
-      fps: { value: 0 },
-      /* Repeat animation in a loop */
-      loop: { value: 1 },
       /**
        * DataArrayTexture - data stored in columns. Rows are:
        * 0 - Frames declaration - RGBA[x,y,w,h]
@@ -126,15 +111,11 @@ export const constructSpriteMaterial = (
       const header = /*glsl*/ `
 			uniform sampler2D animationData;
       uniform int animationDataSize;
-			uniform sampler2D spritesheetData;
-			uniform float animationId;
+			uniform sampler2D spritesheetData;			
       uniform float startTime;
 			uniform float time;
 			uniform float flipX;
-			uniform float flipY;
-			uniform float offset;
-			uniform float fps;
-      uniform float loop;
+			uniform float flipY;						      
 			uniform vec2 dataSize;
       uniform vec4 tint;
 
