@@ -72,11 +72,9 @@
 		count,
 		renderer,
 		{
-			triGeometry: true
+			triGeometry: false
 		}
 	);
-
-	console.log(mesh.compute);
 
 	const textureStore = texture
 		? writable(texture)
@@ -114,7 +112,6 @@
 	watch(jsonStore, (rawSpritesheet) => {
 		if (rawSpritesheet && !spritesheet) {
 			const spritesheet = parseAseprite(rawSpritesheet);
-			console.log({ spritesheet });
 			mesh.spritesheet = spritesheet;
 			animationMap.set(mesh.animationMap);
 		}
@@ -126,8 +123,6 @@
 	});
 
 	$: mesh.fps = fps;
-
-	$: mesh.loop.setGlobal(loop);
 
 	let initialized = false;
 
@@ -152,7 +147,6 @@
 
 	const setAnimation = (instanceId: number, animationId: SpriteAnimations) => {
 		mesh.animation.setAt(instanceId, animationId);
-		// mesh.loop.setGlobal(false);
 	};
 
 	setContext('instanced-sprite-ctx', {
@@ -164,9 +158,7 @@
 	});
 
 	useFrame(() => {
-		// mesh.compute.rtSmall.texture.needsUpdate = true;
-		mesh.updateTime();
-		mesh.compute.gpuCompute.compute();
+		mesh.update();
 	});
 
 	useFrame(({ clock }) => {
@@ -177,28 +169,12 @@
 	});
 
 	let j = 0;
-	useFrame(() => {
-		const computeSize = 256;
-		let row = j % (computeSize * 4);
-
-		if (j % 1 == 0) {
-			for (let i = 0; i < computeSize * 4; i++) {
-				const index = computeSize * row + i;
-				mesh.compute.progressDataTexture.image.data[index] = Math.random();
-			}
-
-			// mesh.compute.progressDataTexture.needsUpdate = true;
-		}
-
-		j++;
-	});
 </script>
 
 <T.Mesh position.y={4}>
 	<T.PlaneGeometry args={[1, 1]} />
 	<PreviewMaterial
-		texture={mesh.compute.gpuCompute.getCurrentRenderTarget(mesh.compute.variables.progressVariable)
-			.texture}
+		texture={mesh.compute.gpuCompute.getCurrentRenderTarget(mesh.compute.animationRunner).texture}
 	/>
 </T.Mesh>
 

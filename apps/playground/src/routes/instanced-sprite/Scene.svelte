@@ -7,7 +7,7 @@
 	import FlyerUpdater from './FlyerUpdater.svelte';
 	import { createSpritesheet } from '@threejs-kit/instanced-sprite-mesh';
 
-	const count = 200000;
+	const count = 1000;
 
 	const spritesheet = createSpritesheet()
 		.add('fly', '/textures/sprites/Monsters_Creatures_Fantasy/Flying_eye/Flight.png', {
