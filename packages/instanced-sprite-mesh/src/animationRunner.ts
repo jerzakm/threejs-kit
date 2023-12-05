@@ -28,6 +28,8 @@ const animProgressCompute = /*glsl*/ `
     return texture2D(spritesheetData, vec2(col * wStep + wHalfStep, row * hStep + hHalfStep));
   }
 
+  
+
   void main()	{    
 
     // OUTPUT FROM THIS SHADER
@@ -60,11 +62,32 @@ const animProgressCompute = /*glsl*/ `
     float newProgress = deltaTime / totalTime;
     // add new delta to saved progress
     float frameTimedId = mod(progressValue.g + newProgress, 1.);
+    frameTimedId = 0.;
+    // float frameTimedId = progressValue.g;
     // save for use in next frame
-    progressValue.g = frameTimedId;
+    
 
-    // 0 - forward 1 - reverse 2 - pingpong | loop if over 10
+
     float playMode = mod(instructions.b, 10.);
+
+    // forward
+    if(playMode == 0.){  
+      frameTimedId = progressValue.g + newProgress;
+    }
+    // reverse
+    if(playMode == 1.){
+      frameTimedId = progressValue.g - newProgress;
+    }
+    // 2 - pause - do nothing
+    
+    // //todo pingpong
+    // if(playMode == 3.){     
+    // }
+
+    // loop (play once over 10.)
+    if(instructions.b < 10.){
+      frameTimedId = mod(frameTimedId, 1.);
+    }
 
     // todo This could be optional and user would reset manually, 
     // todo allowing for consistent movement across multiple animations
@@ -80,9 +103,8 @@ const animProgressCompute = /*glsl*/ `
     // Picked sprite frame that goes to material
     progressValue.r = spritesheetFrameId;
 
-
-
     progressValue.a = instructions.x;
+    progressValue.g = frameTimedId;
 
     gl_FragColor = progressValue;
 
@@ -176,20 +198,47 @@ export const initAnimationRunner = (
   // Format of instructions coming from library user
   // R - animationId
   // G - offset
-  // B - 0 - forward 1 - reverse 2 - pingpong | loop if over 10
+  // B - 0 - forward 1 - reverse 2 - pause 3 - pingpong | loop if over 10
   // A? - -1 - restart, 0 - nothing, manually picked ID of a frame
+
+  let dirtyProgressData = false;
 
   const updateAnimationAt = (instanceId: number, animationId: number) => {
     const index = instanceId * 4;
     progressDataTexture.image.data[index] = animationId;
-    progressDataTexture.needsUpdate = true;
+    dirtyProgressData = true;
+  };
+
+  const updateOffsetAt = (instanceId: number, offset: number) => {
+    const index = instanceId * 4;
+    progressDataTexture.image.data[index + 1] = offset;
+    dirtyProgressData = true;
+  };
+
+  const updatePlaymodeAt = (instanceId: number, playmode: number) => {
+    const index = instanceId * 4;
+    progressDataTexture.image.data[index + 2] = playmode;
+    dirtyProgressData = true;
+  };
+
+  const update = () => {
+    if (dirtyProgressData) {
+      progressDataTexture.needsUpdate = true;
+      dirtyProgressData = false;
+    }
+    gpuCompute.compute();
   };
 
   // todo make this nicer after deciding on api
   return {
     gpuCompute,
-    variables: { progressVariable },
+    animationRunner: progressVariable,
     progressDataTexture,
-    updateAnimationAt,
+    utils: {
+      updateAnimationAt,
+      updateOffsetAt,
+      updatePlaymodeAt,
+    },
+    update,
   };
 };
