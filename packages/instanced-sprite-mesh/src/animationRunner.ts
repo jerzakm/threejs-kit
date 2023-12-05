@@ -17,7 +17,7 @@ const animProgressCompute = /*glsl*/ `
   uniform sampler2D spritesheetData;
   uniform vec2 dataSize;
   uniform float fps;
-  uniform float time;
+  uniform float deltaTime;
 
   // read spritesheet metadata
   vec4 readData(float col, float row, sampler2D tex) {
@@ -30,21 +30,22 @@ const animProgressCompute = /*glsl*/ `
 
   void main()	{    
 
+    // OUTPUT FROM THIS SHADER
+    // progressValue.r - picked animation frame
+    // progressValue.g - previous progress state (for pause, reverse & pingpong consistency)
+    // progressValue.b - not used yet
+    // progressValue.a - previous animationID
+
     vec2 cellSize = 1.0 / resolution.xy;
     vec2 uv = gl_FragCoord.xy * cellSize;
 
-    // progressValue.x - picked animation frame
-    // progressValue.y - previous progress state (for pause, reverse & pingpong consistency)
-    // progressValue.z - not used yet
-    // progressValue.w - not used yet
+    
     vec4 progressValue = texture2D( progress, uv );
-
 
     vec4 instructions = texture2D( instructionsTexture, uv);
 
 
-    progressValue.z = 0.;
-    progressValue.w = 1.;
+    progressValue.b = 0.;    
     
     // todo shouldn't be rounding here, pick
     float animationId = round(instructions.x);
@@ -53,15 +54,35 @@ const animProgressCompute = /*glsl*/ `
 
     float animLength = readData(animationId, 1.f, spritesheetData).r;
     float totalTime = animLength / fps;
-    float frameTimedId = mod(time + offset, totalTime) / totalTime;
+
+
+    // new delta is % of animation
+    float newProgress = deltaTime / totalTime;
+    // add new delta to saved progress
+    float frameTimedId = mod(progressValue.g + newProgress, 1.);
+    // save for use in next frame
+    progressValue.g = frameTimedId;
+
+    // 0 - forward 1 - reverse 2 - pingpong | loop if over 10
+    float playMode = mod(instructions.b, 10.);
+
+    // todo This could be optional and user would reset manually, 
+    // todo allowing for consistent movement across multiple animations
+    // todo for example - running steps being syncec
+    // start anim from beginning if animationID changes
+    if(progressValue.a != instructions.x){
+      frameTimedId = 0.;
+    }    
 
     float frameId = floor(animLength * frameTimedId);
     float spritesheetFrameId = readData(frameId, 2.f + animationId, spritesheetData).r;
     
     // Picked sprite frame that goes to material
-    progressValue.x = spritesheetFrameId;
-    // Save current time
-    progressValue.y = frameTimedId;
+    progressValue.r = spritesheetFrameId;
+
+
+
+    progressValue.a = instructions.x;
 
     gl_FragColor = progressValue;
 
@@ -142,7 +163,7 @@ export const initAnimationRunner = (
   };
   progressVariable.material.uniforms["spritesheetData"] = { value: null };
   progressVariable.material.uniforms["fps"] = { value: 0 };
-  progressVariable.material.uniforms["time"] = { value: 0 };
+  progressVariable.material.uniforms["deltaTime"] = { value: 0 };
   progressVariable.material.uniforms["dataSize"] = { value: new Vector2() };
 
   gpuCompute.setVariableDependencies(progressVariable, [progressVariable]);
@@ -154,9 +175,9 @@ export const initAnimationRunner = (
 
   // Format of instructions coming from library user
   // R - animationId
-  // G - offset?
+  // G - offset
   // B - 0 - forward 1 - reverse 2 - pingpong | loop if over 10
-  // A -
+  // A? - -1 - restart, 0 - nothing, manually picked ID of a frame
 
   const updateAnimationAt = (instanceId: number, animationId: number) => {
     const index = instanceId * 4;

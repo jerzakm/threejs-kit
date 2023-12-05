@@ -15,6 +15,9 @@ import {
 } from "./material";
 import { createSpriteTriangle } from "./triangle";
 import { initAnimationRunner } from "./animationRunner";
+import { Timer } from "./timer";
+
+let t = 0;
 
 type InstancedSpriteOptions = {
   spritesheet?: SpritesheetFormat;
@@ -30,6 +33,7 @@ export class InstancedSpriteMesh<
   private _animationMap: Map<V, number>;
   private _time: number = 0;
   private _fps: number = 15;
+  private _timer: Timer;
 
   compute: ReturnType<typeof initAnimationRunner>;
 
@@ -40,19 +44,22 @@ export class InstancedSpriteMesh<
     options: InstancedSpriteOptions = {}
   ) {
     let geometry: BufferGeometry<any> | PlaneGeometry;
-
     if (options?.triGeometry) {
       geometry = createSpriteTriangle();
     } else {
       geometry = new PlaneGeometry(1, 1) as any;
     }
 
+    // display material
     const spriteMaterial = constructSpriteMaterial(
       baseMaterial,
       options?.triGeometry
     );
     super(geometry, spriteMaterial as any, count);
 
+    this._timer = new Timer();
+
+    // animation runner - compute, data texture, utils
     this.compute = initAnimationRunner(renderer, count);
 
     this._animationMap = new Map();
@@ -272,8 +279,11 @@ export class InstancedSpriteMesh<
     const value = performance.now() * 0.001;
     // this._spriteMaterial.uniforms.time.value = value;
 
-    this.compute.variables.progressVariable.material.uniforms["time"].value =
-      value;
+    this._timer.update();
+
+    this.compute.variables.progressVariable.material.uniforms[
+      "deltaTime"
+    ].value = this._timer.getDelta();
 
     this._time = value;
   }
