@@ -18,7 +18,13 @@ type AnimationDefitinion = {
     h: number;
     // rowMajor: boolean;
   };
+  multiAnimations?: { name: string; frameRange: [from: number, to: number] }[];
 };
+
+// meta is either a string - name of a single animation, or an array of names + framerange
+type AnimationMeta =
+  | { name: string; frameRange: [from: number, to: number] }[]
+  | string;
 
 export const createSpritesheet = () => {
   return new SpriteBuilder();
@@ -33,19 +39,25 @@ class SpriteBuilder {
   }
 
   add(
-    name: string = "default",
     imageUrl: string,
     config: {
       type: "rowColumn" | "frameSize";
       w: number;
       h: number;
-      // rowMajor: boolean;
-    }
+      name?: string;
+    },
+    meta: AnimationMeta
   ) {
     const animation: AnimationDefitinion = {
-      name,
+      name: "",
       imageUrl,
     };
+
+    if (Array.isArray(meta)) {
+      animation.multiAnimations = meta;
+    } else {
+      animation.name = meta;
+    }
 
     if (config.type == "rowColumn") {
       animation["auto"] = {
@@ -89,12 +101,6 @@ class SpriteBuilder {
       });
     }
 
-    if (this.animations.length === 0) {
-      // texture.image = images[0].img;
-    } else {
-      //
-    }
-
     const canvas = document.createElement("canvas");
     canvas.width = generatedWidth;
     canvas.height = generatedHeight;
@@ -121,9 +127,6 @@ class SpriteBuilder {
 
       let framesCount = 0;
 
-      const imgPartialW = img.w;
-      const imgPartialH = img.h;
-
       if (a.auto) {
         let rows = 0;
         let columns = 0;
@@ -136,27 +139,56 @@ class SpriteBuilder {
           columns = a.auto.w;
           rows = a.auto.h;
         }
+        const imgPartialW = img.w / columns;
+        const imgPartialH = img.h / rows;
 
         // TODO ROW MAJOR / COLUMN MAJOR STUFF
 
-        accumulatedHeight += imgPartialH;
         framesCount = rows * columns;
-        spritesheet.animations[a.name] = [];
 
-        for (let x = 0; x < columns; x++) {
-          for (let y = 0; y < rows; y++) {
+        if (!a.multiAnimations) {
+          spritesheet.animations[a.name] = [];
+        }
+
+        const frameMap: Map<number, number> = new Map();
+
+        for (let y = 0; y < rows; y++) {
+          accumulatedHeight += imgPartialH;
+          for (let x = 0; x < columns; x++) {
             spritesheet.frames.push([
-              ((img.w / framesCount) * x) / generatedWidth,
+              ((img.w / columns) * x) / generatedWidth,
               1 - accumulatedHeight / generatedHeight,
-              imgPartialW / framesCount / generatedWidth,
+              imgPartialW / generatedWidth,
               imgPartialH / generatedHeight,
             ]);
-            spritesheet.animations[a.name].push([frameCounter, 1]);
+            if (a.multiAnimations) {
+              const id = y * columns + x;
+              // local to global id
+              frameMap.set(id, frameCounter);
+            } else {
+              spritesheet.animations[a.name].push([frameCounter, 1]);
+            }
             frameCounter++;
           }
         }
 
-        spritesheet.animationLengths.push(framesCount);
+        if (a.multiAnimations) {
+          for (const anim of a.multiAnimations) {
+            spritesheet.animations[anim.name] = [];
+            spritesheet.animationLengths.push(
+              anim.frameRange[1] - anim.frameRange[0]
+            );
+            for (
+              let frame = anim.frameRange[0];
+              frame < anim.frameRange[1];
+              frame++
+            ) {
+              spritesheet.animations[anim.name].push([frameMap.get(frame), 1]);
+            }
+          }
+        } else {
+          spritesheet.animationLengths.push(framesCount);
+        }
       }
       animIndex++;
     }

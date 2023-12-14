@@ -10,26 +10,32 @@
 	const count = 1000;
 
 	const spritesheet = createSpritesheet()
-		.add('fly', '/textures/sprites/Monsters_Creatures_Fantasy/Flying_eye/Flight.png', {
-			type: 'frameSize',
-			w: 150,
-			h: 150
-		})
-		.add('attack', '/textures/sprites/Monsters_Creatures_Fantasy/Flying_eye/Attack.png', {
-			type: 'rowColumn',
-			w: 8,
-			h: 1
-		})
-		.add('death', '/textures/sprites/Monsters_Creatures_Fantasy/Flying_eye/Death.png', {
-			type: 'rowColumn',
-			w: 4,
-			h: 1
-		})
-		.add('hit', '/textures/sprites/Monsters_Creatures_Fantasy/Flying_eye/Hit.png', {
-			type: 'rowColumn',
-			w: 4,
-			h: 1
-		})
+		.add(
+			'/textures/sprites/cacodaemon.png',
+			{
+				type: 'rowColumn',
+				w: 8,
+				h: 4
+			},
+			[
+				{ name: 'fly', frameRange: [0, 6] },
+				{ name: 'attack', frameRange: [8, 14] },
+				{ name: 'idle', frameRange: [16, 20] },
+				{ name: 'death', frameRange: [24, 32] }
+			]
+		)
+		.build();
+
+	const flyerSpritesheet = createSpritesheet()
+		.add(
+			'/textures/sprites/Monsters_Creatures_Fantasy/Flying_eye/Flight.png',
+			{
+				type: 'rowColumn',
+				w: 8,
+				h: 1
+			},
+			'fly'
+		)
 		.build();
 </script>
 
@@ -39,7 +45,7 @@
 
 <slot />
 
-<AnimatedInstancedSprite
+<!-- <AnimatedInstancedSprite
 	textureUrl="/textures/sprites/player.png"
 	dataUrl="/textures/sprites/player.json"
 	fps={10}
@@ -47,13 +53,13 @@
 	{count}
 >
 	<PlayerUpdater />
-</AnimatedInstancedSprite>
+</AnimatedInstancedSprite> -->
 
-<!-- {#await spritesheet then { spritesheet, texture }}
+{#await flyerSpritesheet then { spritesheet, texture }}
 	<AnimatedInstancedSprite {spritesheet} {texture} fps={10} loop={true} {count}>
 		<FlyerUpdater />
 	</AnimatedInstancedSprite>
-{/await} -->
+{/await}
 
 <Sky elevation={0.15} />
 <!-- <T.AmbientLight /> -->

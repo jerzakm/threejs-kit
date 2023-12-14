@@ -1,14 +1,7 @@
 <script lang="ts">
-	import { useFrame, watch, T, useThrelte } from '@threlte/core';
+	import { useFrame, watch } from '@threlte/core';
 	import { getContext } from 'svelte';
-	import {
-		BoxGeometry,
-		BoxHelper,
-		MeshBasicMaterial,
-		SphereGeometry,
-		SpotLightHelper,
-		Vector2
-	} from 'three';
+	import { Vector2 } from 'three';
 
 	const spriteCtx: any = getContext('instanced-sprite-ctx');
 	const { updatePosition, count, animationMap, setAnimation, mesh } = spriteCtx;
@@ -20,7 +13,7 @@
 
 	// mesh.material.uniforms.animationId.value = 0;
 
-	mesh.animation.setGlobal('fly');
+	// mesh.animation.setGlobal('fly');
 
 	mesh.offset.randomizeAll();
 
@@ -110,6 +103,7 @@
 			// $camera.position.set(0 + (posX[0] || 0), 7, 15 + (posZ[0] || 0))
 
 			updatePosition(i, [posX[i] || 0, posY[i] || 0, posZ[i] || 0]);
+			setAnimation(i, 0);
 		}
 	});
 </script>
