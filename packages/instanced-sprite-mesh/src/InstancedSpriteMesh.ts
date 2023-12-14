@@ -66,14 +66,15 @@ export class InstancedSpriteMesh<
       baseMaterial,
       options?.triGeometry
     );
+
     super(geometry, spriteMaterial as any, count);
+    // animation runner - compute, data texture, utils
+    this.compute = initAnimationRunner(renderer, count);
+
     this._spriteMaterial = spriteMaterial as any;
     if (options.spritesheet) this.updateSpritesheet(options.spritesheet);
 
     this._timer = new Timer();
-
-    // animation runner - compute, data texture, utils
-    this.compute = initAnimationRunner(renderer, count);
 
     this._animationMap = new Map();
 
@@ -93,10 +94,8 @@ export class InstancedSpriteMesh<
     this._spriteMaterial.uniforms.spritesheetData.value = dataTexture;
     this._spriteMaterial.uniforms.dataSize.value.x = dataWidth;
     this._spriteMaterial.uniforms.dataSize.value.y = dataHeight;
-
     this.compute.animationRunner.material.uniforms["dataSize"].value =
       new Vector2(dataWidth, dataHeight);
-
     this.compute.animationRunner.material.uniforms["spritesheetData"].value =
       dataTexture;
     // @ts-ignore

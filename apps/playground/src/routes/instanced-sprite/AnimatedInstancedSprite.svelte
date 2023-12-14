@@ -48,6 +48,8 @@
 	export let texture: Texture | undefined = undefined;
 	export let spritesheet: SpritesheetFormat | undefined = undefined;
 
+	$: console.log({ spritesheet });
+
 	const baseMaterial = new MeshBasicMaterial({
 		transparent: true,
 		alphaTest: 0.01,
@@ -72,7 +74,8 @@
 		count,
 		renderer,
 		{
-			triGeometry: false
+			triGeometry: false,
+			spritesheet
 		}
 	);
 
@@ -110,15 +113,15 @@
 	const animationMap = writable<Map<SpriteAnimations, number>>(new Map());
 
 	watch(jsonStore, (rawSpritesheet) => {
-		if (rawSpritesheet && !spritesheet) {
-			const spritesheet = parseAseprite(rawSpritesheet);
-			mesh.spritesheet = spritesheet;
-			animationMap.set(mesh.animationMap);
-		}
+		// if (rawSpritesheet && !spritesheet) {
+		// 	const spritesheet = parseAseprite(rawSpritesheet);
+		// 	mesh.spritesheet = spritesheet;
+		// 	animationMap.set(mesh.animationMap);
+		// }
 
 		if (spritesheet) {
-			mesh.spritesheet = spritesheet;
-			animationMap.set(mesh.animationMap);
+			// mesh.spritesheet = spritesheet;
+			// animationMap.set(mesh.animationMap);
 		}
 	});
 
