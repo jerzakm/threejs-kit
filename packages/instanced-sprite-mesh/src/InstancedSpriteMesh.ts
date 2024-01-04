@@ -60,6 +60,7 @@ export class InstancedSpriteMesh<
     } else {
       geometry = new PlaneGeometry(1, 1) as any;
     }
+    // todo explore snug geometry gen
 
     // display material
     const spriteMaterial = constructSpriteMaterial(

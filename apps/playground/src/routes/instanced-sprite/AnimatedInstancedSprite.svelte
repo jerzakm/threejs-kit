@@ -74,7 +74,7 @@
 		count,
 		renderer,
 		{
-			triGeometry: false,
+			triGeometry: true,
 			spritesheet
 		}
 	);
@@ -120,8 +120,9 @@
 		// }
 
 		if (spritesheet) {
-			// mesh.spritesheet = spritesheet;
-			// animationMap.set(mesh.animationMap);
+			mesh.spritesheet = spritesheet;
+			animationMap.set(mesh.animationMap);
+			mesh.offset.randomizeAll();
 		}
 	});
 
@@ -174,12 +175,12 @@
 	let j = 0;
 </script>
 
-<T.Mesh position.y={4}>
+<!-- <T.Mesh position.y={4}>
 	<T.PlaneGeometry args={[1, 1]} />
 	<PreviewMaterial
 		texture={mesh.compute.gpuCompute.getCurrentRenderTarget(mesh.compute.animationRunner).texture}
 	/>
-</T.Mesh>
+</T.Mesh> -->
 
 <T is={mesh} />
 

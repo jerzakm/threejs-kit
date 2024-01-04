@@ -1,11 +1,10 @@
 <script lang="ts">
+	import { createSpritesheet } from '@threejs-kit/instanced-sprite-mesh';
 	import { T } from '@threlte/core';
 	import { Grid, OrbitControls, Sky } from '@threlte/extras';
-	import PlayerUpdater from './PlayerUpdater.svelte';
 	import { DEG2RAD } from 'three/src/math/MathUtils.js';
 	import AnimatedInstancedSprite from './AnimatedInstancedSprite.svelte';
 	import FlyerUpdater from './FlyerUpdater.svelte';
-	import { createSpritesheet } from '@threejs-kit/instanced-sprite-mesh';
 
 	const count = 1000;
 
@@ -55,8 +54,14 @@
 	<PlayerUpdater />
 </AnimatedInstancedSprite> -->
 
-{#await flyerSpritesheet then { spritesheet, texture }}
+{#await spritesheet then { spritesheet, texture }}
 	<AnimatedInstancedSprite {spritesheet} {texture} fps={10} loop={true} {count}>
+		<FlyerUpdater />
+	</AnimatedInstancedSprite>
+{/await}
+
+{#await flyerSpritesheet then { spritesheet, texture }}
+	<AnimatedInstancedSprite {spritesheet} {texture} fps={10} loop={true} count={count * 25}>
 		<FlyerUpdater />
 	</AnimatedInstancedSprite>
 {/await}
