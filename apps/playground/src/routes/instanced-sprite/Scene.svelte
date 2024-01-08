@@ -5,6 +5,7 @@
 	import { DEG2RAD } from 'three/src/math/MathUtils.js';
 	import AnimatedInstancedSprite from './AnimatedInstancedSprite.svelte';
 	import FlyerUpdater from './FlyerUpdater.svelte';
+	import PlayerUpdater from './PlayerUpdater.svelte';
 
 	const count = 1000;
 
@@ -44,17 +45,17 @@
 
 <slot />
 
-<!-- <AnimatedInstancedSprite
+<AnimatedInstancedSprite
 	textureUrl="/textures/sprites/player.png"
 	dataUrl="/textures/sprites/player.json"
 	fps={10}
 	loop={true}
-	{count}
+	count={10000}
 >
 	<PlayerUpdater />
-</AnimatedInstancedSprite> -->
+</AnimatedInstancedSprite>
 
-{#await spritesheet then { spritesheet, texture }}
+<!-- {#await spritesheet then { spritesheet, texture }}
 	<AnimatedInstancedSprite {spritesheet} {texture} fps={10} loop={true} {count}>
 		<FlyerUpdater />
 	</AnimatedInstancedSprite>
@@ -64,7 +65,7 @@
 	<AnimatedInstancedSprite {spritesheet} {texture} fps={10} loop={true} count={count * 25}>
 		<FlyerUpdater />
 	</AnimatedInstancedSprite>
-{/await}
+{/await} -->
 
 <Sky elevation={0.15} />
 <!-- <T.AmbientLight /> -->

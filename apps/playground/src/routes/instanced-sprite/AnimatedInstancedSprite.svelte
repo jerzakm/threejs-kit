@@ -12,7 +12,6 @@
 		Matrix4,
 		MeshBasicMaterial,
 		NearestFilter,
-		PlaneGeometry,
 		RepeatWrapping,
 		type Texture,
 		type Vector3Tuple
@@ -26,7 +25,6 @@
 	import { useTexture } from '@threlte/extras';
 	import { setContext } from 'svelte';
 	import { writable } from 'svelte/store';
-	import PreviewMaterial from './PreviewMaterial.svelte';
 
 	type $$Props = Required<AnimatedInstancedSpriteProps>;
 	type $$Events = AnimatedInstancedSpriteEvents;
@@ -34,16 +32,12 @@
 
 	export let textureUrl: $$Props['textureUrl'];
 	export let dataUrl: $$Props['dataUrl'] = '';
-	// export let animation: $$Props['animation'] = ''
-	export let loop: $$Props['loop'] = true;
 	// export let autoplay: $$Props['autoplay'] = true;
 	export let count: $$Props['count'] = 1000;
 	export let fps: $$Props['fps'] = 15;
 	export let filter: $$Props['filter'] = 'nearest';
-	// export let alphaTest: $$Props['alphaTest'] = 0.1
-	// export let delay: $$Props['delay'] = 0
-	// export let transparent: $$Props['transparent'] = true
-	// export let flipX: $$Props['flipX'] = false
+	export let alphaTest: $$Props['alphaTest'] = 0.1;
+	export let transparent: $$Props['transparent'] = true;
 
 	export let texture: Texture | undefined = undefined;
 	export let spritesheet: SpritesheetFormat | undefined = undefined;
@@ -51,8 +45,8 @@
 	$: console.log({ spritesheet });
 
 	const baseMaterial = new MeshBasicMaterial({
-		transparent: true,
-		alphaTest: 0.01,
+		transparent: transparent,
+		alphaTest: alphaTest,
 		// needs to be double side for shading
 		side: DoubleSide
 	});
@@ -78,6 +72,9 @@
 			spritesheet
 		}
 	);
+
+	$: mesh.material.alphaTest = alphaTest;
+	$: mesh.material.transparent = transparent;
 
 	const textureStore = texture
 		? writable(texture)
@@ -113,16 +110,15 @@
 	const animationMap = writable<Map<SpriteAnimations, number>>(new Map());
 
 	watch(jsonStore, (rawSpritesheet) => {
-		// if (rawSpritesheet && !spritesheet) {
-		// 	const spritesheet = parseAseprite(rawSpritesheet);
-		// 	mesh.spritesheet = spritesheet;
-		// 	animationMap.set(mesh.animationMap);
-		// }
+		if (rawSpritesheet && !spritesheet) {
+			const spritesheet = parseAseprite(rawSpritesheet);
+			mesh.spritesheet = spritesheet;
+			animationMap.set(mesh.animationMap);
+		}
 
 		if (spritesheet) {
 			mesh.spritesheet = spritesheet;
 			animationMap.set(mesh.animationMap);
-			mesh.offset.randomizeAll();
 		}
 	});
 
@@ -136,18 +132,15 @@
 		}
 	}
 
-	// mesh.scale.set(2, 2, 2);
-
 	let dirtyInstanceMatrix = false;
 
 	const tempMatrix = new Matrix4();
+
 	const updatePosition = (id: number, position: Vector3Tuple) => {
 		tempMatrix.setPosition(...position);
 		mesh.setMatrixAt(id, tempMatrix);
 		dirtyInstanceMatrix = true;
 	};
-
-	const { clock } = useThrelte();
 
 	const setAnimation = (instanceId: number, animationId: SpriteAnimations) => {
 		mesh.animation.setAt(instanceId, animationId);
@@ -174,13 +167,6 @@
 
 	let j = 0;
 </script>
-
-<!-- <T.Mesh position.y={4}>
-	<T.PlaneGeometry args={[1, 1]} />
-	<PreviewMaterial
-		texture={mesh.compute.gpuCompute.getCurrentRenderTarget(mesh.compute.animationRunner).texture}
-	/>
-</T.Mesh> -->
 
 <T is={mesh} />
 

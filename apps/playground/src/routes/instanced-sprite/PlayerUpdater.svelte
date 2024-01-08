@@ -112,8 +112,6 @@
 		}
 	};
 
-	const { camera } = useThrelte();
-
 	useFrame((_, _delta) => {
 		if ($animationMap.size > 0) {
 			updateAgents(_delta);

@@ -77,8 +77,11 @@ const animProgressCompute = /*glsl*/ `
     // reverse
     if(playMode == 1.){
       frameTimedId = progressValue.g - newProgress;
-    }
+    }    
     // 2 - pause - do nothing
+    if(playMode == 2.){
+      frameTimedId = progressValue.g;
+    }
     
     // //todo pingpong
     // if(playMode == 3.){     
