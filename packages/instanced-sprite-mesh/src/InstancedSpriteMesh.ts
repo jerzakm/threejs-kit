@@ -128,6 +128,23 @@ export class InstancedSpriteMesh<
     };
   }
 
+  get playmode() {
+    return {
+      setAt: (instanceId: number, playmode: PLAY_MODE_Keys) => {
+        this.compute.utils.updatePlaymodeAt(instanceId, PLAY_MODE[playmode]);
+      },
+      setAll: (playmode: PLAY_MODE_Keys) => {
+        for (let i = 0; i < this.count; i++) {
+          const isLoop =
+            this.compute.progressDataTexture.image.data[i * 4 + 2] >= 10
+              ? 10
+              : 0;
+          this.compute.utils.updatePlaymodeAt(i, isLoop + PLAY_MODE[playmode]);
+        }
+      },
+    };
+  }
+
   get billboarding() {
     return {
       setAt: (instanceId: number, enable: boolean) => {
@@ -203,11 +220,7 @@ export class InstancedSpriteMesh<
     };
   }
 
-  play(
-    animation: V,
-    loop: boolean = true,
-    playmode: PLAY_MODE_Vals = PLAY_MODE.FORWARD
-  ) {
+  play(animation: V, loop: boolean = true, playmode: PLAY_MODE_Keys) {
     return {
       at: (instanceId: number) => {
         this.compute.utils.updateAnimationAt(
@@ -217,7 +230,7 @@ export class InstancedSpriteMesh<
 
         this.compute.utils.updatePlaymodeAt(
           instanceId,
-          playmode + (loop ? 0 : 10)
+          PLAY_MODE[playmode] + (loop ? 0 : 10)
         );
       },
     };

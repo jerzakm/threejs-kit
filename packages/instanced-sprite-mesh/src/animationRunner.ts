@@ -204,30 +204,30 @@ export const initAnimationRunner = (
   // B - 0 - forward 1 - reverse 2 - pause 3 - pingpong | loop if over 10
   // A? - -1 - restart, 0 - nothing, manually picked ID of a frame
 
-  let dirtyProgressData = false;
+  let needsUpdate = false;
 
   const updateAnimationAt = (instanceId: number, animationId: number) => {
     const index = instanceId * 4;
     progressDataTexture.image.data[index] = animationId;
-    dirtyProgressData = true;
+    needsUpdate = true;
   };
 
   const updateOffsetAt = (instanceId: number, offset: number) => {
     const index = instanceId * 4;
     progressDataTexture.image.data[index + 1] = offset;
-    dirtyProgressData = true;
+    needsUpdate = true;
   };
 
   const updatePlaymodeAt = (instanceId: number, playmode: number) => {
     const index = instanceId * 4;
     progressDataTexture.image.data[index + 2] = playmode;
-    dirtyProgressData = true;
+    needsUpdate = true;
   };
 
   const update = () => {
-    if (dirtyProgressData) {
+    if (needsUpdate) {
       progressDataTexture.needsUpdate = true;
-      dirtyProgressData = false;
+      needsUpdate = false;
     }
     gpuCompute.compute();
   };
