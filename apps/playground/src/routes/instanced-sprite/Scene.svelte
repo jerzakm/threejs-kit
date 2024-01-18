@@ -37,6 +37,18 @@
 			'fly'
 		)
 		.build();
+
+	const countdownSpritesheet = createSpritesheet()
+		.add(
+			'/textures/sprites/countdown_sprite.png',
+			{
+				type: 'rowColumn',
+				w: 10,
+				h: 1
+			},
+			'fly'
+		)
+		.build();
 </script>
 
 <T.PerspectiveCamera makeDefault position.z={15} position.y={7}>
@@ -45,7 +57,7 @@
 
 <slot />
 
-<AnimatedInstancedSprite
+<!-- <AnimatedInstancedSprite
 	textureUrl="/textures/sprites/player.png"
 	dataUrl="/textures/sprites/player.json"
 	fps={10}
@@ -53,7 +65,7 @@
 	count={10000}
 >
 	<PlayerUpdater />
-</AnimatedInstancedSprite>
+</AnimatedInstancedSprite> -->
 
 <!-- {#await spritesheet then { spritesheet, texture }}
 	<AnimatedInstancedSprite {spritesheet} {texture} fps={10} loop={true} {count}>
@@ -66,6 +78,12 @@
 		<FlyerUpdater />
 	</AnimatedInstancedSprite>
 {/await} -->
+
+{#await countdownSpritesheet then { spritesheet, texture }}
+	<AnimatedInstancedSprite {spritesheet} {texture} fps={10} loop={true} count={count * 25}>
+		<FlyerUpdater />
+	</AnimatedInstancedSprite>
+{/await}
 
 <Sky elevation={0.15} />
 <!-- <T.AmbientLight /> -->
