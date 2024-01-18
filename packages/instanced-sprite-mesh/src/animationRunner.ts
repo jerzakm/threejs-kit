@@ -62,7 +62,7 @@ const animProgressCompute = /*glsl*/ `
     float newProgress = deltaTime / totalTime;
     // add new delta to saved progress
     float frameTimedId = mod(progressValue.g + newProgress, 1.);
-    frameTimedId = 0.;
+    // frameTimedId = 0.;
     // float frameTimedId = progressValue.g;
     // save for use in next frame
     
