@@ -80,7 +80,7 @@
 {/await} -->
 
 {#await countdownSpritesheet then { spritesheet, texture }}
-	<AnimatedInstancedSprite {spritesheet} {texture} fps={10} loop={true} count={count * 25}>
+	<AnimatedInstancedSprite {spritesheet} {texture} fps={1} loop={true} count={count * 25}>
 		<FlyerUpdater />
 	</AnimatedInstancedSprite>
 {/await}

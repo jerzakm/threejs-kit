@@ -23,7 +23,7 @@
 	} from './AnimatedInstancedSprite.svelte';
 
 	import { useTexture } from '@threlte/extras';
-	import { setContext } from 'svelte';
+	import { onDestroy, setContext } from 'svelte';
 	import { writable } from 'svelte/store';
 
 	type $$Props = Required<AnimatedInstancedSpriteProps>;
@@ -143,7 +143,7 @@
 	};
 
 	const setAnimation = (instanceId: number, animationId: SpriteAnimations) => {
-		mesh.play(animationId, true, 'REVERSE').at(instanceId);
+		mesh.play(animationId, true, 'FORWARD').at(instanceId);
 	};
 
 	setContext('instanced-sprite-ctx', {
