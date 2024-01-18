@@ -88,7 +88,7 @@ export const start = async () => {
 		agents[0].velocity = playerMoveVector.normalize().multiplyScalar(3).toArray();
 
 		const animation = pickAnimation(0);
-		sprite.play(animation).at(0);
+		sprite.play(animation, true, 'FORWARD').at(0);
 	};
 
 	const handleKeyDown = (e: KeyboardEvent) => {
@@ -192,7 +192,7 @@ export const start = async () => {
 							agents[i].velocity = [0, 0];
 						}
 
-						sprite.play(animation).at(i);
+						sprite.play(animation, true, 'FORWARD').at(i);
 					}
 				}
 			}
@@ -261,9 +261,9 @@ export const start = async () => {
 		});
 
 		const mesh: InstancedSpriteMesh<THREE.MeshBasicMaterial, SpriteAnimations> =
-			new InstancedSpriteMesh(baseMaterial, INSTANCE_COUNT);
+			new InstancedSpriteMesh(baseMaterial, INSTANCE_COUNT, renderer);
 
-		mesh.material.uniforms.fps.value = 15;
+		mesh.fps = 15;
 
 		const spritesheet = parseAseprite(JSON.parse(rawSpritesheet));
 		mesh.spritesheet = spritesheet;
@@ -284,6 +284,8 @@ export const start = async () => {
 		renderer.render(scene, camera);
 		playerIndicator.position.set(posX[0], 2, posZ[0]);
 		updateAgents(0.01);
+
+		sprite.update();
 
 		if (dirtyInstanceMatrix) {
 			sprite.instanceMatrix.needsUpdate = true;
