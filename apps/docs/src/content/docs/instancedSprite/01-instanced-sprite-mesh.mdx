@@ -57,46 +57,41 @@ mesh.spritesheet = spritesheet;
 ```js
   // set global FPS for updating
   mesh.fps = 15
+  
+  // play animation on instance id 0 - loops by defualt
+  mesh.play('IdleBackward').at(0)
+  // play animation without looping
+  mesh.play('RunLeft', false).at(1);
+  // play animation backwards with looping
+  mesh.play('RunLeft', true, 'REVERSE').at(2);
+  
 
-  // loop one animation globally for all sprites without indivudually set animation
-  mesh.play('IdleBackward', true).global();
-  // play this animation once for sprite at instanceId 0
-  mesh.play('RunLeft').at(0);
+  // mesh.play is a utility that combines the use of these functions:  
 
-  // only set animation
-  mesh.animation.setGlobal('IdleRight');
-  mesh.animation.setAt(0, 'RunBackward');
-
-  // defined looping behaviour
-  mesh.loop.setGlobal(true);
+  // animation by name
+  mesh.animation.setAt(0, 'RunBackward');  
+  // looping y/n
   mesh.loop.setAt(0, false);
+  // animation direction - FORWARD (default) / REVERSE / PAUSE 
+  mesh.playmode.setAt(0, 'REVERSE')
 
   // billboarding
-  mesh.billboarding.setGlobal(true);
+  mesh.billboarding.setAll(true);
   mesh.billboarding.setAt(0, true);
-  
-  // tint, only global for now
-  mesh.tint.setGlobal({h:2, s:0.8, v: 0.8})
+
   ```
 
 ## Updating sprite animations
 
-Currently the sprites are only animated based on provided FPS and a timer. Either: 
+Currently the sprites are only animated based on provided FPS and a timer. `mesh.update();` has to be called to update the animations.
 
-- `mesh.updateTime();` has to be called to update the animations - manually or in RAF (performance.now())
-- `mesh.time = 100` can be set manually
-
-
-
-Support for animations independent on time and setting specific frameIDs will be coming soon
+Support for animations independent on time and fps will be coming soon
 
 
 ## Typescript support
 Yes, wip.
 
 import materialPreview from "../../../assets/sprite/typescript1.png";
-
-
 
 
 ```ts
@@ -110,9 +105,16 @@ type SpriteAnimations =
 		| 'RunBackward'
 		| 'IdleBackward';
 
-const mesh: InstancedSpriteMesh<THREE.MeshBasicMaterial, SpriteAnimations> =
-			new InstancedSpriteMesh(baseMaterial, INSTANCE_COUNT);
-      ```
+const mesh: InstancedSpriteMesh<MeshBasicMaterial, SpriteAnimations> = new InstancedSpriteMesh(
+  baseMaterial,
+  count,
+  renderer,
+  {
+    triGeometry: true,
+    spritesheet
+  }
+);
+  ```
 
 for example, the above will allow for autocompletion of animation names
 

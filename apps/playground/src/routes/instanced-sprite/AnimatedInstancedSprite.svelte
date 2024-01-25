@@ -143,7 +143,7 @@
 	};
 
 	const setAnimation = (instanceId: number, animationId: SpriteAnimations) => {
-		mesh.play(animationId, true, 'FORWARD').at(instanceId);
+		mesh.play(animationId, true, 'REVERSE').at(instanceId);
 	};
 
 	setContext('instanced-sprite-ctx', {

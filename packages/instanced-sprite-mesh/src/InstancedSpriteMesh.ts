@@ -17,22 +17,20 @@ import { createSpriteTriangle } from "./triangle";
 import { initAnimationRunner } from "./animationRunner";
 import { Timer } from "./Timer";
 
-let t = 0;
-
 type InstancedSpriteOptions = {
   spritesheet?: SpritesheetFormat;
   triGeometry?: boolean;
 };
 
-export const PLAY_MODE = {
+export const PLAY_MODES = {
   FORWARD: 0,
   REVERSE: 1,
   PAUSE: 2,
   PINGPONG: 3,
 } as const;
 
-type PLAY_MODE_Keys = keyof typeof PLAY_MODE;
-type PLAY_MODE_Vals = (typeof PLAY_MODE)[PLAY_MODE_Keys];
+type PLAY_MODE = keyof typeof PLAY_MODES;
+type PLAY_MODE_Vals = (typeof PLAY_MODES)[PLAY_MODE];
 
 export class InstancedSpriteMesh<
   T extends Material,
@@ -130,16 +128,16 @@ export class InstancedSpriteMesh<
 
   get playmode() {
     return {
-      setAt: (instanceId: number, playmode: PLAY_MODE_Keys) => {
-        this.compute.utils.updatePlaymodeAt(instanceId, PLAY_MODE[playmode]);
+      setAt: (instanceId: number, playmode: PLAY_MODE) => {
+        this.compute.utils.updatePlaymodeAt(instanceId, PLAY_MODES[playmode]);
       },
-      setAll: (playmode: PLAY_MODE_Keys) => {
+      setAll: (playmode: PLAY_MODE) => {
         for (let i = 0; i < this.count; i++) {
           const isLoop =
             this.compute.progressDataTexture.image.data[i * 4 + 2] >= 10
               ? 10
               : 0;
-          this.compute.utils.updatePlaymodeAt(i, isLoop + PLAY_MODE[playmode]);
+          this.compute.utils.updatePlaymodeAt(i, isLoop + PLAY_MODES[playmode]);
         }
       },
     };
@@ -150,7 +148,7 @@ export class InstancedSpriteMesh<
       setAt: (instanceId: number, enable: boolean) => {
         this.setUniformAt("billboarding", instanceId, enable ? 1 : 0);
       },
-      setGlobal: (enable: boolean) => {
+      setAll: (enable: boolean) => {
         this._spriteMaterial.uniforms.billboarding.value = enable ? 1 : 0;
       },
       unsetAll: () => {
@@ -220,7 +218,7 @@ export class InstancedSpriteMesh<
     };
   }
 
-  play(animation: V, loop: boolean = true, playmode: PLAY_MODE_Keys) {
+  play(animation: V, loop: boolean = true, playmode: PLAY_MODE = "FORWARD") {
     return {
       at: (instanceId: number) => {
         this.compute.utils.updateAnimationAt(
@@ -230,7 +228,7 @@ export class InstancedSpriteMesh<
 
         this.compute.utils.updatePlaymodeAt(
           instanceId,
-          PLAY_MODE[playmode] + (loop ? 0 : 10)
+          PLAY_MODES[playmode] + (loop ? 0 : 10)
         );
       },
     };

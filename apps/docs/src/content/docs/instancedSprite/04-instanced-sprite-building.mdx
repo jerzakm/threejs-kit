@@ -13,8 +13,7 @@ The `createSpritesheet` is a helper function that facilitates the creation of sp
 `InstancedSpriteMesh`. The process involves the following steps:
 
 1. **Initialization:** Begin by invoking the `createSpritesheet` function. This function is the starting point for creating your spritesheet.
-2. **Adding Images**: For each image you wish to include in the spritesheet, call the `add` function on the created spritesheet. This function requires specific parameters:
-    - `name`: A string identifier for the image. By default, this is set to "default".
+2. **Adding Images**: For each image you wish to include in the spritesheet, call the `add` function on the created spritesheet. This function requires specific parameters:    
     - `imageUrl`: The URL or path to the image file.
     - `config` object consiting of:
       - `type` - choose whether you're providing how many rows and columns are in an image `"rowColumn"` or giving the size of a single frame for the builder to interpolate from `"frameSize"`
@@ -26,7 +25,13 @@ The `createSpritesheet` is a helper function that facilitates the creation of sp
           w: number;
           h: number;          
         }
-        ```
+    - `meta`: either a string to name an animation, or an array of names + framerange in case of defining multiple animations in one file
+      ```ts
+      type AnimationMeta =
+        | { name: string; frameRange: [from: number, to: number] }[]
+        | string;
+      ```
+        
 3. **Build**: After adding all of the animations, call `build()`. The `createSpritesheet` function returns a promise. This promise resolves to an object containing a `texture: THREE.Texture`, which can be applied as the map property of a material, and a `spritesheet` for use in the InstancedSpriteMesh.
 
 
@@ -66,13 +71,13 @@ import hit from "@assets/sprite/Monsters_Creatures_Fantasy/Flying_eye/Hit.png";
 </div>
 
 
-### example code
+### Example code: multiple files
 
 ```ts
 
 import { createSpritesheet } from '@threejs-kit/instanced-sprite-mesh';
 
-const {spritesheet, texture} = await createSpritesheet()
+const spritesheet = await createSpritesheet()
 		.add('fly', '/Monsters_Creatures_Fantasy/Flying_eye/Flight.png', {
 			type: 'rowColumn',
 			w: 8,
@@ -101,3 +106,34 @@ We call `createSpritesheet` and start defining metadata for each of the sprite f
 - for the second animation - `attack` - I'm going to use a `frameSize` type. So now we provide `w` and `h` in pixels of how big each frame is, then the builder calculates columsn and rows internally.
 - Then I add `death` and `hit` animations, just like I did the first one. Notice that these animations have a different number of columns, but that's fine. Each of your animations can have different column and row numbers.
 
+### Example code: single file
+
+```ts
+import { createSpritesheet } from '@threejs-kit/instanced-sprite-mesh';
+
+const spritesheet = createSpritesheet()
+		.add(
+			'/textures/sprites/cacodaemon.png',
+			{
+				type: 'rowColumn',
+				w: 8,
+				h: 4
+			},
+			[
+				{ name: 'fly', frameRange: [0, 6] },
+				{ name: 'attack', frameRange: [8, 14] },
+				{ name: 'idle', frameRange: [16, 20] },
+				{ name: 'death', frameRange: [24, 32] }
+			]
+		)
+		.build();
+```
+
+import cacodaemon from "@assets/sprite/cacodaemon.png";
+
+<div class="bg-gray-800">
+  <Image src={cacodaemon} alt="cacodaemon"/>
+</div>
+
+Like in previous example, we call `createSpritesheet`, but this time we use one spritesheet file that already contains multiple animations. Instead of using a string as the last argument of the function, an array of animations is declared.
+Each of the entries has a `name` and a `frameRange` that defines at what frameId given animation starts and ends.

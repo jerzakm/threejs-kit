@@ -10,37 +10,92 @@ which in turn extends [THREE.InstancedMesh](https://threejs.org/docs/?q=instance
 ```ts
 type InstancedSpriteOptions = {
   spritesheet?: SpritesheetFormat;
-  triGeometry?: boolean;
+  triGeometry?: boolean;  
 };
 
 new InstancedSpriteMesh ( 
-    baseMaterial: T extends Material, 
-    count: number, 
+    baseMaterial: T,
+    count: number,
+    renderer: WebGLRenderer,
     options: InstancedSpriteOptions = {}
     )
 ```
 
 - **baseMaterial** - Threejs material (recommended THREE.MeshBasicMaterial or THREE.MeshStandardMaterial) - more on this here -> (TODO)
 - **count** - number of instances
-- **options** - (none atm, placeholder)
-  - **spritesheet** - spritesheet metadata
+- **options** -
+  - **spritesheet** - spritesheet metadata (should be provided at initialization, hot swapping spritesheet textures and metadata will come at a later date)
   - **triGeometry** - use triangles instead of PlaneGeometry for sprites
 
-
+## Playmodes
+- "FORWARD" - plays animation from start to end (default)
+- "REVERSE" - plays animation from end to start
+- "PAUSE" - pauses the animation progression. For example if the animation is playing "FORWARD" and the mode is changed to "PAUSED" a few frames in, then it stays at the current frame. "PAUSED" mode is also useful for manually picking which frame should be rendered.
+- "PINGPONG" - (experimental). Plays animation from start to end to start
 
 ## Properties and Methods
 
 ### `.spritesheet`
 set and get spritesheet (todo, test dynamic spritesheet setting on pre-built mesh)
 
-### `.animation`
-  Set of methods to manipulate which animation is set
-  - **.animation.setAt( instanceId: number, animation: string )** - sets animation (by name) on instanceId
-  - **.animation.setGlobal( animation: string )** - sets default global animation that is used unless the `setAt` was called on the instance
-  - **.animation.resetInstances()** - removes all instance specific animation settings
+### `.animation`  
+  - **.animation.setAt( instanceId: number, animation: string )** - sets animation (by name) on instanceId  
+
+### `.playmode` 
+
+```ts
+type PLAY_MODE = "FORWARD" | "REVERSE" | "PAUSE" | "PINGPONG"
+
+```
+
+- **.playmode.setAt(instanceId: number, playmode: PLAY_MODE)** - set playmode for one instance
+- **.playmode.setAll(playmode: PLAY_MODE)** - set playmode for all instances
 
 ### `.billboarding`
   Set of methods to toggle billboarding
   - **.billboarding.setAt( instanceId: number, enable: boolean )** - enables billboarding on instance
-  - **.billboarding.setGlobal( enable: boolean )** - sets default global billboarding state that is used unless the `setAt` was called on the instance
-  - **.billboarding.resetInstances()** - removes all instance specific billboarding settings
+  - **.billboarding.setAll( enable: boolean )** - sets default global billboarding state that is used unless the `setAt` was called on the instance
+  - **.billboarding.unsetAll()** - removes all instance specific billboarding settings
+ 
+ (Experimental. Shadows and normals are not recalculated properly yet)
+
+### `.offset`
+  Offset sprite animation time by a given number of milliseconds
+  - **setAt: (instanceId: number, offset: number)** 
+  - **randomizeAll: (scalar: number = 1)** - offset all sprites by a random value (0-1) multiplied by scalar
+
+### `.loop`
+  methods to control whether sprite animation should be looped
+  - **.loop.setAt( instanceId: number, enable: boolean )** - sets per instance loop mode
+  - **.loop.setAll( enable: boolean )** - changes looping mode in all instances
+
+
+### `.flipX`
+  - **.flipX.setAt(instanceId: number, flipX: boolean)**
+  - **.flipX.setGlobal(flipX: boolean)**
+  - **.flipX.unsetAll()**
+
+### `.flipY`
+  - **.flipY.setAt(instanceId: number, flipY: boolean)**
+  - **.flipY.setGlobal(flipY: boolean)**
+  - **.flipY.unsetAll()**
+
+### `.fps`
+ - **.fps(value: number)** - set fps playback rate for the spritesheet
+
+
+
+### `.play`
+Utility function that combines `.animation`, `.loop` and `.playmode`
+```ts
+play(
+  animation: V, 
+  loop: boolean = true, 
+  playmode: PLAY_MODE = "FORWARD")
+.at(instanceId: number)
+
+```
+
+
+### `.update`
+ - **.update()** - updates instanced spritesheet animation based on fps and time.
