@@ -1,5 +1,19 @@
 # @three-kit/materials
 
+## 2.0.0
+
+### Major Changes
+
+- 848a412: Per instnace granular animation controls with GPGPU
+
+### Minor Changes
+
+- ace70f5: updated sprite builder to support multiple animations per spritesheet image file
+
+### Patch Changes
+
+- 0cb6e5c: bugfix: corrected center point of a zoom when using triangle geometry (glsl)
+
 ## 1.2.0
 
 ### Minor Changes
