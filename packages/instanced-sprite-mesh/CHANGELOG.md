@@ -1,5 +1,11 @@
 # @three-kit/materials
 
+## 2.2.0
+
+### Minor Changes
+
+- 12bc029: sprite builder utility fix for 'frameSize' autoframing option
+
 ## 2.1.1
 
 ### Patch Changes
