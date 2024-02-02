@@ -193,7 +193,7 @@ export class InstancedSpriteMesh<
   get flipX() {
     return {
       setAt: (instanceId: number, flipX: boolean) => {
-        this.setUniformAt("loop", instanceId, flipX ? 1 : 0);
+        this.setUniformAt("flipX", instanceId, flipX ? 1 : 0);
       },
       setGlobal: (flipX: boolean) => {
         this._spriteMaterial.uniforms.flipX.value = flipX ? 1 : 0;
