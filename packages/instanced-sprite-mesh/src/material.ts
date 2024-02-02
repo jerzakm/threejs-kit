@@ -161,10 +161,11 @@ export const constructSpriteMaterial = (
 
       vec2 transformedPlaneUv = vUv + vec2(0.,0.);
 
-      if(flipX == 1.){
+      // todo  == 1. caused a flickering bug. look into Precision/interpolation?
+      if(flipX > 0.){
         transformedPlaneUv.x = 1. - transformedPlaneUv.x;
       }
-      if(flipY == 1.){
+      if(flipY > 0.){
         transformedPlaneUv.y = 1. - transformedPlaneUv.y;
       }           
       
