@@ -67,6 +67,14 @@ class SpriteBuilder {
       };
     }
 
+    if (config.type == "frameSize") {
+      animation["auto"] = {
+        type: "frameSize",
+        w: config.w,
+        h: config.h,
+      };
+    }
+
     this.animations.push(animation);
     return this;
   }
