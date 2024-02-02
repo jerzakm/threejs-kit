@@ -1,5 +1,11 @@
 # @three-kit/materials
 
+## 2.1.0
+
+### Minor Changes
+
+- 2de01f0: mesh.flipX.at() function fixed. Removed console .logs
+
 ## 2.0.0
 
 ### Major Changes
