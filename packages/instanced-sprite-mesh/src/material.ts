@@ -269,8 +269,6 @@ export const makeDataTexture = (data: SpritesheetFormat) => {
   const { frames, animationLengths, animations } = data;
   // find the longest array to determine data width uniform
 
-  console.log({ data });
-
   const dataWidth = Math.max(
     frames.length,
     animationLengths.length,
@@ -302,7 +300,6 @@ export const makeDataTexture = (data: SpritesheetFormat) => {
   for (let i = 0; i < Object.keys(animations).length; i++) {
     const key = Object.keys(animations)[i];
     animMap.set(key, i);
-    console.log(animations[key]);
     const aFrames = animations[key]
       .map((a) => {
         return [...a, 0, 0];

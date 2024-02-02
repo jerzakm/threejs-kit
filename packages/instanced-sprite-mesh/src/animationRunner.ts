@@ -166,8 +166,6 @@ export const initAnimationRunner = (
 
   const computeTextureSize = findFirstPow2LargerThan(Math.sqrt(instanceCount));
 
-  console.log({ computeTextureSize });
-
   const gpuCompute = new GPUComputationRenderer(
     computeTextureSize,
     computeTextureSize,
