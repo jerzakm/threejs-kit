@@ -87,17 +87,16 @@ export const constructSpriteMaterial = (
     vertexMainOutro: /*glsl*/ `
     vId = gl_InstanceID;
     if(billboarding == 1.){
-      vec3 instancePosition = vec3(instanceMatrix[3][0], instanceMatrix[3][1], instanceMatrix[3][2]);
+      vec3 instancePosition = vec3(instanceMatrix[3]);
+      vec3 instanceScale = vec3(length(instanceMatrix[0]), length(instanceMatrix[1]), length(instanceMatrix[2]));
 
       vec3 cameraRight_worldspace = vec3(modelViewMatrix[0][0], modelViewMatrix[1][0], modelViewMatrix[2][0]);
       vec3 cameraUp_worldspace = vec3(modelViewMatrix[0][1], modelViewMatrix[1][1], modelViewMatrix[2][1]);
   
-      vec2 BillboardSize = vec2 (1.,1.);
-  
       vec3 vertexPosition_worldspace = instancePosition
-        + cameraRight_worldspace * position.x * BillboardSize.x
-        + cameraUp_worldspace * position.y * BillboardSize.y;
-        //wip billboarding
+        + cameraRight_worldspace * position.x * instanceScale.x
+        + cameraUp_worldspace * position.y * instanceScale.y;        
+
       gl_Position = projectionMatrix * modelViewMatrix * vec4(vertexPosition_worldspace, 1.0);
     }   
     `,
