@@ -6,6 +6,7 @@ import {
   Vector2,
   Vector4,
   WebGLRenderer,
+  REVISION,
 } from "three";
 import { InstancedUniformsMesh } from "three-instanced-uniforms-mesh";
 import {
@@ -85,6 +86,14 @@ export class InstancedSpriteMesh<
 
     this._spriteMaterial.uniforms.animationDataSize.value =
       this.compute.progressDataTexture.image.width;
+
+    // TODO revisit later. Temp fix for 159 breaking change
+    if (REVISION >= 159) {
+      this.instanceMatrix.clearUpdateRanges();
+      this.instanceMatrix.addUpdateRange(0, count * 16);
+    } else {
+      this.instanceMatrix.updateRange.count = count * 16;
+    }
   }
 
   private updateSpritesheet(spritesheet: SpritesheetFormat) {
