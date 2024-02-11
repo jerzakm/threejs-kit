@@ -14,8 +14,8 @@
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^2.1.1",
 		"@sveltejs/kit": "^1.27.5",
-		"@threlte/core": "^7.0.12",
-		"@threlte/extras": "^7.5.1",
+		"@threlte/core": "^7.1.0",
+		"@threlte/extras": "^8.7.3",
 		"@tweakpane/core": "^2.0.1",
 		"@types/three": "^0.158.2",
 		"@typescript-eslint/eslint-plugin": "^6.10.0",
@@ -27,7 +27,7 @@
 		"prettier-plugin-svelte": "^3.1.0",
 		"svelte": "^4.2.3",
 		"svelte-check": "^3.6.0",
-		"three": "^0.158.0",
+		"three": "^0.159.0",
 		"tslib": "^2.6.2",
 		"typescript": "^5.2.2",
 		"vite": "^4.5.0"

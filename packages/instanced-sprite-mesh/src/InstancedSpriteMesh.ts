@@ -68,6 +68,25 @@ export class InstancedSpriteMesh<
     );
 
     super(geometry, spriteMaterial as any, count);
+
+    // TODO revisit later. Temp fix for 159 breaking change
+    if (REVISION >= 159) {
+      console.log("159");
+      this.instanceMatrix.clearUpdateRanges();
+      this.instanceMatrix.addUpdateRange(0, count * 16);
+    } else {
+      this.instanceMatrix.updateRange.count = count * 16;
+    }
+
+    if (this.instanceColor) {
+      if (REVISION >= 159) {
+        this.instanceColor.clearUpdateRanges();
+        this.instanceColor.addUpdateRange(0, count * 3);
+      } else {
+        this.instanceColor.updateRange.count = count * 3;
+      }
+    }
+
     // animation runner - compute, data texture, utils
     this.compute = initAnimationRunner(renderer, count);
 
@@ -86,14 +105,6 @@ export class InstancedSpriteMesh<
 
     this._spriteMaterial.uniforms.animationDataSize.value =
       this.compute.progressDataTexture.image.width;
-
-    // TODO revisit later. Temp fix for 159 breaking change
-    if (REVISION >= 159) {
-      this.instanceMatrix.clearUpdateRanges();
-      this.instanceMatrix.addUpdateRange(0, count * 16);
-    } else {
-      this.instanceMatrix.updateRange.count = count * 16;
-    }
   }
 
   private updateSpritesheet(spritesheet: SpritesheetFormat) {

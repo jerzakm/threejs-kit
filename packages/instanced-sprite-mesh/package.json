@@ -23,7 +23,7 @@
     "vite-plugin-dts": "^3.6.3"
   },
   "peerDependencies": {
-    "three": ">=0.158.0"
+    "three": ">=0.159.0"
   },
   "publishConfig": {
     "access": "public"
