@@ -1,5 +1,11 @@
 # @three-kit/materials
 
+## 2.3.1
+
+### Patch Changes
+
+- 41898f2: compatibility fix for three>159
+
 ## 2.3.0
 
 ### Minor Changes
