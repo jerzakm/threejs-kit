@@ -161,7 +161,7 @@ importers:
   packages/instanced-sprite-mesh:
     dependencies:
       three:
-        specifier: '>=0.159.0'
+        specifier: '>=0.151.0'
         version: 0.159.0
     devDependencies:
       '@types/three':
