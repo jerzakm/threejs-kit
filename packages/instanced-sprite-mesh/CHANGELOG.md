@@ -1,5 +1,11 @@
 # @three-kit/materials
 
+## 2.3.4
+
+### Patch Changes
+
+- 75cfd6c: rename w and h to width and height
+
 ## 2.3.3
 
 ### Patch Changes
