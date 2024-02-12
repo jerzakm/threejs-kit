@@ -259,9 +259,9 @@ export const parseAseprite = (json: any) => {
 };
 
 export type SpritesheetFormat = {
-  frames: [x: number, y: number, w: number, h: number][];
+  frames: [x: number, y: number, width: number, height: number][];
   animations: Record<string, [frameId: number, duration: number][]>;
-  sheetSize: [w: number, h: number];
+  sheetSize: [width: number, height: number];
   animationLengths: number[];
 };
 

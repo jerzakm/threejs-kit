@@ -14,9 +14,8 @@ type AnimationDefitinion = {
   custom?: SpritesheetFormat["frames"];
   auto?: {
     type: "rowColumn" | "frameSize";
-    w: number;
-    h: number;
-    // rowMajor: boolean;
+    width: number;
+    height: number;
   };
   multiAnimations?: { name: string; frameRange: [from: number, to: number] }[];
 };
@@ -42,8 +41,8 @@ class SpriteBuilder {
     imageUrl: string,
     config: {
       type: "rowColumn" | "frameSize";
-      w: number;
-      h: number;
+      width: number;
+      height: number;
       name?: string;
     },
     meta: AnimationMeta
@@ -62,16 +61,16 @@ class SpriteBuilder {
     if (config.type == "rowColumn") {
       animation["auto"] = {
         type: "rowColumn",
-        w: config.w,
-        h: config.h,
+        width: config.width,
+        height: config.height,
       };
     }
 
     if (config.type == "frameSize") {
       animation["auto"] = {
         type: "frameSize",
-        w: config.w,
-        h: config.h,
+        width: config.width,
+        height: config.height,
       };
     }
 
@@ -140,12 +139,12 @@ class SpriteBuilder {
         let columns = 0;
 
         if (a.auto.type == "frameSize") {
-          columns = img.w / a.auto.w;
-          rows = img.h / a.auto.h;
+          columns = img.w / a.auto.width;
+          rows = img.h / a.auto.height;
         }
         if (a.auto.type == "rowColumn") {
-          columns = a.auto.w;
-          rows = a.auto.h;
+          columns = a.auto.width;
+          rows = a.auto.height;
         }
         const imgPartialW = img.w / columns;
         const imgPartialH = img.h / rows;

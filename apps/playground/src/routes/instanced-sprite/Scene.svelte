@@ -14,8 +14,8 @@
 			'/textures/sprites/cacodaemon.png',
 			{
 				type: 'rowColumn',
-				w: 8,
-				h: 4
+				width: 8,
+				height: 4
 			},
 			[
 				{ name: 'fly', frameRange: [0, 6] },
@@ -31,8 +31,8 @@
 			'/textures/sprites/Monsters_Creatures_Fantasy/Flying_eye/Flight.png',
 			{
 				type: 'rowColumn',
-				w: 8,
-				h: 1
+				width: 8,
+				height: 1
 			},
 			'fly'
 		)
@@ -43,8 +43,8 @@
 			'/textures/sprites/countdown_sprite.png',
 			{
 				type: 'rowColumn',
-				w: 10,
-				h: 1
+				width: 10,
+				height: 1
 			},
 			'fly'
 		)
