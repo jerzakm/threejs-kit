@@ -1,5 +1,11 @@
 # @three-kit/materials
 
+## 2.4.1
+
+### Patch Changes
+
+- db54522: freeze frame bugfix
+
 ## 2.4.0
 
 ### Minor Changes
