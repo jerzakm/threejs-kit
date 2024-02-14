@@ -31,7 +31,6 @@ export const PLAY_MODES = {
 } as const;
 
 type PLAY_MODE = keyof typeof PLAY_MODES;
-type PLAY_MODE_Vals = (typeof PLAY_MODES)[PLAY_MODE];
 
 export class InstancedSpriteMesh<
   T extends Material,
@@ -40,7 +39,6 @@ export class InstancedSpriteMesh<
   private _spriteMaterial: ShaderMaterial;
   private _spritesheet?: SpritesheetFormat | undefined;
   private _animationMap: Map<V, number>;
-  private _time: number = 0;
   private _fps: number = 15;
   private _timer: Timer;
 
@@ -118,7 +116,6 @@ export class InstancedSpriteMesh<
     this.compute.animationRunner.material.uniforms["spritesheetData"].value =
       dataTexture;
     // @ts-ignore
-    // todo type this with named animations?
     this._animationMap = animMap;
   }
 
@@ -142,6 +139,20 @@ export class InstancedSpriteMesh<
           instanceId,
           this._animationMap.get(animation) || 0
         );
+      },
+    };
+  }
+
+  get frame() {
+    return {
+      setAt: (instanceId: number, frameId: number, animation?: V) => {
+        let id = frameId;
+        if (animation) {
+          const frameMeta = this.spritesheet?.animations[animation][frameId][0];
+          id = frameMeta;
+        }
+
+        this.compute.utils.updateFrameAt(instanceId, id);
       },
     };
   }

@@ -64,6 +64,9 @@ type PLAY_MODE = "FORWARD" | "REVERSE" | "PAUSE" | "PINGPONG"
   - **setAt: (instanceId: number, offset: number)** 
   - **randomizeAll: (scalar: number = 1)** - offset all sprites by a random value (0-1) multiplied by scalar
 
+### `.frame`  
+  - **setAt: (instanceId: number, frameId: number, animation?: string)** - Set the instance at a specific frame. FrameID is an n-th frame in the animation if the name is provided, otherwise if not set, it's an n-th frameId of the entire spritesheet.
+
 ### `.loop`
   methods to control whether sprite animation should be looped
   - **.loop.setAt( instanceId: number, enable: boolean )** - sets per instance loop mode
@@ -82,7 +85,6 @@ type PLAY_MODE = "FORWARD" | "REVERSE" | "PAUSE" | "PINGPONG"
 
 ### `.fps`
  - **.fps(value: number)** - set fps playback rate for the spritesheet
-
 
 
 ### `.play`

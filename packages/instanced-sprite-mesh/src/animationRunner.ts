@@ -57,7 +57,6 @@ const animProgressCompute = /*glsl*/ `
     float animLength = readData(animationId, 1.f, spritesheetData).r;
     float totalTime = animLength / fps;
 
-
     // new delta is % of animation
     float newProgress = deltaTime / totalTime;
     // add new delta to saved progress
@@ -102,6 +101,10 @@ const animProgressCompute = /*glsl*/ `
 
     float frameId = floor(animLength * frameTimedId);
     float spritesheetFrameId = readData(frameId, 2.f + animationId, spritesheetData).r;
+
+    if(instructions.a >=10.){
+      spritesheetFrameId = instructions.a - 10.;
+    }
     
     // Picked sprite frame that goes to material
     progressValue.r = spritesheetFrameId;
@@ -200,9 +203,10 @@ export const initAnimationRunner = (
   // R - animationId
   // G - offset
   // B - 0 - forward 1 - reverse 2 - pause 3 - pingpong | loop if over 10
-  // A? - -1 - restart, 0 - nothing, manually picked ID of a frame
+  // A? - -1 - restart, 0 - nothing, 10> manually picked ID of a frame (id - 10)
 
   let needsUpdate = false;
+  let needsClearFrameSet = false;
 
   const updateAnimationAt = (instanceId: number, animationId: number) => {
     const index = instanceId * 4;
@@ -222,12 +226,32 @@ export const initAnimationRunner = (
     needsUpdate = true;
   };
 
+  const updateFrameAt = (instanceId: number, frameId: number) => {
+    const index = instanceId * 4;
+    progressDataTexture.image.data[index + 3] = frameId + 10;
+    needsUpdate = true;
+    needsClearFrameSet = true;
+  };
+
+  const clearFrameSet = () => {
+    for (let i = 0; i < instanceCount; i++) {
+      const index = i * 4;
+      progressDataTexture.image.data[index + 3] = 0;
+    }
+    needsUpdate = true;
+  };
+
   const update = () => {
     if (needsUpdate) {
       progressDataTexture.needsUpdate = true;
       needsUpdate = false;
     }
     gpuCompute.compute();
+
+    if (needsClearFrameSet) {
+      clearFrameSet();
+      needsClearFrameSet = false;
+    }
   };
 
   // todo make this nicer after deciding on api
@@ -239,6 +263,7 @@ export const initAnimationRunner = (
       updateAnimationAt,
       updateOffsetAt,
       updatePlaymodeAt,
+      updateFrameAt,
     },
     update,
   };
