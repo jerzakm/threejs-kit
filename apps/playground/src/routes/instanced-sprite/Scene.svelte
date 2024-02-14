@@ -67,23 +67,23 @@
 	<PlayerUpdater />
 </AnimatedInstancedSprite> -->
 
-<!-- {#await spritesheet then { spritesheet, texture }}
+{#await spritesheet then { spritesheet, texture }}
 	<AnimatedInstancedSprite {spritesheet} {texture} fps={10} loop={true} {count}>
 		<FlyerUpdater />
 	</AnimatedInstancedSprite>
 {/await}
-
+<!-- 
 {#await flyerSpritesheet then { spritesheet, texture }}
 	<AnimatedInstancedSprite {spritesheet} {texture} fps={10} loop={true} count={count * 25}>
 		<FlyerUpdater />
 	</AnimatedInstancedSprite>
 {/await} -->
 
-{#await countdownSpritesheet then { spritesheet, texture }}
+<!-- {#await countdownSpritesheet then { spritesheet, texture }}
 	<AnimatedInstancedSprite {spritesheet} {texture} fps={1} loop={true} count={count * 25}>
 		<FlyerUpdater />
 	</AnimatedInstancedSprite>
-{/await}
+{/await} -->
 
 <Sky elevation={0.15} />
 <!-- <T.AmbientLight /> -->

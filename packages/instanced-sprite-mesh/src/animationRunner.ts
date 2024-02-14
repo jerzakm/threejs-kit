@@ -46,6 +46,15 @@ const animProgressCompute = /*glsl*/ `
 
     vec4 instructions = texture2D( instructionsTexture, uv);
 
+    // FREEZE FRAME - return to save calculations?
+    if(instructions.a >=10.){      
+      progressValue.r = instructions.a - 10.;
+      progressValue.a = instructions.x;
+      progressValue.g = progressValue.g;
+      gl_FragColor = progressValue;
+      return;
+    }
+
 
     progressValue.b = 0.;    
     
@@ -102,9 +111,7 @@ const animProgressCompute = /*glsl*/ `
     float frameId = floor(animLength * frameTimedId);
     float spritesheetFrameId = readData(frameId, 2.f + animationId, spritesheetData).r;
 
-    if(instructions.a >=10.){
-      spritesheetFrameId = instructions.a - 10.;
-    }
+    
     
     // Picked sprite frame that goes to material
     progressValue.r = spritesheetFrameId;
@@ -112,8 +119,7 @@ const animProgressCompute = /*glsl*/ `
     progressValue.a = instructions.x;
     progressValue.g = frameTimedId;
 
-    gl_FragColor = progressValue;
-
+    gl_FragColor = progressValue;    
   }
 `;
 
@@ -230,15 +236,6 @@ export const initAnimationRunner = (
     const index = instanceId * 4;
     progressDataTexture.image.data[index + 3] = frameId + 10;
     needsUpdate = true;
-    needsClearFrameSet = true;
-  };
-
-  const clearFrameSet = () => {
-    for (let i = 0; i < instanceCount; i++) {
-      const index = i * 4;
-      progressDataTexture.image.data[index + 3] = 0;
-    }
-    needsUpdate = true;
   };
 
   const update = () => {
@@ -247,11 +244,6 @@ export const initAnimationRunner = (
       needsUpdate = false;
     }
     gpuCompute.compute();
-
-    if (needsClearFrameSet) {
-      clearFrameSet();
-      needsClearFrameSet = false;
-    }
   };
 
   // todo make this nicer after deciding on api

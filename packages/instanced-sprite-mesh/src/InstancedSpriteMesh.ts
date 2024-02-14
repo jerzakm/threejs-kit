@@ -151,8 +151,15 @@ export class InstancedSpriteMesh<
           const frameMeta = this.spritesheet?.animations[animation][frameId][0];
           id = frameMeta;
         }
-
         this.compute.utils.updateFrameAt(instanceId, id);
+      },
+      unsetAt: (instanceId: number) => {
+        this.compute.utils.updateFrameAt(instanceId, -10);
+      },
+      unsetAll: () => {
+        for (let id = 0; id < this.count; id++) {
+          this.compute.utils.updateFrameAt(id, -10);
+        }
       },
     };
   }
