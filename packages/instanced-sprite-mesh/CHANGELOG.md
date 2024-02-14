@@ -1,5 +1,11 @@
 # @three-kit/materials
 
+## 2.4.0
+
+### Minor Changes
+
+- 2a58cde: Allow setting a given frameID per instance with .frame.setAt
+
 ## 2.3.4
 
 ### Patch Changes
