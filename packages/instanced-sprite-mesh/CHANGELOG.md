@@ -1,5 +1,11 @@
 # @three-kit/materials
 
+## 2.4.2
+
+### Patch Changes
+
+- 4121a83: corrected spritebuilder frameRange
+
 ## 2.4.1
 
 ### Patch Changes
