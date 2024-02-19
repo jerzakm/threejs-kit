@@ -183,11 +183,11 @@ class SpriteBuilder {
           for (const anim of a.multiAnimations) {
             spritesheet.animations[anim.name] = [];
             spritesheet.animationLengths.push(
-              anim.frameRange[1] - anim.frameRange[0]
+              anim.frameRange[1] - anim.frameRange[0] + 1
             );
             for (
               let frame = anim.frameRange[0];
-              frame < anim.frameRange[1];
+              frame <= anim.frameRange[1];
               frame++
             ) {
               spritesheet.animations[anim.name].push([frameMap.get(frame), 1]);

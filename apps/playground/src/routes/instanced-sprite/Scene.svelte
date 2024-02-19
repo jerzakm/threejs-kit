@@ -18,10 +18,10 @@
 				height: 4
 			},
 			[
-				{ name: 'fly', frameRange: [0, 6] },
-				{ name: 'attack', frameRange: [8, 14] },
-				{ name: 'idle', frameRange: [16, 20] },
-				{ name: 'death', frameRange: [24, 32] }
+				{ name: 'fly', frameRange: [0, 5] },
+				{ name: 'attack', frameRange: [8, 13] },
+				{ name: 'idle', frameRange: [16, 19] },
+				{ name: 'death', frameRange: [24, 31] }
 			]
 		)
 		.build();
@@ -46,7 +46,12 @@
 				width: 10,
 				height: 1
 			},
-			'fly'
+			[
+				{
+					name: 'fly',
+					frameRange: [0, 9]
+				}
+			]
 		)
 		.build();
 </script>
@@ -67,11 +72,11 @@
 	<PlayerUpdater />
 </AnimatedInstancedSprite> -->
 
-{#await spritesheet then { spritesheet, texture }}
+<!-- {#await spritesheet then { spritesheet, texture }}
 	<AnimatedInstancedSprite {spritesheet} {texture} fps={10} loop={true} {count}>
 		<FlyerUpdater />
 	</AnimatedInstancedSprite>
-{/await}
+{/await} -->
 <!-- 
 {#await flyerSpritesheet then { spritesheet, texture }}
 	<AnimatedInstancedSprite {spritesheet} {texture} fps={10} loop={true} count={count * 25}>
@@ -79,11 +84,11 @@
 	</AnimatedInstancedSprite>
 {/await} -->
 
-<!-- {#await countdownSpritesheet then { spritesheet, texture }}
+{#await countdownSpritesheet then { spritesheet, texture }}
 	<AnimatedInstancedSprite {spritesheet} {texture} fps={1} loop={true} count={count * 25}>
 		<FlyerUpdater />
 	</AnimatedInstancedSprite>
-{/await} -->
+{/await}
 
 <Sky elevation={0.15} />
 <!-- <T.AmbientLight /> -->

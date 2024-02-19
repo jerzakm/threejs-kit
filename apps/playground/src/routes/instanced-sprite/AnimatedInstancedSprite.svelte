@@ -130,12 +130,6 @@
 		if ($textureStore && mesh.material && !initialized && mesh) {
 			mesh.castShadow = true;
 
-			for (let i = 0; i < count; i++) {
-				// mesh.playmode.setAt(i, 'PAUSE');
-				// mesh.frame.setAt(i, 28);
-				mesh.frame.setAt(i, 7, 'death');
-			}
-
 			initialized = true;
 		}
 	}
@@ -158,7 +152,7 @@
 	};
 
 	const setAnimation = (instanceId: number, animationId: SpriteAnimations) => {
-		mesh.play(animationId, true, 'FORWARD').at(instanceId);
+		mesh.play(animationId, true, 'REVERSE').at(instanceId);
 	};
 
 	setContext('instanced-sprite-ctx', {
