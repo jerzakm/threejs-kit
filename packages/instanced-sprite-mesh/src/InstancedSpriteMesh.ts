@@ -69,7 +69,6 @@ export class InstancedSpriteMesh<
 
     // TODO revisit later. Temp fix for 159 breaking change
     if (REVISION >= 159) {
-      console.log("159");
       this.instanceMatrix.clearUpdateRanges();
       this.instanceMatrix.addUpdateRange(0, count * 16);
     } else {
