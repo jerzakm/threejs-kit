@@ -1,5 +1,11 @@
 # @three-kit/materials
 
+## 2.4.3
+
+### Patch Changes
+
+- 475a348: three-instanced-uniforms-mesh as peer
+
 ## 2.4.2
 
 ### Patch Changes
