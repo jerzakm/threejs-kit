@@ -163,13 +163,13 @@ importers:
       three:
         specifier: '>=0.151.0'
         version: 0.159.0
+      three-instanced-uniforms-mesh:
+        specifier: ^0.49.0
+        version: 0.49.0(three@0.159.0)
     devDependencies:
       '@types/three':
         specifier: ^0.158.2
         version: 0.158.2
-      three-instanced-uniforms-mesh:
-        specifier: ^0.49.0
-        version: 0.49.0(three@0.159.0)
       troika-three-utils:
         specifier: ^0.49.0
         version: 0.49.0(three@0.159.0)
@@ -7402,7 +7402,7 @@ packages:
     dependencies:
       three: 0.159.0
       troika-three-utils: 0.49.0(three@0.159.0)
-    dev: true
+    dev: false
 
   /three-mesh-bvh@0.7.1(three@0.159.0):
     resolution: {integrity: sha512-63xvjnmK3FpA41klHfVvTMi2JRFdKeu3b4STBcLvGyDMYRpkBIyJ2d77CnNvKBZl9bed4sdEyrqE3AOsGorjUA==}
