@@ -17,12 +17,12 @@ The `createSpritesheet` is a helper function that facilitates the creation of sp
     - `imageUrl`: The URL or path to the image file.
     - `config` object consiting of:
       - `type` - choose whether you're providing how many rows and columns are in an image `"rowColumn"` or giving the size of a single frame for the builder to interpolate from `"frameSize"`
-      - `w` and `h` refer to either `column` and `row` or `imageWidth` and `imageHeight` depending on what you chose in `type`
+      - `width` and `height` refer to either `column` and `row` or `imageWidth` and `imageHeight` depending on what you chose in `type`
         ```ts
         /* The configuration object is structured as follows: */
         config: {
           type: "rowColumn" | "frameSize";
-          w: number;
+          width: number;
           h: number;          
         }
     - `meta`: either a string to name an animation, or an array of names + framerange in case of defining multiple animations in one file
@@ -80,23 +80,23 @@ import { createSpritesheet } from '@threejs-kit/instanced-sprite-mesh';
 const spritesheet = await createSpritesheet()
 		.add('fly', '/Monsters_Creatures_Fantasy/Flying_eye/Flight.png', {
 			type: 'rowColumn',
-			w: 8,
-			h: 1
+			width: 8,
+			height: 1
 		})
 		.add('attack', '/Monsters_Creatures_Fantasy/Flying_eye/Attack.png', {
 			type: 'frameSize',
-			w: 150,
-			h: 150
+			width: 150,
+			height: 150
 		})
 		.add('death', '/Monsters_Creatures_Fantasy/Flying_eye/Death.png', {
 			type: 'rowColumn',
-			w: 4,
-			h: 1
+			width: 4,
+			height: 1
 		})
 		.add('hit', '/Monsters_Creatures_Fantasy/Flying_eye/Hit.png', {
 			type: 'rowColumn',
-			w: 4,
-			h: 1
+			width: 4,
+			height: 1
 		})
 		.build();
 ```
