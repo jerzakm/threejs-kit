@@ -9,9 +9,6 @@ Three.js kit is a set of addons such as materials, shaders and other utilities f
 
 High performant instancing of animated sprites in threejs.
 
-[Documentation]
-
-
 ## Materials
 `npm i @threejs-kit/materials`
 
