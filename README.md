@@ -4,10 +4,12 @@ Three.js kit is a set of addons such as materials, shaders and other utilities f
 
 # Features:
 
-## [InstancedSpriteMesh]((https://three-kit.vercel.app/instancedsprite/01-instanced-sprite-mesh/))
+## [InstancedSpriteMesh](https://three-kit.vercel.app/instancedsprite/01-instanced-sprite-mesh/)
 `npm i @threejs-kit/instanced-sprite-mesh`
 
 High performant instancing of animated sprites in threejs.
+
+![InstancedSpriteMesh preview](/apps/docs/public/sprites.jpg)
 
 ## Materials
 `npm i @threejs-kit/materials`
@@ -17,7 +19,7 @@ High performant instancing of animated sprites in threejs.
 
 Real-time realistic glint material for three.js based on "Procedural Physically based BRDF for Real-Time Rendering of Glints" by Xavier Chermain et al.
 
-![MeshGlintMaterial preview](https://three-kit.vercel.app/glint.png)
+![MeshGlintMaterial preview](/apps/docs/public/glint.png)
 
 
 
@@ -26,5 +28,5 @@ Real-time realistic glint material for three.js based on "Procedural Physically 
 Creates convincing illusion of depth, surface irregularities, and geometric complexity,
 without increasing polygon count.
 
-![MeshParallaxMaterial preview](https://three-kit.vercel.app/parallax.png)
+![MeshParallaxMaterial preview](/apps/docs/public/parallax.png)
 
