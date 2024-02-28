@@ -45,7 +45,7 @@ export const initSpriteFlyers = async (renderer: WebGLRenderer, scene: Scene, co
 
 	const sprite = new InstancedSpriteMesh(baseMaterial, count, renderer);
 
-	sprite.fps = 7;
+	sprite.fps = 9;
 
 	sprite.hueShift.setGlobal({
 		h: 0,
