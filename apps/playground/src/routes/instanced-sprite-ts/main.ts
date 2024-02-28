@@ -1,34 +1,38 @@
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { CSM } from 'three/examples/jsm/csm/CSM.js';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
 
-import { initPeopleSprite } from './spritePeople';
 import {
-	PerspectiveCamera,
-	Scene,
-	WebGLRenderer,
-	SRGBColorSpace,
 	AmbientLight,
-	Mesh,
-	PlaneGeometry,
-	MeshPhongMaterial,
-	MeshBasicMaterial,
-	DoubleSide,
-	SphereGeometry,
-	RepeatWrapping,
+	BackSide,
 	Clock,
 	CylinderGeometry,
-	BackSide
+	DoubleSide,
+	Mesh,
+	MeshBasicMaterial,
+	MeshPhongMaterial,
+	PCFSoftShadowMap,
+	PerspectiveCamera,
+	PlaneGeometry,
+	RepeatWrapping,
+	SRGBColorSpace,
+	Scene,
+	SphereGeometry,
+	Vector3,
+	WebGLRenderer
 } from 'three';
 
-import { loadTexture } from './util';
-import { initSpriteLights } from './spriteLights';
-import { createSpritesheet } from '@threejs-kit/instanced-sprite-mesh';
-import { initSpriteHounds } from './spriteHounds';
 import { initSpriteFlyers } from './spriteFlyers';
+import { initSpriteHounds } from './spriteHounds';
+import { initSpriteLights } from './spriteLights';
+import { initPeopleSprite } from './spritePeople';
+import { loadTexture } from './util';
 
 export const clock = new Clock(true);
 
 let sky: Mesh;
+
+export let csm: CSM;
 
 export const start = async () => {
 	// GENERAL SCENE SETUP
@@ -42,12 +46,24 @@ export const start = async () => {
 		canvas
 	});
 
-	// renderer.toneMapping = AgXToneMapping;
 	renderer.outputColorSpace = SRGBColorSpace;
 
 	renderer.shadowMap.enabled = true;
+	renderer.shadowMap.type = PCFSoftShadowMap;
 	renderer.setPixelRatio(window.devicePixelRatio);
 	renderer.setSize(window.innerWidth, window.innerHeight);
+
+	csm = new CSM({
+		maxFar: 1000,
+		cascades: 2,
+		mode: 'practical',
+		parent: scene,
+		shadowMapSize: 2048,
+		lightDirection: new Vector3(0, -1, 3).normalize(),
+		camera: camera,
+		lightIntensity: 0.25,
+		shadowBias: 0.0001
+	});
 
 	const stats = new Stats();
 	document.body.appendChild(stats.dom);
@@ -57,18 +73,17 @@ export const start = async () => {
 	controls.target.set(0, 3, 0);
 	controls.update();
 
-	sceneSetup();
-
-	const people = initPeopleSprite(renderer, scene, 2000);
+	const people = initPeopleSprite(renderer, scene, 8000);
 	const spriteLights = await initSpriteLights(renderer, scene, 25);
-	const spriteHounds = await initSpriteHounds(renderer, scene, 500);
+	const spriteHounds = await initSpriteHounds(renderer, scene, 1500);
 	const spriteFlyers = await initSpriteFlyers(renderer, scene, 2000);
 
+	sceneSetup();
 	animate();
 
 	function sceneSetup() {
-		// Lights
-		scene.add(new AmbientLight(0xccccff, 0.25));
+		const ambient = new AmbientLight('#ccccff', 0.09);
+		scene.add(ambient);
 
 		const groundSize = 1000;
 		const groundRepeatFactor = 2;
@@ -78,8 +93,14 @@ export const start = async () => {
 
 		const ground = new Mesh(
 			new PlaneGeometry(groundSize, groundSize, 1, 1),
-			new MeshPhongMaterial({ color: 0x335544, shininess: 0, map: groundTexture, reflectivity: 0 })
+			new MeshPhongMaterial({
+				map: groundTexture,
+				reflectivity: 0,
+				shininess: 0
+			})
 		);
+
+		csm.setupMaterial(ground.material);
 
 		ground.rotation.x = -Math.PI / 2; // rotates X/Y to X/Z
 		ground.receiveShadow = true;
@@ -90,7 +111,7 @@ export const start = async () => {
 		townTexture.repeat.set(16, 1);
 		const town = new Mesh(
 			new CylinderGeometry(400, 400, 100, 12, 3, true),
-			new MeshBasicMaterial({ map: townTexture, side: DoubleSide, transparent: true })
+			new MeshBasicMaterial({ map: townTexture, side: DoubleSide, transparent: true, fog: false })
 		);
 		town.position.y = 50;
 
@@ -102,7 +123,7 @@ export const start = async () => {
 		skyTexture.offset.set(0, 0.12);
 		sky = new Mesh(
 			new SphereGeometry(600),
-			new MeshBasicMaterial({ map: skyTexture, side: BackSide })
+			new MeshBasicMaterial({ map: skyTexture, side: BackSide, fog: false })
 		);
 
 		scene.add(sky);
@@ -129,6 +150,9 @@ export const start = async () => {
 		spriteHounds.update(delta);
 		spriteFlyers.update(delta);
 		renderer.render(scene, camera);
+		camera.updateMatrixWorld();
+		csm.updateFrustums();
+		csm.update();
 
 		stats.end();
 	}

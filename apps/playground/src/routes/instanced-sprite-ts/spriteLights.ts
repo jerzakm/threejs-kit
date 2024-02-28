@@ -12,6 +12,15 @@ import {
 export const initSpriteLights = async (renderer: WebGLRenderer, scene: Scene, count: number) => {
 	const lightsSheet = await createSpritesheet()
 		.add(
+			'/spritesDemo/spr_Torch_strip.png',
+			{
+				type: 'rowColumn',
+				width: 6,
+				height: 1
+			},
+			'torch'
+		)
+		.add(
 			'/spritesDemo/spr_FirePlace_strip.png',
 			{
 				type: 'rowColumn',
@@ -29,15 +38,7 @@ export const initSpriteLights = async (renderer: WebGLRenderer, scene: Scene, co
 			},
 			'fire2'
 		)
-		.add(
-			'/spritesDemo/spr_Torch_strip.png',
-			{
-				type: 'rowColumn',
-				width: 6,
-				height: 1
-			},
-			'torch'
-		)
+
 		.build();
 
 	const baseMaterial = new MeshBasicMaterial({
@@ -52,7 +53,8 @@ export const initSpriteLights = async (renderer: WebGLRenderer, scene: Scene, co
 	});
 
 	sprite.fps = 8;
-	// sprite.spritesheet = lightsSheet.spritesheet;
+
+	sprite.spritesheet = lightsSheet.spritesheet;
 	// animationMap.set(ref.animationMap as any)
 	sprite.material.needsUpdate = true;
 
@@ -83,7 +85,7 @@ export const initSpriteLights = async (renderer: WebGLRenderer, scene: Scene, co
 			pos[0] = 0;
 			pos[2] = 0;
 		}
-		const light = new PointLight('#FFee77', 3, 50, 0.9);
+		const light = new PointLight('#FFee77', 20, 5, 0.9);
 		light.position.set(pos[0], 2, pos[2]);
 
 		scene.add(light);

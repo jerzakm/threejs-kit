@@ -119,7 +119,7 @@ export const initPeopleSprite = (renderer: WebGLRenderer, scene: Scene, count: n
 	window.addEventListener('keyup', handleKeyUp);
 
 	function setupRandomAgents() {
-		const spread = 400;
+		const spread = 500;
 		const minCenterDistance = 1;
 		const maxCenterDistance = spread;
 		const rndPosition: any = () => {
