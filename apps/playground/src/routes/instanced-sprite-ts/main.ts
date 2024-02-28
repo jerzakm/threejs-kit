@@ -55,13 +55,13 @@ export const start = async () => {
 
 	csm = new CSM({
 		maxFar: 1000,
-		cascades: 2,
+		cascades: 3,
 		mode: 'practical',
 		parent: scene,
 		shadowMapSize: 2048,
 		lightDirection: new Vector3(0, -1, 3).normalize(),
 		camera: camera,
-		lightIntensity: 0.25,
+		lightIntensity: 0.35,
 		shadowBias: 0.0001
 	});
 
@@ -82,7 +82,7 @@ export const start = async () => {
 	animate();
 
 	function sceneSetup() {
-		const ambient = new AmbientLight('#ccccff', 0.09);
+		const ambient = new AmbientLight('#ddddff', 0.19);
 		scene.add(ambient);
 
 		const groundSize = 1000;
