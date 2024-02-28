@@ -1,33 +1,21 @@
-import * as THREE from 'three';
-import Stats from 'three/examples/jsm/libs/stats.module.js';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-
-import rawSpritesheet from './player.json?raw';
 import { InstancedSpriteMesh, parseAseprite } from '@threejs-kit/instanced-sprite-mesh';
+import {
+	BoxGeometry,
+	DoubleSide,
+	Matrix4,
+	Mesh,
+	MeshBasicMaterial,
+	MeshStandardMaterial,
+	SphereGeometry,
+	Vector2,
+	type Scene,
+	type Vector3Tuple,
+	type WebGLRenderer
+} from 'three';
+import rawSpritesheet from './player.json?raw';
+import { loadTexture } from './util';
 
-export const start = async () => {
-	const INSTANCE_COUNT = 10000;
-
-	// GENERAL SCENE SETUP
-	const camera = new THREE.PerspectiveCamera(
-		36,
-		window.innerWidth / window.innerHeight,
-		0.01,
-		2000
-	);
-	camera.position.set(0, 7, 15);
-	const scene = new THREE.Scene();
-	const renderer = new THREE.WebGLRenderer();
-	renderer.shadowMap.enabled = true;
-	renderer.setPixelRatio(window.devicePixelRatio);
-	renderer.setSize(window.innerWidth, window.innerHeight);
-	document.body.appendChild(renderer.domElement);
-
-	const stats = new Stats();
-	document.body.appendChild(stats.dom);
-
-	sceneSetup();
-
+export const initPeopleSprite = (renderer: WebGLRenderer, scene: Scene, count: number) => {
 	// INSTANCED SPRITE SETUP
 	type SpriteAnimations =
 		| 'RunRight'
@@ -38,23 +26,42 @@ export const start = async () => {
 		| 'IdleForward'
 		| 'RunBackward'
 		| 'IdleBackward';
-	const sprite = spriteMeshSetup();
+	// const texture = new TextureLoader().load('/textures/sprites/player.png');
+	// texture.minFilter = NearestFilter;
+	// texture.magFilter = NearestFilter;
+	// texture.colorSpace = SRGBColorSpace;
+
+	const texture = loadTexture('/textures/sprites/player.png');
+
+	const baseMaterial = new MeshStandardMaterial({
+		transparent: true,
+		alphaTest: 0.01,
+		// needs to be double side for shading
+		side: DoubleSide,
+		map: texture
+	});
+
+	const sprite = new InstancedSpriteMesh(baseMaterial, count, renderer);
+	sprite.fps = 15;
+
+	const spritesheet = parseAseprite(JSON.parse(rawSpritesheet));
+	sprite.spritesheet = spritesheet;
 	scene.add(sprite);
+
 	sprite.castShadow = true;
 
 	// UPDATING AND MOVING SPRITES
-
 	let dirtyInstanceMatrix = false;
 
-	const tempMatrix = new THREE.Matrix4();
-	function updatePosition(id: number, position: THREE.Vector3Tuple) {
+	const tempMatrix = new Matrix4();
+	function updatePosition(id: number, position: Vector3Tuple) {
 		tempMatrix.setPosition(...position);
 		sprite.setMatrixAt(id, tempMatrix);
 		dirtyInstanceMatrix = true;
 	}
 
-	const posX: number[] = new Array(INSTANCE_COUNT).fill(0);
-	const posZ: number[] = new Array(INSTANCE_COUNT).fill(0);
+	const posX: number[] = new Array(count).fill(0);
+	const posZ: number[] = new Array(count).fill(0);
 
 	type Agent = {
 		action: 'Idle' | 'Run';
@@ -63,6 +70,7 @@ export const start = async () => {
 	};
 
 	const agents: Agent[] = [];
+
 	const { updateAgents, pickAnimation } = setupRandomAgents();
 
 	const dirs = {
@@ -73,10 +81,10 @@ export const start = async () => {
 	};
 
 	// Player movement & indicator
-	const playerMoveVector = new THREE.Vector2(0, 0);
-	const playerIndicator = new THREE.Mesh(
-		new THREE.SphereGeometry(0.15, 3, 2),
-		new THREE.MeshBasicMaterial({ color: 'lime' })
+	const playerMoveVector = new Vector2(0, 0);
+	const playerIndicator = new Mesh(
+		new SphereGeometry(0.15, 3, 2),
+		new MeshBasicMaterial({ color: 'lime' })
 	);
 	scene.add(playerIndicator);
 
@@ -110,11 +118,9 @@ export const start = async () => {
 	window.addEventListener('keydown', handleKeyDown);
 	window.addEventListener('keyup', handleKeyUp);
 
-	animate();
-
 	function setupRandomAgents() {
 		const spread = 400;
-		const minCenterDistance = 5;
+		const minCenterDistance = 1;
 		const maxCenterDistance = spread;
 		const rndPosition: any = () => {
 			const x = Math.random() * spread - spread / 2;
@@ -130,13 +136,13 @@ export const start = async () => {
 		};
 
 		/** update from 1 because 0 is user controlled and set at 0,0 */
-		for (let i = 1; i < INSTANCE_COUNT; i++) {
+		for (let i = 1; i < count; i++) {
 			const pos = rndPosition();
 			posX[i] = pos.x;
 			posZ[i] = pos.y;
 		}
 
-		for (let i = 0; i < INSTANCE_COUNT; i++) {
+		for (let i = 0; i < count; i++) {
 			agents.push({
 				action: 'Run',
 				timer: 0.1,
@@ -159,7 +165,7 @@ export const start = async () => {
 
 			return animationName;
 		};
-		const velocityHelper = new THREE.Vector2(0, 0);
+		const velocityHelper = new Vector2(0, 0);
 
 		const updateAgents = (delta: number) => {
 			for (let i = 0; i < agents.length; i++) {
@@ -197,7 +203,7 @@ export const start = async () => {
 				}
 			}
 
-			for (let i = 0; i < INSTANCE_COUNT; i++) {
+			for (let i = 0; i < count; i++) {
 				updatePosition(i, [posX[i] || 0, 0.5, posZ[i] || 0]);
 			}
 		};
@@ -205,85 +211,9 @@ export const start = async () => {
 		return { updateAgents, pickAnimation };
 	}
 
-	function sceneSetup() {
-		// Lights
-		scene.add(new THREE.AmbientLight(0xcccccc));
-
-		const dirLight = new THREE.DirectionalLight(0x55505a, 3);
-		dirLight.position.set(0, 4, -10);
-		dirLight.castShadow = true;
-		dirLight.shadow.camera.near = 1;
-		dirLight.shadow.camera.far = 128;
-
-		dirLight.shadow.camera.right = 20;
-		dirLight.shadow.camera.left = -20;
-		dirLight.shadow.camera.top = 20;
-		dirLight.shadow.camera.bottom = -20;
-		dirLight.shadow.bias = -0.001;
-
-		dirLight.shadow.mapSize.width = 1024;
-		dirLight.shadow.mapSize.height = 1024;
-		scene.add(dirLight);
-
-		const ground = new THREE.Mesh(
-			new THREE.PlaneGeometry(2000, 2000, 1, 1),
-			new THREE.MeshPhongMaterial({ color: 0x99cc88, shininess: 0 })
-		);
-
-		ground.rotation.x = -Math.PI / 2; // rotates X/Y to X/Z
-		ground.receiveShadow = true;
-		scene.add(ground);
-
-		// Stats
-
-		// Renderer
-
-		window.addEventListener('resize', onWindowResize);
-
-		// Controls
-		const controls = new OrbitControls(camera, renderer.domElement);
-		controls.target.set(0, 1, 0);
-		controls.update();
-	}
-
-	function spriteMeshSetup() {
-		// dataUrl="/textures/sprites/player.json"
-		const texture = new THREE.TextureLoader().load('/textures/sprites/player.png');
-		texture.minFilter = THREE.NearestFilter;
-		texture.magFilter = THREE.NearestFilter;
-
-		const baseMaterial = new THREE.MeshBasicMaterial({
-			transparent: true,
-			alphaTest: 0.01,
-			// needs to be double side for shading
-			side: THREE.DoubleSide,
-			map: texture
-		});
-
-		const mesh: InstancedSpriteMesh<THREE.MeshBasicMaterial, SpriteAnimations> =
-			new InstancedSpriteMesh(baseMaterial, INSTANCE_COUNT, renderer);
-
-		mesh.fps = 15;
-
-		const spritesheet = parseAseprite(JSON.parse(rawSpritesheet));
-		mesh.spritesheet = spritesheet;
-
-		return mesh;
-	}
-
-	function onWindowResize() {
-		camera.aspect = window.innerWidth / window.innerHeight;
-		camera.updateProjectionMatrix();
-
-		renderer.setSize(window.innerWidth, window.innerHeight);
-	}
-
-	function animate() {
-		requestAnimationFrame(animate);
-		stats.begin();
-		renderer.render(scene, camera);
+	const update = (delta: number) => {
 		playerIndicator.position.set(posX[0], 2, posZ[0]);
-		updateAgents(0.01);
+		updateAgents(delta);
 
 		sprite.update();
 
@@ -291,6 +221,7 @@ export const start = async () => {
 			sprite.instanceMatrix.needsUpdate = true;
 			dirtyInstanceMatrix = false;
 		}
-		stats.end();
-	}
+	};
+
+	return { update, sprite };
 };
