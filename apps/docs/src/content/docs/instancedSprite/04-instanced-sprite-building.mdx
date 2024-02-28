@@ -7,13 +7,13 @@ import { Image } from "astro:assets";
 
 
 
-### `createSpritesheet` utility
+## `createSpritesheet` utility
 
-The `createSpritesheet` is a helper function that facilitates the creation of spritesheet metadata and a `Texture` which are essential for configuring 
+The `createSpritesheet` is a helper function that facilitates the creation of spritesheet metadata and a `Texture` which are essential for configuring
 `InstancedSpriteMesh`. The process involves the following steps:
 
 1. **Initialization:** Begin by invoking the `createSpritesheet` function. This function is the starting point for creating your spritesheet.
-2. **Adding Images**: For each image you wish to include in the spritesheet, call the `add` function on the created spritesheet. This function requires specific parameters:    
+2. **Adding Images**: For each image you wish to include in the spritesheet, call the `add` function on the created spritesheet. This function requires specific parameters:
     - `imageUrl`: The URL or path to the image file.
     - `config` object consiting of:
       - `type` - choose whether you're providing how many rows and columns are in an image `"rowColumn"` or giving the size of a single frame for the builder to interpolate from `"frameSize"`
@@ -23,7 +23,7 @@ The `createSpritesheet` is a helper function that facilitates the creation of sp
         config: {
           type: "rowColumn" | "frameSize";
           width: number;
-          h: number;          
+          height: number;
         }
     - `meta`: either a string to name an animation, or an array of names + framerange in case of defining multiple animations in one file
       ```ts
@@ -31,20 +31,57 @@ The `createSpritesheet` is a helper function that facilitates the creation of sp
         | { name: string; frameRange: [from: number, to: number] }[]
         | string;
       ```
-        
+
 3. **Build**: After adding all of the animations, call `build()`. The `createSpritesheet` function returns a promise. This promise resolves to an object containing a `texture: THREE.Texture`, which can be applied as the map property of a material, and a `spritesheet` for use in the InstancedSpriteMesh.
 
 
 **Important Note:** The utility currently supports only the rowMajor layout. This means the frames in the spritesheet are ordered from left to right and top to bottom, progressing row by row. Adjustments to support different frame sequencing may be added in future updates.
 
+### Generating slim sprite geometries
 
+`createSpritesheet` integrates [diet-sprite](https://github.com/gsimone/diet-sprite) library to support generating slim geometries. It results in more vertices than for example quad or
+triangle geometries, but can lead to significant performance improvements because of fewer fragments being discarded. It works by drawing all spritesheet frames on top of each other, then tracing a shape around it.
+
+You enable it by providing an options object as an argument to the `.build` step of the `createSpritesheet` builder utility.
+When you do that, the `build` function, besides `texture` and `spritesheet` will also return a `geometry` that you can use in [InstancedSpriteMesh constructor options](/02-reference-sheet/#constructor).
+
+```ts
+	type CreateSpritesheetBuildOptions = {
+		makeSlimGeometry?: boolean,
+		slimOptions?: {
+			vertices: number,
+			alphaThreshold:number
+		}
+	}
+```
+
+```ts
+	const flyerSpritesheet = createSpritesheet()
+		.add(
+			'/textures/sprites/Firework.png',
+			{
+				type: 'rowColumn',
+				width: 10,
+				height: 1
+			},
+			'firework'
+		)
+		.build({
+			makeSlimGeometry: true,
+			slimOptions: {
+				alphaTreshold:0,
+				vertices: 8
+			}
+		});
+
+```
 
 
 ## Example
 
-This example shows how to create a spritesheet using the Flying Eye character 
-from the collection available at https://luizmelo.itch.io/monsters-creatures-fantasy. 
-The Flying Eye character includes four separate animation files. The goal is to merge these 
+This example shows how to create a spritesheet using the Flying Eye character
+from the collection available at https://luizmelo.itch.io/monsters-creatures-fantasy.
+The Flying Eye character includes four separate animation files. The goal is to merge these
 files into a single texture and establish the necessary metadata for it.
 
 import attack from "@assets/sprite/Monsters_Creatures_Fantasy/Flying_eye/Attack.png";

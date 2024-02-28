@@ -7,6 +7,8 @@ import {
   Texture,
 } from "three";
 import { SpritesheetFormat } from "./material";
+import { ClippedSpriteGeometry } from "./dietSprite";
+// import * as ds from 'diet-sprite'
 
 type AnimationDefitinion = {
   name: string;
@@ -19,6 +21,14 @@ type AnimationDefitinion = {
   };
   multiAnimations?: { name: string; frameRange: [from: number, to: number] }[];
 };
+
+type CreateSpritesheetBuildOptions = {
+	makeSlimGeometry?: boolean,
+	slimOptions?: {
+		vertices: number,
+		alphaThreshold:number
+	}
+}
 
 // meta is either a string - name of a single animation, or an array of names + framerange
 type AnimationMeta =
@@ -78,7 +88,11 @@ class SpriteBuilder {
     return this;
   }
 
-  async build() {
+  async build(options:CreateSpritesheetBuildOptions = {}):Promise<{
+    spritesheet: SpritesheetFormat;
+    texture: Texture;
+    geometry?: ClippedSpriteGeometry;
+}> {
     const imgLoader = new ImageLoader();
 
     const spritesheet: SpritesheetFormat = {
@@ -108,6 +122,7 @@ class SpriteBuilder {
       });
     }
 
+
     const canvas = document.createElement("canvas");
     canvas.width = generatedWidth;
     canvas.height = generatedHeight;
@@ -128,6 +143,9 @@ class SpriteBuilder {
     let animIndex = 0;
     let frameCounter = 0;
     let accumulatedHeight = 0;
+
+		let frameSize = 64
+
 
     for (const a of this.animations) {
       const img = images[animIndex];
@@ -200,14 +218,48 @@ class SpriteBuilder {
       animIndex++;
     }
 
-    texture.matrixAutoUpdate = false;
+		texture.matrixAutoUpdate = false;
     texture.generateMipmaps = false;
     texture.premultiplyAlpha = false;
     texture.wrapS = texture.wrapT = RepeatWrapping;
     texture.magFilter = texture.minFilter = NearestFilter;
     texture.colorSpace = SRGBColorSpace;
-
     spritesheet.sheetSize = [generatedWidth, generatedHeight];
+
+
+		if(options.makeSlimGeometry){
+			const dietCanvas = document.createElement("canvas")
+			dietCanvas.width = frameSize;
+			dietCanvas.height = frameSize;
+
+			const dietCanvasContext = dietCanvas.getContext("2d");
+
+			const cols = generatedWidth / frameSize
+			const rows = generatedHeight / frameSize
+
+
+			for(let col =0; col<cols;col++){
+				for(let row=0; row<rows;row++){
+					//
+					const sourceX = col * frameSize;
+					const sourceY = row * frameSize;
+
+					dietCanvasContext?.drawImage(canvas, sourceX, sourceY, frameSize, frameSize, 0, 0, frameSize, frameSize);
+				}
+			}
+
+			const dietTexture = new CanvasTexture(dietCanvas);
+			dietTexture.magFilter = texture.minFilter = NearestFilter;
+			dietTexture.colorSpace = SRGBColorSpace;
+
+			const geometry = new ClippedSpriteGeometry(
+				dietTexture, // an already loaded HTMLImageElement or a ThreeJS texture
+				options.slimOptions? options.slimOptions.vertices : 8,
+				options.slimOptions? options.slimOptions.alphaThreshold : 0 // alphaThreshold, 0 means only fully transparent pixels will be discarded
+			)
+			return { spritesheet, texture, geometry };
+		}
+
     return { spritesheet, texture };
   }
 }

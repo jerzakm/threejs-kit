@@ -20,7 +20,8 @@ import { Timer } from "./Timer";
 
 type InstancedSpriteOptions = {
   spritesheet?: SpritesheetFormat;
-  triGeometry?: boolean;
+  geometry?: 'quad' | 'tri' | BufferGeometry<any>;
+	dietGeometry?: any
 };
 
 export const PLAY_MODES = {
@@ -48,36 +49,51 @@ export class InstancedSpriteMesh<
     baseMaterial: T,
     count: number,
     renderer: WebGLRenderer,
-    options: InstancedSpriteOptions = {}
+    options: InstancedSpriteOptions = {
+			geometry: 'quad'
+		}
   ) {
-    // todo bench triangle performance and fix y axis positioning
+
     let geometry: BufferGeometry<any> | PlaneGeometry;
-    if (options?.triGeometry) {
-      geometry = createSpriteTriangle();
-    } else {
-      geometry = new PlaneGeometry(1, 1) as any;
-    }
-    // todo explore snug geometry gen
+		if(!options.geometry) options.geometry = 'quad'
+
+		if(options.geometry === 'tri') {
+			geometry = createSpriteTriangle();
+		}
+
+		if(options.geometry === 'quad') {
+			geometry = new PlaneGeometry(1, 1) as any;
+		}
+
+		if(options.geometry && typeof options.geometry !== 'string'){
+			geometry = options.geometry
+		}
 
     // display material
     const spriteMaterial = constructSpriteMaterial(
       baseMaterial,
-      options?.triGeometry
+      options?.geometry ==='tri'
     );
 
     super(geometry, spriteMaterial as any, count);
 
     // TODO revisit later. Temp fix for 159 breaking change
+		//@ts-ignore
     if (REVISION >= 159) {
+			//@ts-ignore
       this.instanceMatrix.clearUpdateRanges();
+			//@ts-ignore
       this.instanceMatrix.addUpdateRange(0, count * 16);
     } else {
       this.instanceMatrix.updateRange.count = count * 16;
     }
 
     if (this.instanceColor) {
+			//@ts-ignore
       if (REVISION >= 159) {
+				//@ts-ignore
         this.instanceColor.clearUpdateRanges();
+				//@ts-ignore
         this.instanceColor.addUpdateRange(0, count * 3);
       } else {
         this.instanceColor.updateRange.count = count * 3;

@@ -38,11 +38,10 @@
 	export let filter: $$Props['filter'] = 'nearest';
 	export let alphaTest: $$Props['alphaTest'] = 0.1;
 	export let transparent: $$Props['transparent'] = true;
+	export let geometry: any;
 
 	export let texture: Texture | undefined = undefined;
 	export let spritesheet: SpritesheetFormat | undefined = undefined;
-
-	$: console.log({ spritesheet });
 
 	const baseMaterial = new MeshBasicMaterial({
 		transparent: transparent,
@@ -68,8 +67,9 @@
 		count,
 		renderer,
 		{
-			triGeometry: true,
-			spritesheet
+			// dietGeometry: geometry,
+			spritesheet,
+			geometry: geometry ? geometry : 'quad'
 		}
 	);
 

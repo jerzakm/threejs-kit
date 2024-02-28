@@ -3,17 +3,18 @@ title: Reference sheet
 description: InstancedSpriteMesh
 ---
 
-InstancedSpriteMesh extends troika's [InstancedUniformsMesh](https://protectwise.github.io/troika/three-instanced-uniforms-mesh/), 
-which in turn extends [THREE.InstancedMesh](https://threejs.org/docs/?q=instance#api/en/objects/InstancedMesh). 
+InstancedSpriteMesh extends troika's [InstancedUniformsMesh](https://protectwise.github.io/troika/three-instanced-uniforms-mesh/),
+which in turn extends [THREE.InstancedMesh](https://threejs.org/docs/?q=instance#api/en/objects/InstancedMesh).
 
 ## Constructor
 ```ts
 type InstancedSpriteOptions = {
   spritesheet?: SpritesheetFormat;
-  triGeometry?: boolean;  
+  geometry?: 'quad' | 'tri' | BufferGeometry<any>;
+	dietGeometry?: any
 };
 
-new InstancedSpriteMesh ( 
+new InstancedSpriteMesh (
     baseMaterial: T,
     count: number,
     renderer: WebGLRenderer,
@@ -24,13 +25,18 @@ new InstancedSpriteMesh (
 - **baseMaterial** - Threejs material (recommended THREE.MeshBasicMaterial or THREE.MeshStandardMaterial) - more on this here -> (TODO)
 - **count** - number of instances
 - **options** -
-  - **spritesheet** - spritesheet metadata (should be provided at initialization, hot swapping spritesheet textures and metadata will come at a later date)
-  - **triGeometry** - use triangles instead of PlaneGeometry for sprites
+  - **spritesheet** - spritesheet metadata (should be provided at initialization, hot swapping spritesheet
+	textures and metadata will come at a later date)
+  - **geometry** - type of geometry to use. `quad` is a 1x1 `PlaneGeometry`, `tri` is an
+	equilateral triangle but you can also provide a custom geometry here
+	(like the one made with [diet-sprite](/instancedsprite/04-instanced-sprite-building/#generating-slim-sprite-geometries))
 
 ## Playmodes
 - "FORWARD" - plays animation from start to end (default)
 - "REVERSE" - plays animation from end to start
-- "PAUSE" - pauses the animation progression. For example if the animation is playing "FORWARD" and the mode is changed to "PAUSED" a few frames in, then it stays at the current frame. "PAUSED" mode is also useful for manually picking which frame should be rendered.
+- "PAUSE" - pauses the animation progression. For example if the animation is playing "FORWARD" and the mode
+is changed to "PAUSED" a few frames in, then it stays at the current frame. "PAUSED" mode is also useful for
+manually picking which frame should be rendered.
 - "PINGPONG" - (experimental). Plays animation from start to end to start
 
 ## Properties and Methods
@@ -38,10 +44,10 @@ new InstancedSpriteMesh (
 ### `.spritesheet`
 set and get spritesheet (todo, test dynamic spritesheet setting on pre-built mesh)
 
-### `.animation`  
-  - **.animation.setAt( instanceId: number, animation: string )** - sets animation (by name) on instanceId  
+### `.animation`
+  - **.animation.setAt( instanceId: number, animation: string )** - sets animation (by name) on instanceId
 
-### `.playmode` 
+### `.playmode`
 
 ```ts
 type PLAY_MODE = "FORWARD" | "REVERSE" | "PAUSE" | "PINGPONG"
@@ -54,18 +60,21 @@ type PLAY_MODE = "FORWARD" | "REVERSE" | "PAUSE" | "PINGPONG"
 ### `.billboarding`
   Set of methods to toggle billboarding
   - **.billboarding.setAt( instanceId: number, enable: boolean )** - enables billboarding on instance
-  - **.billboarding.setAll( enable: boolean )** - sets default global billboarding state that is used unless the `setAt` was called on the instance
+  - **.billboarding.setAll( enable: boolean )** - sets default global billboarding state that is used
+	unless the `setAt` was called on the instance
   - **.billboarding.unsetAll()** - removes all instance specific billboarding settings
- 
+
  (Experimental. Shadows and normals are not recalculated properly yet)
 
 ### `.offset`
   Offset sprite animation time by a given number of milliseconds
-  - **setAt: (instanceId: number, offset: number)** 
+  - **setAt: (instanceId: number, offset: number)**
   - **randomizeAll: (scalar: number = 1)** - offset all sprites by a random value (0-1) multiplied by scalar
 
-### `.frame`  
-  - **setAt: (instanceId: number, frameId: number, animation?: string)** - Set the instance at a specific frame. FrameID is an n-th frame in the animation if the name is provided, otherwise if not set, it's an n-th frameId of the entire spritesheet.
+### `.frame`
+  - **setAt: (instanceId: number, frameId: number, animation?: string)** - Set the instance at a specific frame.
+	FrameID is an n-th frame in the animation if the name is provided, otherwise if not set, it's an n-th frameId of
+	the entire spritesheet.
 
 ### `.loop`
   methods to control whether sprite animation should be looped
@@ -91,13 +100,12 @@ type PLAY_MODE = "FORWARD" | "REVERSE" | "PAUSE" | "PINGPONG"
 Utility function that combines `.animation`, `.loop` and `.playmode`
 ```ts
 play(
-  animation: V, 
-  loop: boolean = true, 
+  animation: V,
+  loop: boolean = true,
   playmode: PLAY_MODE = "FORWARD")
 .at(instanceId: number)
 
 ```
-
 
 ### `.update`
  - **.update()** - updates instanced spritesheet animation based on fps and time.

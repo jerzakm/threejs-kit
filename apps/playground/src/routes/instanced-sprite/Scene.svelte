@@ -6,6 +6,7 @@
 	import AnimatedInstancedSprite from './AnimatedInstancedSprite.svelte';
 	import FlyerUpdater from './FlyerUpdater.svelte';
 	import PlayerUpdater from './PlayerUpdater.svelte';
+	import { MeshBasicMaterial } from 'three';
 
 	const count = 1000;
 
@@ -24,7 +25,13 @@
 				{ name: 'death', frameRange: [24, 31] }
 			]
 		)
-		.build();
+		.build({
+			makeSlimGeometry: true,
+			slimOptions: {
+				vertices: 5,
+				alphaTreshold: 0
+			}
+		});
 
 	const flyerSpritesheet = createSpritesheet()
 		.add(
@@ -36,24 +43,9 @@
 			},
 			'fly'
 		)
-		.build();
-
-	const countdownSpritesheet = createSpritesheet()
-		.add(
-			'/textures/sprites/countdown_sprite.png',
-			{
-				type: 'rowColumn',
-				width: 10,
-				height: 1
-			},
-			[
-				{
-					name: 'fly',
-					frameRange: [0, 9]
-				}
-			]
-		)
-		.build();
+		.build({
+			makeSlimGeometry: true
+		});
 </script>
 
 <T.PerspectiveCamera makeDefault position.z={15} position.y={7}>
@@ -77,18 +69,25 @@
 		<FlyerUpdater />
 	</AnimatedInstancedSprite>
 {/await} -->
-<!-- 
-{#await flyerSpritesheet then { spritesheet, texture }}
-	<AnimatedInstancedSprite {spritesheet} {texture} fps={10} loop={true} count={count * 25}>
+
+{#await spritesheet then { spritesheet, texture, geometry }}
+	<T.Mesh {geometry} position.y={4}>
+		<T.MeshBasicMaterial color="yellow" wireframe />
+	</T.Mesh>
+	<AnimatedInstancedSprite {spritesheet} {texture} fps={10} loop={true} count={50} {geometry}>
 		<FlyerUpdater />
 	</AnimatedInstancedSprite>
-{/await} -->
 
-{#await countdownSpritesheet then { spritesheet, texture }}
+	<!-- <T.Mesh {geometry} position.y={5}>
+		<T.MeshBasicMaterial color="yellow" wireframe />
+	</T.Mesh> -->
+{/await}
+
+<!-- {#await countdownSpritesheet then { spritesheet, texture }}
 	<AnimatedInstancedSprite {spritesheet} {texture} fps={1} loop={true} count={count * 25}>
 		<FlyerUpdater />
 	</AnimatedInstancedSprite>
-{/await}
+{/await} -->
 
 <Sky elevation={0.15} />
 <!-- <T.AmbientLight /> -->
