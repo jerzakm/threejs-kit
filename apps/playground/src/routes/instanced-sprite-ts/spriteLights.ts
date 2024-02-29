@@ -72,7 +72,7 @@ export const initSpriteLights = async (renderer: WebGLRenderer, scene: Scene, co
 		dirtyInstanceMatrix = true;
 	}
 
-	const spread = 150;
+	const spread = 120;
 
 	for (let i = 0; i < count; i++) {
 		const pos: Vector3Tuple = [

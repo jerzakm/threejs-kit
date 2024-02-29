@@ -73,8 +73,8 @@ export const start = async () => {
 	controls.target.set(0, 3, 0);
 	controls.update();
 
-	const people = initPeopleSprite(renderer, scene, 8000);
-	const spriteLights = await initSpriteLights(renderer, scene, 25);
+	const people = initPeopleSprite(renderer, scene, 4000);
+	const spriteLights = await initSpriteLights(renderer, scene, 15);
 	const spriteHounds = await initSpriteHounds(renderer, scene, 1500);
 	const spriteFlyers = await initSpriteFlyers(renderer, scene, 2000);
 
@@ -130,10 +130,11 @@ export const start = async () => {
 	}
 
 	window.addEventListener('resize', onWindowResize);
+
 	function onWindowResize() {
 		camera.aspect = window.innerWidth / window.innerHeight;
 		camera.updateProjectionMatrix();
-
+		csm.updateFrustums();
 		renderer.setSize(window.innerWidth, window.innerHeight);
 	}
 
@@ -151,7 +152,7 @@ export const start = async () => {
 		spriteFlyers.update(delta);
 		renderer.render(scene, camera);
 		camera.updateMatrixWorld();
-		csm.updateFrustums();
+
 		csm.update();
 
 		stats.end();
