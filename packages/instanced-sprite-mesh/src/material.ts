@@ -328,7 +328,6 @@ export const makeDataTexture = (data: SpritesheetFormat) => {
     RGBAFormat,
     FloatType
   );
-	console.log('nearest fix')
   dataTexture.type = FloatType;
   dataTexture.minFilter = NearestFilter;
   dataTexture.magFilter = NearestFilter;
