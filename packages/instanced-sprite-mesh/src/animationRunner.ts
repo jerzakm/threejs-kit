@@ -140,13 +140,13 @@ const makeDataTexture = (size = 512) => {
     HalfFloatType
   );
 
-	console.log('floatType test')
   // dataTexture.type = FloatType;
   dataTexture.minFilter = NearestFilter;
   dataTexture.magFilter = NearestFilter;
   dataTexture.wrapS = ClampToEdgeWrapping;
   dataTexture.wrapT = RepeatWrapping;
   dataTexture.needsUpdate = true;
+
 
   return dataTexture;
 };

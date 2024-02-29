@@ -2,8 +2,10 @@ import {
   ClampToEdgeWrapping,
   DataTexture,
   FloatType,
+  HalfFloatType,
   LinearFilter,
   Material,
+  NearestFilter,
   RGBAFormat,
   RepeatWrapping,
   Vector2,
@@ -92,13 +94,13 @@ export const constructSpriteMaterial = (
 
       vec3 cameraRight_worldspace = vec3(modelViewMatrix[0][0], modelViewMatrix[1][0], modelViewMatrix[2][0]);
       vec3 cameraUp_worldspace = vec3(modelViewMatrix[0][1], modelViewMatrix[1][1], modelViewMatrix[2][1]);
-  
+
       vec3 vertexPosition_worldspace = instancePosition
         + cameraRight_worldspace * position.x * instanceScale.x
-        + cameraUp_worldspace * position.y * instanceScale.y;        
+        + cameraUp_worldspace * position.y * instanceScale.y;
 
       gl_Position = projectionMatrix * modelViewMatrix * vec4(vertexPosition_worldspace, 1.0);
-    }   
+    }
     `,
     /**
      *
@@ -110,11 +112,11 @@ export const constructSpriteMaterial = (
       const header = /*glsl*/ `
 			uniform sampler2D animationData;
       uniform int animationDataSize;
-			uniform sampler2D spritesheetData;			
+			uniform sampler2D spritesheetData;
       uniform float startTime;
 			uniform float time;
 			uniform float flipX;
-			uniform float flipY;						      
+			uniform float flipY;
 			uniform vec2 dataSize;
       uniform vec4 tint;
 
@@ -129,18 +131,18 @@ export const constructSpriteMaterial = (
 				float hStep = 1.f / dataSize.y;
 				float hHalfStep = 1.f / dataSize.y * 0.5f;
 				return texture2D(spritesheetData, vec2(col * wStep + wHalfStep, row * hStep + hHalfStep));
-			}     
+			}
 
       vec2 zoomUV(vec2 uv, vec2 zoomCenter, float zoomFactor) {
         // Shift UVs so that the zoom center is the origin
         vec2 shiftedUV = uv - zoomCenter;
-    
+
         // Scale (zoom) the UV coordinates
         shiftedUV *= zoomFactor;
-    
+
         // Shift back
         shiftedUV += zoomCenter;
-    
+
         return shiftedUV;
     }
 			`;
@@ -151,7 +153,7 @@ export const constructSpriteMaterial = (
       float x = mod(float(vId),float(animationDataSize)) / float(animationDataSize);
 
       float spritesheetFrameId = texture2D(animationData, vec2(x,y)).r;
-     
+
 			// x,y,w,h
 			vec4 frameMeta = readData(spritesheetFrameId, 0.f);
 
@@ -166,8 +168,8 @@ export const constructSpriteMaterial = (
       }
       if(flipY > 0.){
         transformedPlaneUv.y = 1. - transformedPlaneUv.y;
-      }           
-      
+      }
+
 			vec2 spriteUv = fSize * transformedPlaneUv + fOffset ;
 
       #ifdef TRI_GEOMETRY
@@ -175,17 +177,17 @@ export const constructSpriteMaterial = (
         // TODO optimize ugly math
         if(vUv.y>0.5 || vUv.x<0.25 || vUv.x>0.75){
           discard;
-        }  
+        }
 
         vec2 zoomCenter = vec2(fSize.x * 0.5,0.) + fOffset;
         float zoomFactor = 2.;
-        vec2 shiftedUV = spriteUv - zoomCenter; 
+        vec2 shiftedUV = spriteUv - zoomCenter;
         shiftedUV *= zoomFactor;
-        shiftedUV += zoomCenter; 
+        shiftedUV += zoomCenter;
         spriteUv = shiftedUV;
       #endif
 
-   
+
 
 			`;
       fragmentShader = fragmentShader.replace(
@@ -196,22 +198,22 @@ export const constructSpriteMaterial = (
       fragmentShader = `
 			${header}
 			${readData}
-			${fragmentShader}      
+			${fragmentShader}
 			`;
 
       fragmentShader = fragmentShader.replace(
         `vec4 sampledDiffuseColor = texture2D( map, vMapUv );`,
         /*glsl*/ `
         vec4 sampledDiffuseColor = texture2D( map, vMapUv );
-        if(tint.w == 1.){    
+        if(tint.w == 1.){
           vec3 hue_term = 1.0 - min(abs(vec3(tint.x) - vec3(0,2.0,1.0)), 1.0);
           hue_term.x = 1.0 - dot(hue_term.yz, vec2(1));
           vec3 res = vec3(dot(sampledDiffuseColor.xyz, hue_term.xyz), dot(sampledDiffuseColor.xyz, hue_term.zxy), dot(sampledDiffuseColor.xyz, hue_term.yzx));
           res = mix(vec3(dot(res, vec3(0.2, 0.5, 0.3))), res, tint.y);
-          res = res * tint.z;        
-  
+          res = res * tint.z;
+
           sampledDiffuseColor = vec4(res, sampledDiffuseColor.a);
-        }        
+        }
 
         // sampledDiffuseColor = vec4(texture2D(animationData, vUv).rgb, 1.);
       `
@@ -326,9 +328,10 @@ export const makeDataTexture = (data: SpritesheetFormat) => {
     RGBAFormat,
     FloatType
   );
+	console.log('nearest fix')
   dataTexture.type = FloatType;
-  dataTexture.minFilter = LinearFilter;
-  dataTexture.magFilter = LinearFilter;
+  dataTexture.minFilter = NearestFilter;
+  dataTexture.magFilter = NearestFilter;
   dataTexture.wrapS = ClampToEdgeWrapping;
   dataTexture.wrapT = RepeatWrapping;
   dataTexture.needsUpdate = true;
