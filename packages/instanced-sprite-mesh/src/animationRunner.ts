@@ -2,7 +2,9 @@ import {
   ClampToEdgeWrapping,
   DataTexture,
   FloatType,
+  HalfFloatType,
   LinearFilter,
+  NearestFilter,
   RGBAFormat,
   RepeatWrapping,
   Vector2,
@@ -13,7 +15,7 @@ import { GPUComputationRenderer } from "three/examples/jsm/misc/GPUComputationRe
 const animProgressCompute = /*glsl*/ `
   #include <common>
   uniform sampler2D instructionsTexture;
-  
+
   uniform sampler2D spritesheetData;
   uniform vec2 dataSize;
   uniform float fps;
@@ -28,9 +30,9 @@ const animProgressCompute = /*glsl*/ `
     return texture2D(spritesheetData, vec2(col * wStep + wHalfStep, row * hStep + hHalfStep));
   }
 
-  
 
-  void main()	{    
+
+  void main()	{
 
     // OUTPUT FROM THIS SHADER
     // progressValue.r - picked animation frame
@@ -41,13 +43,13 @@ const animProgressCompute = /*glsl*/ `
     vec2 cellSize = 1.0 / resolution.xy;
     vec2 uv = gl_FragCoord.xy * cellSize;
 
-    
+
     vec4 progressValue = texture2D( progress, uv );
 
     vec4 instructions = texture2D( instructionsTexture, uv);
 
     // FREEZE FRAME - return to save calculations?
-    if(instructions.a >=10.){      
+    if(instructions.a >=10.){
       progressValue.r = instructions.a - 10.;
       progressValue.a = instructions.x;
       progressValue.g = progressValue.g;
@@ -56,11 +58,11 @@ const animProgressCompute = /*glsl*/ `
     }
 
 
-    progressValue.b = 0.;    
-    
+    progressValue.b = 0.;
+
     // todo shouldn't be rounding here, pick
     float animationId = round(instructions.x);
-    
+
     float offset = instructions.g;
 
     float animLength = readData(animationId, 1.f, spritesheetData).r;
@@ -73,26 +75,26 @@ const animProgressCompute = /*glsl*/ `
     // frameTimedId = 0.;
     // float frameTimedId = progressValue.g;
     // save for use in next frame
-    
+
 
 
     float playMode = mod(instructions.b, 10.);
 
     // forward
-    if(playMode == 0.){  
+    if(playMode == 0.){
       frameTimedId = progressValue.g + newProgress;
     }
     // reverse
     if(playMode == 1.){
       frameTimedId = progressValue.g - newProgress;
-    }    
+    }
     // 2 - pause - do nothing
     if(playMode == 2.){
       frameTimedId = progressValue.g;
     }
-    
+
     // //todo pingpong
-    // if(playMode == 3.){     
+    // if(playMode == 3.){
     // }
 
     // loop (play once over 10.)
@@ -100,26 +102,26 @@ const animProgressCompute = /*glsl*/ `
       frameTimedId = mod(frameTimedId, 1.);
     }
 
-    // todo This could be optional and user would reset manually, 
+    // todo This could be optional and user would reset manually,
     // todo allowing for consistent movement across multiple animations
     // todo for example - running steps being syncec
     // start anim from beginning if animationID changes
     if(progressValue.a != instructions.x){
       frameTimedId = 0.;
-    }    
+    }
 
     float frameId = floor(animLength * frameTimedId);
     float spritesheetFrameId = readData(frameId, 2.f + animationId, spritesheetData).r;
 
-    
-    
+
+
     // Picked sprite frame that goes to material
     progressValue.r = spritesheetFrameId;
 
     progressValue.a = instructions.x;
     progressValue.g = frameTimedId;
 
-    gl_FragColor = progressValue;    
+    gl_FragColor = progressValue;
   }
 `;
 
@@ -135,12 +137,13 @@ const makeDataTexture = (size = 512) => {
     size,
     size,
     RGBAFormat,
-    FloatType
+    HalfFloatType
   );
 
-  dataTexture.type = FloatType;
-  dataTexture.minFilter = LinearFilter;
-  dataTexture.magFilter = LinearFilter;
+	console.log('floatType test')
+  // dataTexture.type = FloatType;
+  dataTexture.minFilter = NearestFilter;
+  dataTexture.magFilter = NearestFilter;
   dataTexture.wrapS = ClampToEdgeWrapping;
   dataTexture.wrapT = RepeatWrapping;
   dataTexture.needsUpdate = true;
