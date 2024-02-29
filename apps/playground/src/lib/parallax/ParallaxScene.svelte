@@ -68,7 +68,7 @@
 	turbidity={0}
 	setEnvironment
 	azimuth={20}
-	elevation={-1}
+	elevation={3}
 	mieCoefficient={0.1}
 	mieDirectionalG={0.91}
 />
@@ -85,7 +85,7 @@
 	/>
 </T.PerspectiveCamera>
 
-<T.DirectionalLight position={[90, 80, 300]} intensity={1.5} castShadow color="#ffeecc">
+<T.DirectionalLight position={[90, 80, 300]} intensity={4.5} castShadow color="#ffeecc">
 	<T.Mesh>
 		<T.SphereGeometry args={[1, 5, 5]} />
 		<T.MeshBasicMaterial wireframe color="yellow" />
@@ -150,7 +150,7 @@
 		cutoffDistance={500}
 		repeatUv.x={terrainRepeat}
 		repeatUv.y={terrainRepeat}
-		parallaxMinLayers={64}
+		parallaxMinLayers={16}
 		parallaxMaxLayers={128}
 	/>
 </Terrain>

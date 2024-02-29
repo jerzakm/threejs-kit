@@ -9,6 +9,7 @@
 		SMAAEffect,
 		SMAAPreset
 	} from 'postprocessing';
+	import { LinearToneMapping } from 'three';
 
 	import { ThreePerf } from 'three-perf';
 
@@ -16,24 +17,26 @@
 
 	const { scene, renderer, camera, size } = useThrelte();
 
+	renderer.toneMapping = LinearToneMapping;
+
 	const composer = new EffectComposer(renderer);
 
-	const setupEffectComposer = (camera: THREE.Camera) => {
-		composer.removeAllPasses();
-		composer.addPass(new RenderPass(scene, camera));
+	// const setupEffectComposer = (camera: THREE.Camera) => {
+	// 	composer.removeAllPasses();
+	// 	composer.addPass(new RenderPass(scene, camera));
 
-		composer.addPass(
-			new EffectPass(
-				camera,
-				new SMAAEffect({
-					preset: SMAAPreset.HIGH
-				})
-			)
-		);
-	};
+	// 	composer.addPass(
+	// 		new EffectPass(
+	// 			camera,
+	// 			new SMAAEffect({
+	// 				preset: SMAAPreset.HIGH
+	// 			})
+	// 		)
+	// 	);
+	// };
 
-	$: setupEffectComposer($camera);
-	$: composer.setSize($size.width, $size.height);
+	// $: setupEffectComposer($camera);
+	// $: composer.setSize($size.width, $size.height);
 
 	const perf = new ThreePerf({
 		anchorX: 'left',
