@@ -119,12 +119,12 @@ export const initPeopleSprite = (renderer: WebGLRenderer, scene: Scene, count: n
 	window.addEventListener('keyup', handleKeyUp);
 
 	function setupRandomAgents() {
-		const spread = 500;
+		const spread = 300;
 		const minCenterDistance = 1;
 		const maxCenterDistance = spread;
 		const rndPosition: any = () => {
 			const x = Math.random() * spread - spread / 2;
-			const y = Math.random() * spread - spread / 2;
+			const y = Math.random() * spread - spread;
 
 			/** min distance from 0,0. Recursive reroll if too close */
 

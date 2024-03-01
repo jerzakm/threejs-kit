@@ -88,7 +88,7 @@ export const initSpriteFlyers = async (renderer: WebGLRenderer, scene: Scene, co
 		const maxCenterDistance = spread;
 		const rndPosition: any = () => {
 			const x = Math.random() * spread - spread / 2;
-			const y = Math.random() * spread - spread / 2;
+			const y = Math.random() * spread - spread;
 
 			if (Math.sqrt(x ** 2 + y ** 2) < minCenterDistance) {
 				return rndPosition();

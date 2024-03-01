@@ -137,7 +137,7 @@ const makeDataTexture = (size = 512) => {
     size,
     size,
     RGBAFormat,
-    HalfFloatType
+    FloatType
   );
 
   // dataTexture.type = FloatType;
