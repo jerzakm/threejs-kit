@@ -8,6 +8,7 @@ import { Image } from "astro:assets";
 
 `InstancedSpriteMesh` was created to enabled high performant instancing of animated sprites in threejs. Current solutions do not fare well with very high instance counts. This package aims to resolve that, boasting the capability to render tens of thousands individually animated sprites even on low/medium power devices.
 
+**Example**: [Live](https://threejs-kit-playground.vercel.app/instanced-sprite-ts) [Code](https://github.com/jerzakm/threejs-kit/tree/main/apps/playground/src/routes/instanced-sprite-ts)
 
 ## Installation
 
@@ -57,22 +58,22 @@ mesh.spritesheet = spritesheet;
 ```js
   // set global FPS for updating
   mesh.fps = 15
-  
+
   // play animation on instance id 0 - loops by defualt
   mesh.play('IdleBackward').at(0)
   // play animation without looping
   mesh.play('RunLeft', false).at(1);
   // play animation backwards with looping
   mesh.play('RunLeft', true, 'REVERSE').at(2);
-  
 
-  // mesh.play is a utility that combines the use of these functions:  
+
+  // mesh.play is a utility that combines the use of these functions:
 
   // animation by name
-  mesh.animation.setAt(0, 'RunBackward');  
+  mesh.animation.setAt(0, 'RunBackward');
   // looping y/n
   mesh.loop.setAt(0, false);
-  // animation direction - FORWARD (default) / REVERSE / PAUSE 
+  // animation direction - FORWARD (default) / REVERSE / PAUSE
   mesh.playmode.setAt(0, 'REVERSE')
 
   // billboarding
