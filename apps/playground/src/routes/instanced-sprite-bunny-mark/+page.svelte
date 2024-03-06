@@ -10,8 +10,8 @@
 
 	const param = url.searchParams.get('count');
 
-	const count = parseInt(param);
-	const mode = url.searchParams.get('mode');
+	const count = parseInt(param) || 1000;
+	const mode = url.searchParams.get('mode') || 'bunnies';
 
 	onMount(() => {
 		if (mode === 'bunnies') {
