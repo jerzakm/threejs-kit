@@ -70,6 +70,7 @@
 	}
 	ul {
 		display: flex;
+		flex-wrap: wrap;
 		margin: 0;
 		padding: 0;
 		gap: 1rem;
