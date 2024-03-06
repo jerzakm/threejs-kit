@@ -1,17 +1,24 @@
-<script>
+<script lang="ts">
 	import { onMount } from 'svelte';
-	import { start } from './main';
+	import { initDemonBench } from './mainDemons';
 
 	import { page } from '$app/stores';
+	import { initBunBench } from './mainBunnies';
+	import { fly } from 'svelte/transition';
 
 	const url = $page.url;
 
 	const param = url.searchParams.get('count');
 
 	const count = parseInt(param);
+	const mode = url.searchParams.get('mode');
 
 	onMount(() => {
-		start(count);
+		if (mode === 'bunnies') {
+			initBunBench(count);
+		} else {
+			initDemonBench(count);
+		}
 	});
 
 	const countOptions = [500, 2000, 10000, 50000, 100000, 200000, 400000, 600000, 800000, 1000000];
@@ -27,13 +34,28 @@
 		Displaying <b>{count}</b> bunnies.
 	</span>
 	<ul>
-		<span>Go to:</span>
+		<span style="width: 140px;">Bunnies (static):</span>
 		{#each countOptions as c}
 			<li>
-				<a data-sveltekit-reload href={`/instanced-sprite-bunny-mark?count=${c}`}>{c}</a>
+				<a data-sveltekit-reload href={`/instanced-sprite-bunny-mark?count=${c}&mode=bunnies`}
+					>{c}</a
+				>
 			</li>
 		{/each}
 	</ul>
+	<ul>
+		<span style="width: 140px;">Demons (animated):</span>
+		{#each countOptions as c}
+			<li>
+				<a data-sveltekit-reload href={`/instanced-sprite-bunny-mark?count=${c}&mode=demons`}>{c}</a
+				>
+			</li>
+		{/each}
+	</ul>
+	{#if mode === 'demons'}
+		Each demon has a random animation (idle, death, fly, attack) that changes each time it hits the
+		screen boundary, a separate animation progression and changes flipX based on the direction.
+	{/if}
 </div>
 
 <canvas id="three-canvas" />

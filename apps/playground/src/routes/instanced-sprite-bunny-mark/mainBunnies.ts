@@ -13,7 +13,7 @@ import { initBunnies } from './bunny';
 
 export const clock = new Clock(true);
 
-export const start = async (count = 100000) => {
+export const initBunBench = async (count = 100000) => {
 	// GENERAL SCENE SETUP
 	const screenWidth = window.innerWidth;
 	const screenHeight = window.innerHeight;
@@ -58,8 +58,14 @@ export const start = async (count = 100000) => {
 	window.addEventListener('resize', onWindowResize);
 
 	function onWindowResize() {
-		camera.aspect = window.innerWidth / window.innerHeight;
+		camera.left = 0;
+		camera.right = window.innerWidth;
+		camera.top = window.innerHeight;
+		camera.bottom = 0;
+		// camera.position.set(screenWidth / 2, screenHeight / 2, 10);
+		// camera.lookAt(screenWidth / 2, screenHeight / 2, 0);
 		camera.updateProjectionMatrix();
+
 		renderer.setSize(window.innerWidth, window.innerHeight);
 	}
 
