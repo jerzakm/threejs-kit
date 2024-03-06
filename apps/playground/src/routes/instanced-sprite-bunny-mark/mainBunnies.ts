@@ -31,8 +31,7 @@ export const initBunBench = async (count = 100000) => {
 	if (!canvas) return;
 	const renderer = new WebGLRenderer({
 		canvas,
-		powerPreference: 'high-performance',
-		antialias: true
+		powerPreference: 'high-performance'
 	});
 
 	renderer.outputColorSpace = SRGBColorSpace;
