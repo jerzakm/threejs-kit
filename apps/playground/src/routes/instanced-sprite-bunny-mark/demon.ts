@@ -9,7 +9,7 @@ import {
 } from 'three';
 
 export const initDemons = async (renderer: WebGLRenderer, scene: Scene, count: number) => {
-	const { texture, spritesheet } = await createSpritesheet()
+	const { texture, spritesheet, geometry } = await createSpritesheet()
 		.add(
 			'/textures/sprites/cacodaemon.png',
 			{
@@ -24,7 +24,13 @@ export const initDemons = async (renderer: WebGLRenderer, scene: Scene, count: n
 				{ name: 'death', frameRange: [24, 31] }
 			]
 		)
-		.build();
+		.build({
+			makeSlimGeometry: true,
+			slimOptions: {
+				vertices: 4,
+				alphaThreshold: 0.01
+			}
+		});
 
 	const baseMaterial = new MeshBasicMaterial({
 		transparent: true,
@@ -34,7 +40,9 @@ export const initDemons = async (renderer: WebGLRenderer, scene: Scene, count: n
 		map: texture
 	});
 
-	const sprite = new InstancedSpriteMesh(baseMaterial, count, renderer);
+	const sprite = new InstancedSpriteMesh(baseMaterial, count, renderer, {
+		geometry
+	});
 
 	sprite.fps = 9;
 	sprite.playmode.setAll('FORWARD');

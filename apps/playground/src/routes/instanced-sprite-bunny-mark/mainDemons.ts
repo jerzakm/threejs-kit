@@ -1,4 +1,5 @@
 import Stats from 'three/examples/jsm/libs/stats.module.js';
+import { ThreePerf } from 'three-perf';
 
 import {
 	AmbientLight,
@@ -41,15 +42,19 @@ export const initDemonBench = async (count = 100000) => {
 
 	const demons = await initDemons(renderer, scene, count);
 
-	sceneSetup();
-	animate();
-
 	function sceneSetup() {
 		const ambient = new AmbientLight('#ddddff', 1.19);
 		scene.add(ambient);
 	}
 
 	window.addEventListener('resize', onWindowResize);
+
+	const perf = new ThreePerf({
+		anchorX: 'left',
+		anchorY: 'bottom',
+		domElement: document.body, // or other canvas rendering wrapper
+		renderer: renderer // three js renderer instance you use for rendering
+	});
 
 	function onWindowResize() {
 		camera.left = 0;
@@ -63,16 +68,20 @@ export const initDemonBench = async (count = 100000) => {
 		renderer.setSize(window.innerWidth, window.innerHeight);
 	}
 
+	sceneSetup();
+	animate();
+
 	function animate() {
 		requestAnimationFrame(animate);
 		stats.begin();
+		perf.begin();
 		// timer.update();
 		// const delta = timer.getDelta();
 		const delta = clock.getDelta();
 
 		demons.update(delta);
 		renderer.render(scene, camera);
-
+		perf.end();
 		stats.end();
 	}
 };

@@ -4,7 +4,6 @@
 
 	import { page } from '$app/stores';
 	import { initBunBench } from './mainBunnies';
-	import { fly } from 'svelte/transition';
 
 	const url = $page.url;
 
@@ -80,7 +79,7 @@
 		display: flex;
 		flex-direction: column;
 		gap: 0.5rem;
-		background-color: black;
+		background-color: rgba(0, 0, 0, 0.35);
 		color: #cccccc;
 		padding: 0.15rem 0.2rem;
 		position: fixed;
