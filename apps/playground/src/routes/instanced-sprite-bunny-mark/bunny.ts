@@ -70,7 +70,7 @@ export const initBunnies = async (renderer: WebGLRenderer, scene: Scene, count: 
 
 	const tempMatrix = new Matrix4();
 	function updatePosition(id: number, [x, y, z]: Vector3Tuple) {
-		tempMatrix.makeScale(32, 32, 32);
+		tempMatrix.makeScale(25, 32, 1);
 		tempMatrix.setPosition(x, bounds.top - y, z);
 		sprite.setMatrixAt(id, tempMatrix);
 		dirtyInstanceMatrix = true;
