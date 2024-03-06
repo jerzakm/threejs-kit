@@ -31,7 +31,8 @@
 		>
 	</div>
 	<span>
-		Displaying <b>{count}</b> bunnies.
+		Displaying <b>{count}</b>
+		{mode}.
 	</span>
 	<ul>
 		<span style="width: 140px;">Bunnies (static):</span>
