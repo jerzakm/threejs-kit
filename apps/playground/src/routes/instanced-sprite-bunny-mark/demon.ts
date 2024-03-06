@@ -66,6 +66,7 @@ export const initDemons = async (renderer: WebGLRenderer, scene: Scene, count: n
 
 	const positionX: number[] = new Array(count).fill(0);
 	const positionY: number[] = new Array(count).fill(0);
+	const zIndex: number[] = new Array(count).fill(0);
 
 	const speedX: number[] = new Array(count).fill(0);
 	const speedY: number[] = new Array(count).fill(0);
@@ -79,6 +80,7 @@ export const initDemons = async (renderer: WebGLRenderer, scene: Scene, count: n
 		for (let i = 0; i < count; i++) {
 			positionX[i] = 0;
 			positionY[i] = 0;
+			zIndex[i] = -Math.random() * 10;
 
 			speedX[i] = Math.random() * 10;
 			speedY[i] = Math.random() * 10 - 5;
@@ -125,7 +127,7 @@ export const initDemons = async (renderer: WebGLRenderer, scene: Scene, count: n
 			}
 
 			for (let i = 0; i < count; i++) {
-				updatePosition(i, [positionX[i], positionY[i], 0]);
+				updatePosition(i, [positionX[i], positionY[i], zIndex[i]]);
 			}
 		};
 
