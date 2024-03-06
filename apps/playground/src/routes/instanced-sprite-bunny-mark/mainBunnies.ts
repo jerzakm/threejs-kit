@@ -30,7 +30,9 @@ export const initBunBench = async (count = 100000) => {
 	const canvas = document.getElementById('three-canvas');
 	if (!canvas) return;
 	const renderer = new WebGLRenderer({
-		canvas
+		canvas,
+		powerPreference: 'high-performance',
+		antialias: true
 	});
 
 	renderer.outputColorSpace = SRGBColorSpace;
