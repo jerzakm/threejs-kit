@@ -1,5 +1,11 @@
 # @three-kit/materials
 
+## 2.4.6
+
+### Patch Changes
+
+- e98dbb5: Apple bugfix #2 - HalfFloat back to Float
+
 ## 2.4.3
 
 ### Patch Changes
