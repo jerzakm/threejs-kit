@@ -3,7 +3,6 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
 	plugins: [
-		sveltekit(),
 		{
 			name: 'configure-response-headers',
 			configureServer: (server) => {
@@ -13,7 +12,8 @@ export default defineConfig({
 					next();
 				});
 			}
-		}
+		},
+		sveltekit()
 	],
 	ssr: {
 		noExternal: ['three']
