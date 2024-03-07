@@ -47,8 +47,7 @@ onmessage = function (e) {
 		}
 		lastTime = currentTime * 1;
 
-		// Schedule the next update
-		setTimeout(update, 0); // roughly 60fps
+		setTimeout(update, 0);
 	}
 	update();
 };

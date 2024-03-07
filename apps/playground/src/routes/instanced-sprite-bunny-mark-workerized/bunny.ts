@@ -3,8 +3,6 @@ import {
 	DoubleSide,
 	Matrix4,
 	MeshBasicMaterial,
-	MeshStandardMaterial,
-	Vector2,
 	type Scene,
 	type Vector3Tuple,
 	type WebGLRenderer
@@ -52,21 +50,12 @@ export const initBunnies = async (renderer: WebGLRenderer, scene: Scene, count: 
 
 	const sprite = new InstancedSpriteMesh(baseMaterial, count, renderer);
 
-	sprite.fps = 9;
-
-	sprite.hueShift.setGlobal({
-		h: 0,
-		s: 1.1,
-		v: 1.9
-	});
+	sprite.fps = 1;
 
 	sprite.spritesheet = spritesheet;
 	scene.add(sprite);
 
 	sprite.castShadow = true;
-
-	// UPDATING AND MOVING SPRITES
-	let dirtyInstanceMatrix = false;
 
 	const tempMatrix = new Matrix4();
 	function updatePosition(id: number, [x, y, z]: Vector3Tuple) {
@@ -75,18 +64,6 @@ export const initBunnies = async (renderer: WebGLRenderer, scene: Scene, count: 
 		sprite.setMatrixAt(id, tempMatrix);
 		// dirtyInstanceMatrix = true;
 	}
-
-	const gravity = 0.75;
-
-	const positionX: number[] = new Array(count).fill(0);
-	const positionY: number[] = new Array(count).fill(0);
-	const zIndex: number[] = new Array(count).fill(0);
-
-	const speedX: number[] = new Array(count).fill(0);
-	const speedY: number[] = new Array(count).fill(0);
-
-	const { updateAgents } = setupRandomAgents();
-
 	const bounds = {
 		left: 0,
 		right: window.innerWidth,
@@ -94,77 +71,9 @@ export const initBunnies = async (renderer: WebGLRenderer, scene: Scene, count: 
 		top: window.innerHeight
 	};
 
-	function setupRandomAgents() {
-		for (let i = 0; i < count; i++) {
-			positionX[i] = 0;
-			positionY[i] = 0;
-			zIndex[i] = -Math.random() * 10;
-
-			speedX[i] = Math.random() * 10;
-			speedY[i] = Math.random() * 10 - 5;
-
-			sprite.animation.setAt(i, bunnies[Math.floor(Math.random() * bunnies.length)]);
-		}
-
-		const updateAgents = (delta: number) => {
-			for (let i = 0; i < count; i++) {
-				delta = 1;
-				// timer
-				// apply gravity
-
-				// apply velocity
-				positionX[i] += speedX[i] * delta;
-				positionY[i] += speedY[i] * delta;
-				speedY[i] += gravity * delta;
-
-				// roll new behaviour if bunny gets out of bounds
-
-				if (positionX[i] > bounds.right) {
-					speedX[i] *= -1;
-					positionX[i] = bounds.right;
-				} else if (positionX[i] < bounds.left) {
-					speedX[i] *= -1;
-					positionX[i] = bounds.left;
-				}
-
-				if (positionY[i] > bounds.top) {
-					speedY[i] *= -0.85;
-					positionY[i] = bounds.top;
-					if (Math.random() > 0.5) {
-						speedY[i] -= Math.random() * 6;
-					}
-				} else if (positionY[i] < bounds.bottom) {
-					speedY[i] *= -1;
-					positionY[i] = bounds.top;
-				}
-			}
-
-			for (let i = 0; i < count; i++) {
-				updatePosition(i, [positionX[i], positionY[i], zIndex[i]]);
-			}
-		};
-		sprite.update();
-
-		return { updateAgents };
+	for (let i = 0; i < count; i++) {
+		sprite.animation.setAt(i, bunnies[Math.floor(Math.random() * bunnies.length)]);
 	}
 
-	let initialized = false;
-
-	const update = (delta: number) => {
-		updateAgents(delta);
-
-		// sprite.update();
-
-		if (dirtyInstanceMatrix) {
-			sprite.instanceMatrix.needsUpdate = true;
-			dirtyInstanceMatrix = false;
-		}
-
-		if (!initialized) {
-			sprite.update();
-			initialized = true;
-		}
-	};
-
-	return { update, sprite, updatePosition };
+	return { sprite, updatePosition };
 };

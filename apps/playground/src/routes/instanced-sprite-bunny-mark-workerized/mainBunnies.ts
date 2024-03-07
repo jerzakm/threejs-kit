@@ -106,7 +106,7 @@ export const initBunBench = async (count = 100000) => {
 
 	let workersToSpawn = navigator.hardwareConcurrency
 		? Math.floor(navigator.hardwareConcurrency / 2)
-		: 3;
+		: 2;
 
 	// workersToSpawn = 1;
 	console.log(`This device appears to have ${navigator.hardwareConcurrency} logical cores.`);
@@ -156,7 +156,6 @@ export const initBunBench = async (count = 100000) => {
 		}
 
 		bunnies.sprite.instanceMatrix.needsUpdate = true;
-		// bunnies.update(delta);
 		renderer.render(scene, camera);
 		perf.end();
 		stats.end();

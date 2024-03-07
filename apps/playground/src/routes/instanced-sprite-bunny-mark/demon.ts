@@ -48,12 +48,6 @@ export const initDemons = async (renderer: WebGLRenderer, scene: Scene, count: n
 	sprite.playmode.setAll('FORWARD');
 	sprite.loop.setAll(true);
 
-	sprite.hueShift.setGlobal({
-		h: 0,
-		s: 1.1,
-		v: 1.9
-	});
-
 	sprite.spritesheet = spritesheet;
 	scene.add(sprite);
 

@@ -54,12 +54,6 @@ export const initBunnies = async (renderer: WebGLRenderer, scene: Scene, count: 
 
 	sprite.fps = 9;
 
-	sprite.hueShift.setGlobal({
-		h: 0,
-		s: 1.1,
-		v: 1.9
-	});
-
 	sprite.spritesheet = spritesheet;
 	scene.add(sprite);
 

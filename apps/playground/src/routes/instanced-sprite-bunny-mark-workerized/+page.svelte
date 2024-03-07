@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { initDemonBench } from './mainDemons';
 
 	import { page } from '$app/stores';
 	import { initBunBench } from './mainBunnies';
@@ -15,8 +14,6 @@
 	onMount(() => {
 		if (mode === 'bunnies') {
 			initBunBench(count);
-		} else {
-			initDemonBench(count);
 		}
 	});
 
@@ -44,21 +41,6 @@
 			</li>
 		{/each}
 	</ul>
-	<ul>
-		<span style="width: 140px;">Demons (animated):</span>
-		{#each countOptions as c}
-			<li>
-				<a
-					data-sveltekit-reload
-					href={`/instanced-sprite-bunny-mark-workerized?count=${c}&mode=demons`}>{c}</a
-				>
-			</li>
-		{/each}
-	</ul>
-	{#if mode === 'demons'}
-		Each demon has a random animation (idle, death, fly, attack) that changes each time it hits the
-		screen boundary, a separate animation progression and changes flipX based on the direction.
-	{/if}
 </div>
 
 <canvas id="three-canvas" />
