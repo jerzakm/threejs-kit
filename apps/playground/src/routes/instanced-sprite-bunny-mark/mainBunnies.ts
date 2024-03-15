@@ -18,7 +18,7 @@ export const initBunBench = async (count = 100000) => {
 	// GENERAL SCENE SETUP
 	const screenWidth = window.innerWidth;
 	const screenHeight = window.innerHeight;
-	const pixelRatio = window.devicePixelRatio || 1;
+	const pixelRatio = 1;
 
 	const camera = new OrthographicCamera(0, screenWidth, screenHeight, 0, 1, 1000);
 	camera.position.set(0, 0, 10);
