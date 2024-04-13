@@ -1,5 +1,11 @@
 # @three-kit/materials
 
+## 2.4.7
+
+### Patch Changes
+
+- 437b867: update package.json, move dependencies from peer&dev to dependencies
+
 ## 2.4.6
 
 ### Patch Changes

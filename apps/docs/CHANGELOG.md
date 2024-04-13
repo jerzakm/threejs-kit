@@ -1,5 +1,12 @@
 # @threejs-kit/docs
 
+## 0.0.21
+
+### Patch Changes
+
+- Updated dependencies [437b867]
+  - @threejs-kit/instanced-sprite-mesh@2.4.7
+
 ## 0.0.20
 
 ### Patch Changes
