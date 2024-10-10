@@ -14,14 +14,14 @@
     "build": "vite build"
   },
   "devDependencies": {
-    "@types/three": "^0.158.2",
+    "@types/three": "^0.159.0",
     "tsc-watch": "^6.0.4",
     "typescript": "^5.2.2",
     "vite": "^4.5.0",
     "vite-plugin-dts": "^3.6.3"
   },
   "peerDependencies": {
-    "three": ">=0.151.0"
+    "three": ">=0.159.0"
   },
   "publishConfig": {
     "access": "public"
@@ -39,6 +39,7 @@
     }
   },
   "dependencies": {
+    "@three.ez/instanced-mesh": "^0.2.2",
     "diet-sprite": "^0.0.1",
     "earcut": "^2.2.4",
     "maath": "^0.10.7",

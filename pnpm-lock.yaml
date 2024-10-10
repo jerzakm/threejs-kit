@@ -163,6 +163,9 @@ importers:
 
   packages/instanced-sprite-mesh:
     dependencies:
+      '@three.ez/instanced-mesh':
+        specifier: ^0.2.2
+        version: 0.2.2(three@0.159.0)
       diet-sprite:
         specifier: ^0.0.1
         version: 0.0.1
@@ -171,9 +174,9 @@ importers:
         version: 2.2.4
       maath:
         specifier: ^0.10.7
-        version: 0.10.7(@types/three@0.158.2)(three@0.159.0)
+        version: 0.10.7(@types/three@0.159.0)(three@0.159.0)
       three:
-        specifier: '>=0.151.0'
+        specifier: '>=0.159.0'
         version: 0.159.0
       three-instanced-uniforms-mesh:
         specifier: ^0.49.0
@@ -183,8 +186,8 @@ importers:
         version: 0.49.0(three@0.159.0)
     devDependencies:
       '@types/three':
-        specifier: ^0.158.2
-        version: 0.158.2
+        specifier: ^0.159.0
+        version: 0.159.0
       tsc-watch:
         specifier: ^6.0.4
         version: 6.0.4(typescript@5.2.2)
@@ -1789,6 +1792,15 @@ packages:
       '@theatre/dataverse': 0.7.0
     dev: false
 
+  /@three.ez/instanced-mesh@0.2.2(three@0.159.0):
+    resolution: {integrity: sha512-CA/xg/oZhwnwfMqVwK87vmAfWKWKJla6/9gkyzlC6IxFg2fgGFisAPa6qEu8gfRQ/UzIFXvpbf8a8h/qCdVi9w==}
+    peerDependencies:
+      three: '>=0.159.0'
+    dependencies:
+      bvh.js: 0.0.9
+      three: 0.159.0
+    dev: false
+
   /@threlte/core@7.1.0(svelte@4.2.3)(three@0.159.0):
     resolution: {integrity: sha512-Qshrrt1Bqu8B0rWuNtFqGJpbmxrFUBNYTHOJZ29Tiqy2kpmwYZfzVSPRoGUfJTqUtpfxGCrDU3S2etWnB0KsUA==}
     peerDependencies:
@@ -1804,6 +1816,9 @@ packages:
     peerDependencies:
       svelte: '>=4'
       three: '>=0.133'
+    peerDependenciesMeta:
+      three-mesh-bvh:
+        optional: true
     dependencies:
       svelte: 4.2.3
       three: 0.159.0
@@ -2012,14 +2027,6 @@ packages:
       lil-gui: 0.17.0
     dev: true
 
-  /@types/three@0.158.2:
-    resolution: {integrity: sha512-KPYbdLI8VPhu7qnHqsayfkuk58Qk+20l1U5HBK7uG50EjtrqeCreurNNpnatMZje29XRuTM1A+pGHGdDBHPyUQ==}
-    dependencies:
-      '@types/stats.js': 0.17.3
-      '@types/webxr': 0.5.8
-      fflate: 0.6.10
-      meshoptimizer: 0.18.1
-
   /@types/three@0.159.0:
     resolution: {integrity: sha512-2gybdh7HtX+rGUgslzK7QEJfzD2I0qrbUGzKk+dK0FDx49UHkNX0rqZVRzIgeFjBd1HzzhNNgwNoMacm3Wyc7w==}
     dependencies:
@@ -2027,7 +2034,6 @@ packages:
       '@types/webxr': 0.5.8
       fflate: 0.6.10
       meshoptimizer: 0.18.1
-    dev: true
 
   /@types/unist@2.0.10:
     resolution: {integrity: sha512-IfYcSBWE3hLpBg8+X2SEa8LVkJdJEkT2Ese2aaLs3ptGdVtABxndrMaxuFlQ1qdFf9Q5rDvDpxI3WwgvKFAsQA==}
@@ -2763,6 +2769,10 @@ packages:
     dependencies:
       base64-js: 1.5.1
       ieee754: 1.2.1
+    dev: false
+
+  /bvh.js@0.0.9:
+    resolution: {integrity: sha512-kSQbpfA1xWaBqlAuRkkFYO4/w/miN3Hs26XgMTPnWuWZcY0bsO1ugjizpDbKMBMbGgwz2+4X5NBGFxn+0kItsQ==}
     dev: false
 
   /call-bind@1.0.2:
@@ -4936,13 +4946,13 @@ packages:
     dependencies:
       yallist: 4.0.0
 
-  /maath@0.10.7(@types/three@0.158.2)(three@0.159.0):
+  /maath@0.10.7(@types/three@0.159.0)(three@0.159.0):
     resolution: {integrity: sha512-zQ2xd7dNOIVTjAS+hj22fyj1EFYmOJX6tzKjZ92r6WDoq8hyFxjuGA2q950tmR4iC/EKXoMQdSipkaJVuUHDTg==}
     peerDependencies:
       '@types/three': '>=0.144.0'
       three: '>=0.144.0'
     dependencies:
-      '@types/three': 0.158.2
+      '@types/three': 0.159.0
       three: 0.159.0
     dev: false
 

@@ -33,6 +33,24 @@
 			}
 		});
 
+	const clouds = createSpritesheet()
+		.add(
+			'/textures/sprites/clouds.png',
+			{
+				type: 'rowColumn',
+				width: 5,
+				height: 5
+			},
+			[{ name: 'fly', frameRange: [0, 24] }]
+		)
+		.build({
+			makeSlimGeometry: true,
+			slimOptions: {
+				vertices: 5,
+				alphaTreshold: 0
+			}
+		});
+
 	const flyerSpritesheet = createSpritesheet()
 		.add(
 			'/textures/sprites/Monsters_Creatures_Fantasy/Flying_eye/Flight.png',
@@ -70,11 +88,11 @@
 	</AnimatedInstancedSprite>
 {/await} -->
 
-{#await spritesheet then { spritesheet, texture, geometry }}
+{#await clouds then { spritesheet, texture, geometry }}
 	<T.Mesh {geometry} position.y={4}>
 		<T.MeshBasicMaterial color="yellow" wireframe />
 	</T.Mesh>
-	<AnimatedInstancedSprite {spritesheet} {texture} fps={10} loop={true} count={50} {geometry}>
+	<AnimatedInstancedSprite {spritesheet} {texture} fps={10} loop={true} count={5000} {geometry}>
 		<FlyerUpdater />
 	</AnimatedInstancedSprite>
 
@@ -91,10 +109,5 @@
 
 <Sky elevation={0.15} />
 <!-- <T.AmbientLight /> -->
-
-<T.Mesh rotation.x={-DEG2RAD * 90} receiveShadow>
-	<T.PlaneGeometry args={[1000, 100]} />
-	<T.MeshStandardMaterial color={'#aa6644'} />
-</T.Mesh>
 
 <Grid infiniteGrid type={'grid'} sectionThickness={0.0} position.y={0.01} />
