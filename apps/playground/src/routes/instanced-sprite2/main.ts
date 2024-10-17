@@ -4,7 +4,10 @@ import Stats from 'three/examples/jsm/libs/stats.module.js';
 
 import {
 	AmbientLight,
+	BoxGeometry,
 	Clock,
+	Mesh,
+	MeshBasicMaterial,
 	PCFSoftShadowMap,
 	PerspectiveCamera,
 	SRGBColorSpace,
@@ -51,6 +54,15 @@ export const start = async () => {
 	function sceneSetup() {
 		const ambient = new AmbientLight('#ddddff', 3.19);
 		scene.add(ambient);
+
+		const dataTextureCube = new Mesh(
+			new BoxGeometry(),
+			new MeshBasicMaterial({
+				map: spriteFlyers.sprite.compute.animationRunner.renderTargets[0].texture,
+				color: 'red'
+			})
+		);
+		scene.add(dataTextureCube);
 	}
 
 	window.addEventListener('resize', onWindowResize);

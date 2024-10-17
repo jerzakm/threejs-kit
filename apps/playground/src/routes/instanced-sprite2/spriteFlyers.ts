@@ -1,36 +1,34 @@
-import { InstancedSpriteMesh2, createSpritesheet } from '@threejs-kit/instanced-sprite-mesh';
 import {
-	DoubleSide,
-	Matrix4,
-	MeshStandardMaterial,
-	Vector2,
-	type Scene,
-	type Vector3Tuple,
-	type WebGLRenderer
-} from 'three';
+	InstancedSpriteMesh2,
+	createSpritesheet,
+	SpriteMaterial2
+} from '@threejs-kit/instanced-sprite-mesh';
+import { Matrix4, Vector2, type Scene, type Vector3Tuple, type WebGLRenderer } from 'three';
 
 export const initSpriteFlyers = async (renderer: WebGLRenderer, scene: Scene, count: number) => {
-	const { texture } = await createSpritesheet()
+	const { texture, spritesheet } = await createSpritesheet()
 		.add(
 			'/textures/sprites/countdown_sprite.png',
 			{
 				type: 'rowColumn',
-				width: 8,
-				height: 4
+				width: 9,
+				height: 1
 			},
 			[{ name: 'countdown', frameRange: [0, 9] }]
 		)
 		.build();
 
-	const baseMaterial = new MeshStandardMaterial({
-		transparent: true,
-		alphaTest: 0.01,
-		// needs to be double side for shading
-		side: DoubleSide,
-		map: texture
-	});
+	// const baseMaterial = new MeshStandardMaterial({
+	// 	transparent: true,
+	// 	alphaTest: 0.01,
+	// 	side: DoubleSide,
+	// 	map: texture
+	// });
 
-	const sprite = new InstancedSpriteMesh2(baseMaterial, count, renderer);
+	const basematerial = new SpriteMaterial2(count);
+
+	const sprite = new InstancedSpriteMesh2(basematerial, count, renderer, spritesheet);
+	sprite.fps = 15;
 
 	scene.add(sprite);
 
@@ -138,7 +136,7 @@ export const initSpriteFlyers = async (renderer: WebGLRenderer, scene: Scene, co
 	const update = (delta: number) => {
 		updateAgents(delta);
 
-		// sprite.update();
+		sprite.update();
 
 		if (dirtyInstanceMatrix) {
 			// sprite.instanceMatrix.needsUpdate = true;
