@@ -5,7 +5,6 @@ import Stats from 'three/examples/jsm/libs/stats.module.js';
 import {
 	AmbientLight,
 	Clock,
-	DirectionalLight,
 	PCFSoftShadowMap,
 	PerspectiveCamera,
 	SRGBColorSpace,
