@@ -33,9 +33,7 @@ export class InstancedSpriteMesh2<V> extends InstancedMesh2 {
     this.compute = initAnimationRunner(renderer, count)
 
     const { dataTexture, dataWidth, dataHeight, animMap } = makeDataTexture(spritesheet)
-    // this._spriteMaterial.uniforms.spritesheetData.value = dataTexture;
-    // this._spriteMaterial.uniforms.dataSize.value.x = dataWidth;
-    // this._spriteMaterial.uniforms.dataSize.value.y = dataHeight;
+
     this.compute.animationRunner.material.uniforms['dataSize'].value = new Vector2(
       dataWidth,
       dataHeight
@@ -44,6 +42,16 @@ export class InstancedSpriteMesh2<V> extends InstancedMesh2 {
     // @ts-ignore
     this._animationMap = animMap
     this._spritesheet = spritesheet
+
+    baseMaterial.uniforms.spritesheetData.value = dataTexture
+    baseMaterial.uniforms.dataSize.value.x = dataWidth
+    baseMaterial.uniforms.dataSize.value.y = dataHeight
+
+    baseMaterial.uniforms.animationData.value = this.compute.gpuCompute.getCurrentRenderTarget(
+      this.compute.animationRunner
+    ).texture
+
+    baseMaterial.uniforms.animationDataSize.value = this.compute.progressDataTexture.image.width
   }
 
   public get spritesheet(): SpritesheetFormat | undefined {

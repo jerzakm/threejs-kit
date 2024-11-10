@@ -8,13 +8,18 @@ import { Matrix4, Vector2, type Scene, type Vector3Tuple, type WebGLRenderer } f
 export const initSpriteFlyers = async (renderer: WebGLRenderer, scene: Scene, count: number) => {
 	const { texture, spritesheet } = await createSpritesheet()
 		.add(
-			'/textures/sprites/countdown_sprite.png',
+			'/textures/sprites/cacodaemon.png',
 			{
 				type: 'rowColumn',
-				width: 9,
-				height: 1
+				width: 8,
+				height: 4
 			},
-			[{ name: 'countdown', frameRange: [0, 9] }]
+			[
+				{ name: 'fly', frameRange: [0, 5] },
+				{ name: 'attack', frameRange: [8, 13] },
+				{ name: 'idle', frameRange: [16, 19] },
+				{ name: 'death', frameRange: [24, 31] }
+			]
 		)
 		.build();
 
@@ -25,10 +30,12 @@ export const initSpriteFlyers = async (renderer: WebGLRenderer, scene: Scene, co
 	// 	map: texture
 	// });
 
-	const basematerial = new SpriteMaterial2(count);
+	const basematerial = new SpriteMaterial2(count, {
+		map: texture
+	});
 
 	const sprite = new InstancedSpriteMesh2(basematerial, count, renderer, spritesheet);
-	sprite.fps = 15;
+	sprite.fps = 7;
 
 	scene.add(sprite);
 
@@ -49,7 +56,7 @@ export const initSpriteFlyers = async (renderer: WebGLRenderer, scene: Scene, co
 	const posZ: number[] = new Array(count).fill(0);
 
 	type Agent = {
-		action: 'countdown';
+		action: string;
 		velocity: [number, number];
 		timer: number;
 	};
@@ -62,7 +69,7 @@ export const initSpriteFlyers = async (renderer: WebGLRenderer, scene: Scene, co
 		const spread = 400;
 		const minCenterDistance = 0;
 		const maxCenterDistance = spread;
-		const rndPosition: any = () => {
+		const rndPosition = () => {
 			const x = Math.random() * spread - spread / 2;
 			const y = Math.random() * spread - spread;
 
@@ -81,7 +88,7 @@ export const initSpriteFlyers = async (renderer: WebGLRenderer, scene: Scene, co
 
 		for (let i = 0; i < count; i++) {
 			agents.push({
-				action: 'countdown',
+				action: 'death',
 				timer: 0.1,
 				velocity: [0, 1]
 			});
@@ -107,9 +114,6 @@ export const initSpriteFlyers = async (renderer: WebGLRenderer, scene: Scene, co
 				if (i > 0) {
 					const dist = Math.sqrt((posX[i] || 0) ** 2 + (posZ[i] || 0) ** 2);
 					if (agents[i].timer < 0 || dist < minCenterDistance || dist > maxCenterDistance) {
-						const pickedAction = 'countdown';
-
-						agents[i].action = pickedAction;
 						agents[i].timer = 5 + Math.random() * 5;
 
 						velocityHelper
@@ -117,6 +121,8 @@ export const initSpriteFlyers = async (renderer: WebGLRenderer, scene: Scene, co
 							.normalize()
 							.multiplyScalar(RUN_SPEED);
 						agents[i].velocity = velocityHelper.toArray();
+						sprite.play(agents[i].action, true, 'FORWARD').at(i);
+						sprite.flipX.setAt(i, velocityHelper.x < 0);
 					}
 				}
 			}
@@ -139,7 +145,6 @@ export const initSpriteFlyers = async (renderer: WebGLRenderer, scene: Scene, co
 		sprite.update();
 
 		if (dirtyInstanceMatrix) {
-			// sprite.instanceMatrix.needsUpdate = true;
 			dirtyInstanceMatrix = false;
 		}
 	};
