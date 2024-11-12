@@ -50,7 +50,7 @@ export const start = async () => {
 	controls.target.set(0, 3, 0);
 	controls.update();
 
-	const spriteFlyers = await initSpriteFlyers(renderer, scene, 2000);
+	const spriteFlyers = await initSpriteFlyers(renderer, scene, 10000);
 
 	sceneSetup();
 	animate();
@@ -59,14 +59,14 @@ export const start = async () => {
 		const ambient = new AmbientLight('#ddddff', 3.19);
 		scene.add(ambient);
 
-		// const dataTextureCube = new Mesh(
-		// 	new BoxGeometry(),
-		// 	new MeshBasicMaterial({
-		// 		map: spriteFlyers.sprite.compute.animationRunner.renderTargets[0].texture,
-		// 		color: 'red'
-		// 	})
-		// );
-		// scene.add(dataTextureCube);
+		const dataTextureCube = new Mesh(
+			new BoxGeometry(),
+			new MeshBasicMaterial({
+				map: spriteFlyers.sprite.compute.animationRunner.renderTargets[0].texture,
+				color: 'red'
+			})
+		);
+		scene.add(dataTextureCube);
 	}
 
 	window.addEventListener('resize', onWindowResize);
@@ -82,8 +82,6 @@ export const start = async () => {
 
 		perf.begin();
 
-		// timer.update();
-		// const delta = timer.getDelta();
 		const delta = clock.getDelta();
 
 		spriteFlyers.update(delta);

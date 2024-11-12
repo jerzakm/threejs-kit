@@ -142,8 +142,7 @@ export const start = async () => {
 	function animate() {
 		requestAnimationFrame(animate);
 		stats.begin();
-		// timer.update();
-		// const delta = timer.getDelta();
+
 		const delta = clock.getDelta();
 
 		if (sky) sky.rotation.y += 0.005 * delta;

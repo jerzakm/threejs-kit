@@ -2,8 +2,9 @@ import { InstancedMesh2 } from '@three.ez/instanced-mesh'
 
 import { PlaneGeometry, Vector2, Vector4, WebGLRenderer } from 'three'
 import { initAnimationRunner } from './animationRunner'
-import { Timer } from './Timer'
 import { makeDataTexture, SpritesheetFormat } from './material'
+import { patchSpriteMaterial } from './material2'
+import { Timer } from './Timer'
 
 export const PLAY_MODES = {
   FORWARD: 0,
@@ -19,6 +20,7 @@ export class InstancedSpriteMesh2<V> extends InstancedMesh2 {
   private _animationMap: Map<V, number>
   private _fps: number = 15
   private _timer: Timer
+  private _updateShader: any
   compute: ReturnType<typeof initAnimationRunner>
 
   constructor(
@@ -27,7 +29,9 @@ export class InstancedSpriteMesh2<V> extends InstancedMesh2 {
     renderer: WebGLRenderer,
     spritesheet: SpritesheetFormat
   ) {
-    super(renderer, count, new PlaneGeometry(), baseMaterial)
+    // const patched = patchSpriteMaterial(baseMaterial)
+    const patched = patchSpriteMaterial(baseMaterial)
+    super(renderer, count, new PlaneGeometry(), patched)
 
     this._timer = new Timer()
     this.compute = initAnimationRunner(renderer, count)
@@ -43,15 +47,18 @@ export class InstancedSpriteMesh2<V> extends InstancedMesh2 {
     this._animationMap = animMap
     this._spritesheet = spritesheet
 
-    baseMaterial.uniforms.spritesheetData.value = dataTexture
-    baseMaterial.uniforms.dataSize.value.x = dataWidth
-    baseMaterial.uniforms.dataSize.value.y = dataHeight
-
-    baseMaterial.uniforms.animationData.value = this.compute.gpuCompute.getCurrentRenderTarget(
-      this.compute.animationRunner
-    ).texture
-
-    baseMaterial.uniforms.animationDataSize.value = this.compute.progressDataTexture.image.width
+    this._updateShader = () => {
+      if (this.material.userData.shader) {
+        this.material.userData.shader.uniforms.time.value = performance.now()
+        this.material.userData.shader.uniforms.spritesheetData.value = dataTexture
+        this.material.userData.shader.uniforms.dataSize.value.x = dataWidth
+        this.material.userData.shader.uniforms.dataSize.value.y = dataHeight
+        this.material.userData.shader.uniforms.animationData.value =
+          this.compute.gpuCompute.getCurrentRenderTarget(this.compute.animationRunner).texture
+        this.material.userData.shader.uniforms.animationDataSize.value =
+          this.compute.progressDataTexture.image.width
+      }
+    }
   }
 
   public get spritesheet(): SpritesheetFormat | undefined {
@@ -231,7 +238,7 @@ export class InstancedSpriteMesh2<V> extends InstancedMesh2 {
     this._timer.update()
     const dt = this._timer.getDelta()
     this.compute.animationRunner.material.uniforms['deltaTime'].value = dt
-
+    this._updateShader()
     this.compute.update()
   }
 }

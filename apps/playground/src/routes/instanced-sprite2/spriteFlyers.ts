@@ -3,7 +3,15 @@ import {
 	createSpritesheet,
 	SpriteMaterial2
 } from '@threejs-kit/instanced-sprite-mesh';
-import { Matrix4, Vector2, type Scene, type Vector3Tuple, type WebGLRenderer } from 'three';
+import {
+	DoubleSide,
+	Matrix4,
+	MeshBasicMaterial,
+	Vector2,
+	type Scene,
+	type Vector3Tuple,
+	type WebGLRenderer
+} from 'three';
 
 export const initSpriteFlyers = async (renderer: WebGLRenderer, scene: Scene, count: number) => {
 	const { texture, spritesheet } = await createSpritesheet()
@@ -23,18 +31,14 @@ export const initSpriteFlyers = async (renderer: WebGLRenderer, scene: Scene, co
 		)
 		.build();
 
-	// const baseMaterial = new MeshStandardMaterial({
-	// 	transparent: true,
-	// 	alphaTest: 0.01,
-	// 	side: DoubleSide,
-	// 	map: texture
-	// });
-
-	const basematerial = new SpriteMaterial2(count, {
+	const baseMaterial = new MeshBasicMaterial({
+		transparent: true,
+		alphaTest: 0.01,
+		side: DoubleSide,
 		map: texture
 	});
 
-	const sprite = new InstancedSpriteMesh2(basematerial, count, renderer, spritesheet);
+	const sprite = new InstancedSpriteMesh2(baseMaterial, count, renderer, spritesheet);
 	sprite.fps = 7;
 
 	scene.add(sprite);
@@ -69,7 +73,7 @@ export const initSpriteFlyers = async (renderer: WebGLRenderer, scene: Scene, co
 		const spread = 400;
 		const minCenterDistance = 0;
 		const maxCenterDistance = spread;
-		const rndPosition = () => {
+		const rndPosition: any = () => {
 			const x = Math.random() * spread - spread / 2;
 			const y = Math.random() * spread - spread;
 
@@ -88,15 +92,24 @@ export const initSpriteFlyers = async (renderer: WebGLRenderer, scene: Scene, co
 
 		for (let i = 0; i < count; i++) {
 			agents.push({
-				action: 'death',
+				action: 'fly',
 				timer: 0.1,
 				velocity: [0, 1]
 			});
 		}
 
+		const pickAction = () => {
+			const actionRoll = Math.random();
+			if (actionRoll > 0.99) return 'death';
+			if (actionRoll > 0.9) return 'attack';
+			if (actionRoll > 0.75) return 'idle';
+			return 'fly';
+		};
+
 		const velocityHelper = new Vector2(0, 0);
 
 		const RUN_SPEED = 4;
+		const WALK_SPEED = 0.8;
 
 		let totalTime = 0;
 
@@ -114,14 +127,42 @@ export const initSpriteFlyers = async (renderer: WebGLRenderer, scene: Scene, co
 				if (i > 0) {
 					const dist = Math.sqrt((posX[i] || 0) ** 2 + (posZ[i] || 0) ** 2);
 					if (agents[i].timer < 0 || dist < minCenterDistance || dist > maxCenterDistance) {
+						const pickedAction = pickAction() satisfies Agent['action'];
+
+						agents[i].action = pickedAction;
 						agents[i].timer = 5 + Math.random() * 5;
 
-						velocityHelper
-							.set(Math.random() - 0.5, Math.random() - 0.5)
-							.normalize()
-							.multiplyScalar(RUN_SPEED);
-						agents[i].velocity = velocityHelper.toArray();
-						sprite.play(agents[i].action, true, 'FORWARD').at(i);
+						if (agents[i].action === 'fly') {
+							velocityHelper
+								.set(Math.random() - 0.5, Math.random() - 0.5)
+								.normalize()
+								.multiplyScalar(RUN_SPEED);
+							agents[i].velocity = velocityHelper.toArray();
+							sprite.play('fly', true, 'FORWARD').at(i);
+						}
+
+						if (agents[i].action === 'idle') {
+							velocityHelper
+								.set(Math.random() - 0.5, Math.random() - 0.5)
+								.normalize()
+								.multiplyScalar(WALK_SPEED);
+							agents[i].velocity = velocityHelper.toArray();
+							sprite.play('idle', true, 'FORWARD').at(i);
+						}
+
+						if (agents[i].action === 'death') {
+							velocityHelper
+								.set(Math.random() - 0.5, Math.random() - 0.5)
+								.normalize()
+								.multiplyScalar(WALK_SPEED * 0.1);
+							agents[i].velocity = velocityHelper.toArray();
+							sprite.play('death', true, 'FORWARD').at(i);
+						}
+
+						if (agents[i].action === 'attack') {
+							sprite.play('attack', true, 'FORWARD').at(i);
+							agents[i].velocity = [0, 0];
+						}
 						sprite.flipX.setAt(i, velocityHelper.x < 0);
 					}
 				}
