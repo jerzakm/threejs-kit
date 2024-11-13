@@ -65,8 +65,8 @@ export class SpriteMaterial2 extends ShaderMaterial {
 		}
 
     void main() {
-			float y = float(vId / animationDataSize) / float(animationDataSize);
-      float x = mod(float(vId),float(animationDataSize)) / float(animationDataSize);
+			float y = float(vInstanceIndex / animationDataSize) / float(animationDataSize);
+      float x = mod(float(vInstanceIndex),float(animationDataSize)) / float(animationDataSize);
 
       float spritesheetFrameId = texture2D(animationData, vec2(x,y)).r;
 
@@ -148,10 +148,14 @@ const expandThreejsMaterialChunks = (shader: string) => {
   })
 }
 
-export const patchSpriteMaterial = (material: any) => {
+export const patchSpriteMaterial = (material: any, triGeometry = false) => {
   let amount = performance.now() * 100
 
   material.defines = { USE_UV: '' }
+
+  if (triGeometry) {
+    material.defines['TRI_GEOMETRY'] = ''
+  }
 
   material.onBeforeCompile = function (shader: any) {
     shader.uniforms = {
@@ -178,8 +182,7 @@ export const patchSpriteMaterial = (material: any) => {
       /**
        * Tinting - Vector4 (enabled 0/1, H (0-3), S (0-1), V(0-1))
        */
-      tint: { value: new Vector4(0, 0, 0, 0) },
-      time: { value: 0 }
+      tint: { value: new Vector4(0, 0, 0, 0) }
     }
 
     shader.vertexShader = shader.vertexShader.replace(
@@ -207,7 +210,6 @@ export const patchSpriteMaterial = (material: any) => {
 			uniform int animationDataSize;
 			uniform sampler2D spritesheetData;
 			uniform float startTime;
-			uniform float time;
 			uniform float flipX;
 			uniform float flipY;
 			uniform vec2 dataSize;
@@ -265,13 +267,11 @@ export const patchSpriteMaterial = (material: any) => {
 
     // shader.fragmentShader =
     //   shader.fragmentShader.slice(0, -1) +
-    //   /*glsl*/ `gl_FragColor = vec4(spriteUv * sin(time*0.01), 1.,1.);` +
+    //   /*glsl*/ `gl_FragColor = vec4(spriteUv, 1.,1.);` +
     //   shader.fragmentShader.slice(-1)
 
     material.userData.shader = shader
   }
-
-  // Make sure WebGLRenderer doesnt reuse a single program
 
   material.customProgramCacheKey = function () {
     return amount.toFixed(1)

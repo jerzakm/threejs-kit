@@ -40,7 +40,6 @@
   },
   "dependencies": {
     "@three.ez/instanced-mesh": "^0.2.8",
-    "diet-sprite": "^0.0.1",
     "earcut": "^2.2.4",
     "maath": "^0.10.7",
     "three-instanced-uniforms-mesh": "^0.49.0",

@@ -1,10 +1,12 @@
-import { createRadixSort, InstancedMesh2 } from '@three.ez/instanced-mesh'
+import { InstancedMesh2 } from '@three.ez/instanced-mesh'
 
-import { PlaneGeometry, Vector2, Vector4, WebGLRenderer } from 'three'
+import { BufferGeometry, PlaneGeometry, Vector2, Vector4, WebGLRenderer } from 'three'
 import { initAnimationRunner } from './animationRunner'
 import { makeDataTexture, SpritesheetFormat } from './material'
 import { patchSpriteMaterial } from './material2'
 import { Timer } from './Timer'
+import { InstancedSpriteOptions } from './InstancedSpriteMesh'
+import { createSpriteTriangle } from './triangle'
 
 export const PLAY_MODES = {
   FORWARD: 0,
@@ -27,11 +29,27 @@ export class InstancedSpriteMesh2<V> extends InstancedMesh2 {
     baseMaterial: any,
     count: number,
     renderer: WebGLRenderer,
-    spritesheet: SpritesheetFormat
+    spritesheet: SpritesheetFormat,
+    options: InstancedSpriteOptions = {
+      geometry: 'quad'
+    }
   ) {
-    // const patched = patchSpriteMaterial(baseMaterial)
-    const patched = patchSpriteMaterial(baseMaterial)
-    super(renderer, count, new PlaneGeometry(), patched)
+    const patched = patchSpriteMaterial(baseMaterial, options.geometry === 'tri')
+
+    let geometry: BufferGeometry<any> | PlaneGeometry
+    if (!options.geometry) options.geometry = 'quad'
+
+    if (options.geometry === 'tri') {
+      geometry = createSpriteTriangle()
+    } else if (options.geometry === 'quad') {
+      geometry = new PlaneGeometry(1, 1) as any
+    } else if (typeof options.geometry !== 'string') {
+      geometry = options.geometry
+    } else {
+      throw new Error(`Invalid geometry option: ${options.geometry}`)
+    }
+
+    super(renderer, count, geometry, patched)
 
     this._timer = new Timer()
     this.compute = initAnimationRunner(renderer, count)
@@ -49,7 +67,6 @@ export class InstancedSpriteMesh2<V> extends InstancedMesh2 {
 
     this._updateShader = () => {
       if (this.material.userData.shader) {
-        this.material.userData.shader.uniforms.time.value = performance.now()
         this.material.userData.shader.uniforms.spritesheetData.value = dataTexture
         this.material.userData.shader.uniforms.dataSize.value.x = dataWidth
         this.material.userData.shader.uniforms.dataSize.value.y = dataHeight
@@ -59,10 +76,6 @@ export class InstancedSpriteMesh2<V> extends InstancedMesh2 {
           this.compute.progressDataTexture.image.width
       }
     }
-
-    // this.sortObjects = true
-    // this.customSort = createRadixSort(this)
-    this.perObjectFrustumCulled = false
   }
 
   public get spritesheet(): SpritesheetFormat | undefined {

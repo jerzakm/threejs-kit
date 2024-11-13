@@ -166,9 +166,6 @@ importers:
       '@three.ez/instanced-mesh':
         specifier: ^0.2.8
         version: 0.2.8(three@0.159.0)
-      diet-sprite:
-        specifier: ^0.0.1
-        version: 0.0.1
       earcut:
         specifier: ^2.2.4
         version: 2.2.4
@@ -1752,9 +1749,6 @@ packages:
 
   didyoumean@1.2.2:
     resolution: {integrity: sha512-gxtyfqMg7GKyhQmb056K7M3xszy/myH8w+B4RT+QXBQsvAOdc3XymqDDPHx1BgPgsdAA5SIifona89YtRATDzw==}
-
-  diet-sprite@0.0.1:
-    resolution: {integrity: sha512-zSHI2WDAn1wJqJYxcmjWfJv3Iw8oL9reQIbEyx2x2/EZ4/qmUTIo8/5qOCurnAcq61EwtJJaZ0XTy2NRYqpB5A==}
 
   diff@5.1.0:
     resolution: {integrity: sha512-D+mk+qE8VC/PAUrlAU34N+VfXev0ghe5ywmpqrawphmVZc1bEfn56uo9qpyGp1p4xpzOHkSW4ztBd6L7Xx4ACw==}
@@ -6308,8 +6302,6 @@ snapshots:
       dequal: 2.0.3
 
   didyoumean@1.2.2: {}
-
-  diet-sprite@0.0.1: {}
 
   diff@5.1.0: {}
 
