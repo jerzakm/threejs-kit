@@ -1,4 +1,4 @@
-import { InstancedMesh2 } from '@three.ez/instanced-mesh'
+import { createRadixSort, InstancedMesh2 } from '@three.ez/instanced-mesh'
 
 import { PlaneGeometry, Vector2, Vector4, WebGLRenderer } from 'three'
 import { initAnimationRunner } from './animationRunner'
@@ -59,6 +59,10 @@ export class InstancedSpriteMesh2<V> extends InstancedMesh2 {
           this.compute.progressDataTexture.image.width
       }
     }
+
+    // this.sortObjects = true
+    // this.customSort = createRadixSort(this)
+    this.perObjectFrustumCulled = false
   }
 
   public get spritesheet(): SpritesheetFormat | undefined {
