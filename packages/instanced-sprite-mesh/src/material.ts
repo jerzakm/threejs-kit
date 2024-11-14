@@ -111,8 +111,6 @@ export const constructSpriteMaterial = (
 			uniform sampler2D animationData;
       uniform int animationDataSize;
 			uniform sampler2D spritesheetData;
-      uniform float startTime;
-			uniform float time;
 			uniform float flipX;
 			uniform float flipY;
 			uniform vec2 dataSize;

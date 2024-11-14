@@ -61,6 +61,7 @@ export const patchSpriteMaterial = (material: any, triGeometry = false) => {
       '#include <batching_pars_vertex>',
       /*glsl*/ `
 			#include <batching_pars_vertex>
+
 			flat varying uint vInstanceIndex;
 			`
     )
@@ -79,7 +80,6 @@ export const patchSpriteMaterial = (material: any, triGeometry = false) => {
 			uniform sampler2D animationData;
 			uniform uint animationDataSize;
 			uniform sampler2D spritesheetData;
-			uniform float startTime;
 			uniform float flipX;
 			uniform float flipY;
 			uniform vec2 dataSize;
@@ -131,14 +131,7 @@ export const patchSpriteMaterial = (material: any, triGeometry = false) => {
     )
 
     shader.fragmentShader = expandThreejsMaterialChunks(shader.fragmentShader)
-
     shader.fragmentShader = replaceUVs(shader.fragmentShader, 'spriteUv')
-
-    // shader.fragmentShader =
-    //   shader.fragmentShader.slice(0, -1) +
-    //   /*glsl*/ `gl_FragColor = vec4(spriteUv, 1.,1.);` +
-    //   shader.fragmentShader.slice(-1)
-
     material.userData.shader = shader
   }
 
