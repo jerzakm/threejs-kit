@@ -1,8 +1,4 @@
-import {
-	InstancedSpriteMesh2,
-	createSpritesheet,
-	SpriteMaterial2
-} from '@threejs-kit/instanced-sprite-mesh';
+import { InstancedSpriteMesh2, createSpritesheet } from '@threejs-kit/instanced-sprite-mesh';
 import {
 	DoubleSide,
 	Matrix4,

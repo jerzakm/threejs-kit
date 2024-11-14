@@ -4,6 +4,5 @@ export { makeDataTexture, parseAseprite } from './material'
 export { createSpritesheet } from './spriteBuilder'
 
 export { InstancedSpriteMesh2 } from './InstancedSpriteMesh2'
-export { SpriteMaterial2 } from './material2'
 
 export type { SpritesheetFormat } from './material'
