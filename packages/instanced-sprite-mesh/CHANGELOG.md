@@ -1,5 +1,11 @@
 # @three-kit/materials
 
+## 2.5.0
+
+### Minor Changes
+
+- 9dc174c: Update troik dep and three to work with three 170.0.0
+
 ## 2.4.7
 
 ### Patch Changes
