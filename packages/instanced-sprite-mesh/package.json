@@ -42,7 +42,7 @@
     "diet-sprite": "^0.0.1",
     "earcut": "^2.2.4",
     "maath": "^0.10.7",
-    "three-instanced-uniforms-mesh": "^0.52.0",
-    "troika-three-utils": "^0.52.0"
+    "three-instanced-uniforms-mesh": "^0.52.4",
+    "troika-three-utils": "^0.52.4"
   }
 }
