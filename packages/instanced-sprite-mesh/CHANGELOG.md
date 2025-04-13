@@ -1,5 +1,11 @@
 # @three-kit/materials
 
+## 2.5.1
+
+### Patch Changes
+
+- 16f9d17: Update dependencies
+
 ## 2.5.0
 
 ### Minor Changes
