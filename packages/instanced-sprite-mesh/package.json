@@ -1,6 +1,6 @@
 {
   "name": "@threejs-kit/instanced-sprite-mesh",
-  "version": "2.5.0",
+  "version": "2.5.1",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
